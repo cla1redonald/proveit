@@ -1,0 +1,11 @@
+{
+  "name": "proveit",
+  "description": "Validate product ideas through structured discovery, market research, and confidence scoring. For product managers — from raw idea to technical handoff deck.",
+  "version": "0.1.0",
+  "author": { "name": "Claire Donald" },
+  "homepage": "https://github.com/cla1redonald/proveit",
+  "license": "MIT",
+  "keywords": ["product", "validation", "discovery", "research", "pm", "strategy"],
+  "commands": "./commands/",
+  "agents": "./agents/"
+}

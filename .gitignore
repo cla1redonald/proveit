@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Claude Code local settings (per-user, never shared)
+.claude/settings.local.json
+.claude/agent-memory-local/
+.claude/agent-memory/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
