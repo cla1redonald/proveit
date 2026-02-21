@@ -21,8 +21,8 @@ Everything is saved to `discovery.md` — stop anytime, resume later.
 ## Prerequisites
 
 - **Claude Code** (latest version) — [install](https://claude.ai/download)
-- **Node.js** — [install](https://nodejs.org)
-- **jq** — `brew install jq` on macOS
+- **Node.js 18+** — [install](https://nodejs.org)
+- **jq** — `brew install jq` (macOS) or `apt-get install jq` (Debian/Ubuntu) or `yum install jq` (RHEL/CentOS)
 
 ## Installation
 
@@ -106,7 +106,7 @@ A living research document updated after every phase:
 - Kill signals (if any)
 - Validation playbook (experiments to run next)
 
-### Gamma Presentation
+### Handoff Presentation
 
 When confidence is high enough, ProveIt generates a slide deck covering:
 - The problem and who has it
@@ -115,6 +115,8 @@ When confidence is high enough, ProveIt generates a slide deck covering:
 - What to build (high level)
 - T-shirt size estimate and technical risks
 - Recommended next steps
+
+If you have [Gamma MCP](https://gamma.app) installed, ProveIt generates a polished Gamma presentation. Otherwise, it generates a structured markdown deck in `discovery.md` that you can paste into any slide tool.
 
 ### Validation Playbook
 
@@ -125,6 +127,17 @@ Practical experiments tied to remaining unknowns:
 ## Security
 
 This repo commits **zero Bash permission allows** in `.claude/settings.json`. Anyone who clones this repo will be prompted to approve every command individually. This is intentional — see [ShipIt's security rationale](https://github.com/cla1redonald/shipit-v2) for why shared repos should not pre-approve command execution.
+
+## Optional MCP Enhancements
+
+ProveIt works fully with built-in tools (`WebSearch`, `WebFetch`). For deeper research and richer output, you can optionally install these MCP servers:
+
+| MCP Server | What It Adds |
+|------------|-------------|
+| [Firecrawl](https://firecrawl.dev) | Deeper page scraping and structured extraction for competitor analysis |
+| [Gamma](https://gamma.app) | Polished slide deck generation instead of markdown |
+
+ProveIt detects available tools automatically — no configuration needed.
 
 ## Frameworks Used
 

@@ -36,10 +36,21 @@ check_prereqs() {
   if ! command -v node &>/dev/null; then
     error "'node' not found. Install Node.js: https://nodejs.org"
     missing=1
+  else
+    local node_major
+    node_major=$(node -v | sed 's/v//' | cut -d'.' -f1)
+    if [[ "$node_major" -lt 18 ]]; then
+      error "Node.js 18+ required. Current: $(node -v)"
+      missing=1
+    fi
   fi
 
   if ! command -v jq &>/dev/null; then
-    error "'jq' not found. Install it: brew install jq"
+    if [[ "$(uname)" == "Darwin" ]]; then
+      error "'jq' not found. Install it: brew install jq"
+    else
+      error "'jq' not found. Install it: apt-get install jq (Debian/Ubuntu) or yum install jq (RHEL/CentOS)"
+    fi
     missing=1
   fi
 
@@ -55,7 +66,10 @@ check_prereqs() {
 # --- Install ---
 install_proveit() {
   # Create settings dir if needed
-  mkdir -p "$SETTINGS_DIR"
+  mkdir -p "$SETTINGS_DIR" || {
+    error "Cannot create $SETTINGS_DIR. Check permissions."
+    exit 1
+  }
 
   # Create settings file if needed
   if [[ ! -f "$SETTINGS_FILE" ]]; then
@@ -70,9 +84,10 @@ install_proveit() {
     exit 1
   fi
 
-  # Backup
-  cp "$SETTINGS_FILE" "$SETTINGS_FILE.bak"
-  success "Backed up settings to settings.json.bak"
+  # Backup (timestamped to preserve previous backups)
+  local backup_file="$SETTINGS_FILE.bak.$(date +%s)"
+  cp "$SETTINGS_FILE" "$backup_file"
+  success "Backed up settings to $(basename "$backup_file")"
 
   # Merge keys using dot-path notation (preserves all existing keys)
   jq --arg path "$PROVEIT_PATH" '
@@ -95,7 +110,7 @@ install_proveit() {
     success "Verified installation"
   else
     error "Verification failed. Check $SETTINGS_FILE manually."
-    error "A backup is at $SETTINGS_FILE.bak"
+    error "A backup is at $backup_file"
     exit 1
   fi
 
@@ -109,8 +124,9 @@ uninstall_proveit() {
     exit 0
   fi
 
-  cp "$SETTINGS_FILE" "$SETTINGS_FILE.bak"
-  success "Backed up settings to settings.json.bak"
+  local backup_file="$SETTINGS_FILE.bak.$(date +%s)"
+  cp "$SETTINGS_FILE" "$backup_file"
+  success "Backed up settings to $(basename "$backup_file")"
 
   jq '
     del(.extraKnownMarketplaces.proveit) |
@@ -120,7 +136,14 @@ uninstall_proveit() {
   ' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
 
   mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
-  success "ProveIt removed from settings"
+
+  # Verify removal
+  if jq -e '.extraKnownMarketplaces.proveit' "$SETTINGS_FILE" >/dev/null 2>&1; then
+    error "Uninstall verification failed. ProveIt config still present."
+    error "A backup is at $backup_file"
+    exit 1
+  fi
+  success "Verified ProveIt removed from settings"
   echo ""
   echo "To reinstall: ./setup.sh"
 }
@@ -146,7 +169,7 @@ print_quickstart() {
   echo "  - Automated market research and competitor analysis"
   echo "  - Confidence scoring with honest kill signals"
   echo "  - discovery.md — persistent research document"
-  echo "  - Gamma presentation for technical handoff"
+  echo "  - Handoff presentation for the technical team"
   echo ""
   info "  Tip: Create a directory for each idea:"
   echo "  mkdir ~/my-idea && cd ~/my-idea && /proveit:proveit"

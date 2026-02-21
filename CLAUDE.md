@@ -4,7 +4,15 @@ ProveIt is a product validation tool for product managers. One agent, one skill,
 
 ## What It Does
 
-Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Outputs a confidence score, a `discovery.md` research document, and a Gamma presentation for technical handoff.
+Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Outputs a confidence score, a `discovery.md` research document, and a handoff presentation for the technical team.
+
+## MCP Strategy
+
+Firecrawl and Gamma MCP tools are **optional enhancements**. ProveIt detects available tools at session start and adapts:
+- **Research:** Uses Firecrawl if available, otherwise `WebSearch` + `WebFetch`
+- **Presentation:** Uses Gamma if available, otherwise generates a markdown deck in `discovery.md`
+
+The experience should feel complete either way — never mention missing tools to the PM.
 
 ## How to Use
 

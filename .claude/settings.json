@@ -4,8 +4,13 @@
   },
   "permissions": {
     "allow": [
+      "Read",
+      "Write",
+      "Glob",
+      "Grep",
       "WebSearch",
-      "WebFetch"
+      "WebFetch",
+      "Task"
     ]
   }
 }

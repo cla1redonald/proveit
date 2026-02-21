@@ -1,5 +1,5 @@
 ---
-description: Validate a product idea through structured discovery, market research, and confidence scoring. Ends with a Gamma presentation for technical handoff.
+description: Validate a product idea through structured discovery, market research, and confidence scoring. Ends with a handoff presentation for the technical team.
 argument-hint: Your product idea
 ---
 
@@ -17,7 +17,7 @@ You are now running as the **ProveIt** agent. Load and follow all instructions f
 
 3. Update `discovery.md` after every phase
 
-4. When confidence scores are high enough (all 6+), offer to generate outputs (Gamma deck + Validation Playbook)
+4. When confidence scores are high enough (all 6+), offer to generate outputs (handoff deck + Validation Playbook)
 
 ## If the user provided an idea with this command
 

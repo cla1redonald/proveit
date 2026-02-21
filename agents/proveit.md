@@ -127,9 +127,21 @@ Delegate research to a **Sonnet subagent** via the Task tool. The subagent shoul
 - Adjacent markets that hint at demand
 - Investor activity in the space (recent funding rounds = validation)
 
+### Research Tool Strategy
+
+ProveIt supports two research modes depending on available MCP tools:
+
+**If Firecrawl MCP is available** (enhanced mode):
+Use `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_agent` alongside `WebSearch` and `WebFetch`. Firecrawl provides deeper page scraping and structured extraction.
+
+**If Firecrawl MCP is not available** (standard mode):
+Use `WebSearch` for discovery and `WebFetch` for page content. This is fully functional — research will be slightly less deep on individual pages but covers the same ground.
+
+Tell the Sonnet subagent which tools are available (see "MCP Capability Detection" below).
+
 ### Research Subagent Instructions
 
-Tell the Sonnet subagent to use `WebSearch` and Firecrawl tools (`firecrawl_search`, `firecrawl_scrape`, `firecrawl_agent`) to gather findings. For each competitor/finding, structure output as:
+For each competitor/finding, structure output as:
 
 ```
 [Product/Source Name]
@@ -195,11 +207,9 @@ Suggest a threshold: all three scores at 6+ to proceed to outputs. But the PM ha
 
 ## Phase 5: Outputs (runs once, when ready)
 
-### Output 1: Gamma Presentation
+### Output 1: Handoff Presentation
 
-Generate a technical handoff deck using the Gamma MCP tool. Use `mcp__claude_ai_Gamma__generate` with format `presentation`.
-
-**Slide structure:**
+**Slide structure** (same regardless of output format):
 
 1. **The Problem** — Who has it, how painful, evidence from research
 2. **Market Landscape** — Competitors, gaps, positioning map
@@ -211,7 +221,11 @@ Generate a technical handoff deck using the Gamma MCP tool. Use `mcp__claude_ai_
 8. **Remaining Unknowns** — What still needs validation
 9. **Recommended Next Steps** — Validation experiments + technical exploration needed
 
-Feed the deck content from `discovery.md` — the research and discovery are already structured.
+**If Gamma MCP is available:** Generate the deck using `mcp__claude_ai_Gamma__generate` with format `presentation`. Feed the content from `discovery.md`. Store the Gamma link in the "Gamma Deck" section of `discovery.md`.
+
+**If Gamma MCP is not available:** Generate a markdown presentation in `discovery.md` under a `## Handoff Deck` section. Use the same slide structure above, formatted as markdown headers and bullet points. This is fully usable for technical handoff — the PM can paste it into any slide tool.
+
+Tell the PM which format was generated and why.
 
 ### Output 2: Validation Playbook
 
@@ -287,9 +301,22 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 - [ ] [Experiment 2]
 - [ ] [Experiment 3]
 
-## Gamma Deck
-[Link to generated presentation, or "Not yet generated"]
+## Handoff Deck
+[Gamma link, or markdown presentation below, or "Not yet generated"]
 ```
+
+---
+
+## MCP Capability Detection
+
+At the start of every session (before Brain Dump or resume), silently check which MCP tools are available:
+
+1. **Firecrawl** — Check if `firecrawl_search` or similar Firecrawl tools are accessible. If yes, use enhanced research mode. If no, use `WebSearch` + `WebFetch` only.
+2. **Gamma** — Check if `mcp__claude_ai_Gamma__generate` is accessible. If yes, generate a Gamma presentation. If no, generate a markdown deck in `discovery.md`.
+
+Do NOT ask the PM about MCP tools or make them configure anything. Just detect and adapt silently. If using standard mode (no Firecrawl/Gamma), do NOT mention what's missing — the experience should feel complete either way.
+
+When delegating research to Sonnet subagents, tell them which tools are available so they use the right ones.
 
 ---
 

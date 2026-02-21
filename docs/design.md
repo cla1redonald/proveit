@@ -1,14 +1,14 @@
 # ProveIt — Design Document
 
-**Version:** POC
+**Version:** 0.1.0
 **Date:** 2026-02-07
 **Author:** Claire Donald
 
 ## What is ProveIt?
 
-ProveIt is a Claude Code plugin that helps product managers validate ideas before committing technical resources. It takes a raw idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a Gamma presentation for technical handoff.
+ProveIt is a Claude Code plugin that helps product managers validate ideas before committing technical resources. It takes a raw idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a handoff presentation for the technical team.
 
-**Tagline:** "ProveIt first, then ShipIt."
+**Tagline:** "ProveIt first, then build it."
 
 ## The Problem
 
@@ -96,21 +96,20 @@ ProveIt goes autonomous. PM waits. Three parallel research tracks:
 - Existing products (Product Hunt, app stores, SaaS directories)
 - Open source alternatives (GitHub)
 - Failed attempts — the graveyard (tarpit detection)
-- Tools: `firecrawl_search`, `firecrawl_scrape`, `WebSearch`
 
 **Track 2: Market Evidence**
 - Real people expressing this pain (Reddit, HN, Twitter, forums)
 - "I wish...", "I built...", "why isn't there..." patterns
 - Industry articles about the problem space
 - Evidence of switching behaviour
-- Tools: `firecrawl_search`, `firecrawl_agent`, `WebSearch`
 
 **Track 3: Viability Signals**
 - Competitor pricing
 - Market size estimates
 - Adjacent market signals
 - Investor activity (recent funding = validation)
-- Tools: `firecrawl_search`, `firecrawl_extract`, `WebSearch`
+
+**Research tools:** `WebSearch` and `WebFetch` are always available. If the user has Firecrawl MCP installed, `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_agent` are also used for deeper page analysis. ProveIt detects available tools automatically and adapts.
 
 **Output per competitor/finding:**
 ```
@@ -149,9 +148,7 @@ Message: "Here's what the evidence shows. The bar for pursuing this just got hig
 
 ### Phase 5: Outputs (runs once, when ready)
 
-**1. Gamma Presentation (technical handoff deck)**
-
-Generated via `mcp__claude_ai_Gamma__generate` with format: 'presentation'.
+**1. Handoff Presentation**
 
 Slides:
 1. The Problem — who has it, how painful, evidence
@@ -163,6 +160,8 @@ Slides:
 7. Size & Complexity — T-shirt size, key technical risks
 8. Remaining Unknowns — what still needs validation
 9. Recommended Next Steps — validation playbook summary
+
+If Gamma MCP is available, the deck is generated via `mcp__claude_ai_Gamma__generate`. Otherwise, it's generated as a structured markdown section in `discovery.md` that the PM can paste into any slide tool.
 
 **2. Validation Playbook (appended to discovery.md)**
 
@@ -233,8 +232,8 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 - [ ] [Experiment 2]
 - [ ] [Experiment 3]
 
-## Gamma Deck
-[Link to generated presentation, or "Not yet generated"]
+## Handoff Deck
+[Gamma link, markdown presentation, or "Not yet generated"]
 ```
 
 **Session resume:** ProveIt's first move in any session is to check if `discovery.md` exists. If yes, read it, summarise where things stand, and ask what the PM wants to tackle next. If no, start fresh with brain dump.
@@ -272,16 +271,25 @@ proveit/
 
 Minimal footprint. One agent, one skill, one setup script.
 
-## MCP Tools Required
+## Tools
+
+### Always Available (built-in)
 
 | Tool | Used For |
 |------|----------|
-| `WebSearch` | Quick market searches, trend discovery |
-| `firecrawl_search` | Deep web search with scraped results |
-| `firecrawl_scrape` | Competitor site analysis |
-| `firecrawl_agent` | Autonomous multi-source research |
-| `Gamma generate` | Final presentation output |
-| `Gamma get_themes` | Theme selection for deck |
+| `WebSearch` | Market searches, trend discovery |
+| `WebFetch` | Fetching and reading web page content |
+
+### Optional MCP Enhancements
+
+These MCP tools are used if installed, but ProveIt works fully without them:
+
+| Tool | Used For | Fallback |
+|------|----------|----------|
+| `firecrawl_search` | Deep web search with scraped results | `WebSearch` |
+| `firecrawl_scrape` | Competitor site analysis | `WebFetch` |
+| `firecrawl_agent` | Autonomous multi-source research | Multiple `WebSearch` queries |
+| `Gamma generate` | Slide deck output | Markdown deck in `discovery.md` |
 
 ## Setup / Onboarding
 
@@ -307,19 +315,20 @@ Script:
 - Not a replacement for talking to real users
 - Not a decision-maker — it presents evidence, the PM decides
 
-## POC Scope
+## Current Scope
 
 **In:**
 - Single-user (one PM, one idea per session)
 - Core discovery loop (all 5 phases)
 - discovery.md persistence
-- Gamma deck generation
+- Handoff deck generation (Gamma or markdown)
 - Validation playbook
 - Confidence scoring
 - Kill signal detection
 - Session resume
+- MCP tool detection with graceful fallbacks
 
-**Out:**
+**Out (potential future work):**
 - Multi-user collaboration
 - Web UI
 - Database persistence
