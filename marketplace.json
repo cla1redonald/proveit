@@ -1,0 +1,11 @@
+{
+  "name": "proveit",
+  "owner": { "name": "Claire Donald" },
+  "plugins": [
+    {
+      "name": "proveit",
+      "source": ".",
+      "description": "Validate product ideas through structured discovery, market research, and confidence scoring."
+    }
+  ]
+}
