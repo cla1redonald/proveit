@@ -5,6 +5,7 @@ import { anthropic } from "@/lib/anthropic";
 import { buildFastCheckPrompt } from "@/lib/prompts";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const FastCheckSchema = z.object({
   idea: z

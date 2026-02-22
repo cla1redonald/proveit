@@ -4,14 +4,19 @@ import { useEffect, useState } from "react";
 
 interface SearchingIndicatorProps {
   isSearching: boolean;
+  searches: string[]; // completed search queries
+  currentQuery: string | null; // in-progress query
   onTimeout: () => void;
 }
 
 export default function SearchingIndicator({
   isSearching,
+  searches,
+  currentQuery,
   onTimeout,
 }: SearchingIndicatorProps) {
   const [elapsed, setElapsed] = useState(0);
+  const hasActivity = isSearching || searches.length > 0;
 
   useEffect(() => {
     if (!isSearching) {
@@ -22,9 +27,7 @@ export default function SearchingIndicator({
     const interval = setInterval(() => {
       setElapsed((prev) => {
         const next = prev + 1;
-        if (next >= 60) {
-          onTimeout();
-        }
+        if (next >= 120) onTimeout();
         return next;
       });
     }, 1000);
@@ -32,34 +35,65 @@ export default function SearchingIndicator({
     return () => clearInterval(interval);
   }, [isSearching, onTimeout]);
 
-  if (!isSearching) return null;
+  if (!hasActivity) return null;
 
   return (
     <div
       role="status"
       aria-live="polite"
-      aria-label="Searching the web for evidence"
-      className="flex flex-col gap-[var(--space-2)]"
+      className="rounded-[var(--radius-lg)] border p-[var(--space-4)]"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-subtle)",
+      }}
     >
-      <div className="flex items-center gap-[var(--space-3)]">
-        <span className="section-label">SEARCHING THE WEB</span>
-        <div className="search-dots flex gap-1">
-          <span />
-          <span />
-          <span />
-        </div>
+      <p className="section-label mb-[var(--space-3)]">RESEARCH IN PROGRESS</p>
+
+      <div className="flex flex-col gap-[var(--space-2)]">
+        {/* Completed searches */}
+        {searches.map((query, i) => (
+          <div key={i} className="flex items-start gap-[var(--space-2)]">
+            <span
+              className="font-mono shrink-0 mt-px"
+              style={{ fontSize: "var(--text-xs)", color: "var(--color-supported-fg)" }}
+            >
+              ✓
+            </span>
+            <p
+              className="font-mono"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}
+            >
+              {query}
+            </p>
+          </div>
+        ))}
+
+        {/* Current in-progress search */}
+        {isSearching && (
+          <div className="flex items-start gap-[var(--space-2)]">
+            <div className="search-dots flex gap-1 shrink-0 mt-[3px]">
+              <span />
+              <span />
+              <span />
+            </div>
+            <p
+              className="font-mono"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)" }}
+            >
+              {currentQuery ?? "Searching the web..."}
+            </p>
+          </div>
+        )}
+
+        {elapsed >= 30 && elapsed < 120 && (
+          <p
+            className="font-mono mt-[var(--space-1)]"
+            style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
+          >
+            Still researching — this can take a minute or two.
+          </p>
+        )}
       </div>
-      {elapsed >= 15 && elapsed < 60 && (
-        <p
-          className="font-mono"
-          style={{
-            fontSize: "var(--text-xs)",
-            color: "var(--text-muted)",
-          }}
-        >
-          Still searching... this can take up to 30 seconds.
-        </p>
-      )}
     </div>
   );
 }

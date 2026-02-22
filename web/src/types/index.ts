@@ -86,7 +86,8 @@ export type StreamEvent =
   | { type: "phase_change"; phase: DiscoveryPhase }
   | { type: "scores"; scores: ConfidenceScores }
   | { type: "kill_signal"; signal: KillSignal }
-  | { type: "searching"; active: boolean } // pause_turn indicator
+  | { type: "searching"; active: boolean }
+  | { type: "search_query"; query: string } // emitted when a web search query is ready to run
   | { type: "done" }
   | { type: "error"; message: string };
 
