@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getSession, updateSession, clearSession } from "@/lib/session";
 import type { ValidationSession } from "@/types";
 
 export function useSession() {
-  const [session, setSession] = useState<ValidationSession | null>(() => {
-    // Initialize from localStorage on first render (client-side only)
-    if (typeof window === "undefined") return null;
-    return getSession();
-  });
+  const [session, setSession] = useState<ValidationSession | null>(null);
+
+  useEffect(() => {
+    setSession(getSession());
+  }, []);
 
   const handleUpdateSession = useCallback((updated: ValidationSession) => {
     updateSession(updated);
