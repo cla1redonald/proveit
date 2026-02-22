@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ─── ProveIt Design System ─────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* ── shadcn/ui HSL channel values (space-separated, no commas) ── */
+    --background:    14 17 21;     /* #0e1115 */
+    --foreground:    240 244 248;  /* #f0f4f8 */
+
+    --card:          22 27 34;     /* #161b22 */
+    --card-foreground: 240 244 248;
+
+    --popover:       31 41 55;     /* #1f2937 */
+    --popover-foreground: 240 244 248;
+
+    --primary:       224 90 43;    /* #e05a2b — accent */
+    --primary-foreground: 240 244 248;
+
+    --secondary:     22 27 34;     /* --bg-surface */
+    --secondary-foreground: 139 148 158;
+
+    --muted:         22 27 34;
+    --muted-foreground: 72 79 88;  /* --text-muted */
+
+    --accent:        31 41 55;     /* --bg-elevated */
+    --accent-foreground: 240 244 248;
+
+    --destructive:   248 113 113;  /* --color-contradicted-fg */
+    --destructive-foreground: 240 244 248;
+
+    --border:        255 255 255 / 0.12;  /* --border-default */
+    --input:         255 255 255 / 0.12;
+    --ring:          224 90 43;           /* --border-focus */
+
+    --radius: 0.375rem;  /* --radius-md */
+
+    /* ── ProveIt Brand Colors ── */
+
+    /* Background scale */
+    --bg-base:     #0e1115;  /* Page background */
+    --bg-surface:  #161b22;  /* Cards, panels, chat bubbles (ProveIt side) */
+    --bg-elevated: #1f2937;  /* Modals, dropdowns, user chat bubbles */
+
+    /* Text scale */
+    --text-primary:   #f0f4f8;  /* Headings, primary body text */
+    --text-secondary: #8b949e;  /* Secondary labels, metadata, timestamps */
+    --text-muted:     #484f58;  /* Disabled states, placeholder text */
+
+    /* Accent */
+    --color-accent:       #e05a2b;  /* Primary CTA buttons and verdict badges only */
+    --color-accent-hover: #c94e22;  /* Hover state for accent elements */
+
+    /* Semantic verdict colors */
+    --color-supported:    #2d6a4f;
+    --color-supported-fg: #52b788;
+    --color-weak:         #7c5800;
+    --color-weak-fg:      #e9a829;
+    --color-contradicted:     #6b1a1a;
+    --color-contradicted-fg:  #f87171;
+
+    /* Kill signal */
+    --color-kill-signal:    #3d1515;
+    --color-kill-signal-fg: #f87171;
+
+    /* Border */
+    --border-subtle:  rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.12);
+    --border-focus:   #e05a2b;
+
+    /* ── Typography ── */
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New', monospace;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Type scale */
+    --text-xs:   0.75rem;
+    --text-sm:   0.875rem;
+    --text-base: 1rem;
+    --text-lg:   1.125rem;
+    --text-xl:   1.25rem;
+    --text-2xl:  1.5rem;
+    --text-3xl:  1.875rem;
+    --text-4xl:  2.25rem;
+
+    /* Line height */
+    --leading-tight:   1.25;
+    --leading-snug:    1.375;
+    --leading-normal:  1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose:   2;
+
+    /* ── Spacing (4px base unit) ── */
+    --space-1:  0.25rem;
+    --space-2:  0.5rem;
+    --space-3:  0.75rem;
+    --space-4:  1rem;
+    --space-5:  1.25rem;
+    --space-6:  1.5rem;
+    --space-8:  2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+    --space-24: 6rem;
+
+    /* ── Component Tokens ── */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+    /* ── Animation ── */
+    --duration-fast:   150ms;
+    --duration-base:   200ms;
+    --duration-slow:   300ms;
+    --duration-xslow:  500ms;
+    --easing-default:  cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-enter:    cubic-bezier(0, 0, 0.2, 1);
+    --easing-exit:     cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+  }
+
+  /* Focus rings — accessible but not obtrusive */
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 0;
+    border-color: var(--border-focus);
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dot-pulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
+  40%           { opacity: 1;   transform: scale(1.2); }
+}
+
+/* Streaming cursor */
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: var(--text-secondary);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+/* Assumption card entrance */
+.assumption-card-enter {
+  animation: card-enter 0.3s ease-out forwards;
+}
+
+/* Section label style */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Web search dots */
+.search-dots span {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--text-secondary);
+  animation: dot-pulse 1.4s ease-in-out infinite;
+}
+
+.search-dots span:nth-child(2) { animation-delay: 0.2s; }
+.search-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── Button Utilities ────────────────────────────────────────────────────────── */
+
+.accent-btn {
+  background-color: var(--color-accent);
+  color: var(--text-primary);
+  transition: background-color var(--duration-fast);
+  text-decoration: none;
+}
+
+.accent-btn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.accent-btn:active {
+  transform: scale(0.98);
+}
+
+.accent-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.outline-btn {
+  background-color: transparent;
+  border-color: var(--border-default);
+  color: var(--text-primary);
+  transition: border-color var(--duration-fast);
+  text-decoration: none;
+}
+
+.outline-btn:hover {
+  border-color: var(--text-secondary);
+}
+
+/* ─── Reduced Motion ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .streaming-cursor {
+    animation: none;
+    opacity: 1;
+  }
+}

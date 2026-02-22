@@ -1,10 +1,17 @@
 # ProveIt
 
-Validate product ideas before committing technical resources. For product managers.
+> *"Products don't fail at launch. They fail at the idea — when nobody checked if the problem was real, the market was big enough, or someone already tried and failed. You're about to make that bet. ProveIt checks the odds first."*
 
-ProveIt takes a raw idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a presentation for technical handoff.
+ProveIt takes a raw product idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a research document and Gamma presentation for technical handoff.
 
-**"ProveIt first, then build it."**
+---
+
+## When to Run It
+
+Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or put something on the roadmap. It's a preflight check, not a post-analysis.
+
+- **Fast check (10-15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill the idea
+- **Full validation (1-2 hrs):** `/proveit:proveit [your idea]` — structured discovery + research + confidence scoring + handoff deck
 
 ---
 
@@ -26,7 +33,6 @@ ProveIt takes a raw idea through Desirability (do users want it?), Viability (ca
 **Required:**
 - **Claude Code** (latest version) — [install](https://claude.ai/download)
 - **Node.js** — [install](https://nodejs.org)
-- **jq** — `brew install jq` on macOS
 
 **MCP Tools** (configure in Claude Code settings):
 - **Firecrawl** — deep web research and competitor analysis
