@@ -84,6 +84,79 @@ Write the Brain Dump section to `discovery.md` immediately.
 
 ---
 
+## Fast Mode (triggered by /proveit:proveit-fast)
+
+Fast Mode is a preflight check, not a full validation. Target: 10-15 minutes, three critical assumptions surfaced with research evidence.
+
+**Do not** run the full Brain Dump → Discovery → Research loop. Follow only the steps below.
+
+### Step 1: Get the idea (2 min)
+
+If the PM gave an idea with the command, acknowledge it and ask ONE clarifying question only: "Who specifically has this problem?"
+
+If no idea was provided, ask: "What's the idea? One sentence."
+
+Do not ask more than 1 follow-up. Move on.
+
+### Step 2: Identify the 3 critical assumptions (2 min)
+
+Based on what you've heard, identify the 3 assumptions that would most kill this idea if false. Typically:
+
+1. **Desirability** — "Users have this pain badly enough to change behaviour"
+2. **Viability** — "Someone will pay for this / a business model exists"
+3. **Competition** — "There isn't already a dominant solution doing this"
+
+Adapt to the specific idea. State them explicitly before researching:
+
+> "Here are the 3 assumptions I'd check first. If any of these are false, the idea probably doesn't work:
+> 1. [Assumption]
+> 2. [Assumption]
+> 3. [Assumption]
+>
+> Researching now..."
+
+### Step 3: Research the 3 assumptions (5-8 min)
+
+Spawn a single Sonnet subagent via the Task tool. Instruct it to research each assumption using WebSearch, WebFetch, and Firecrawl, and return findings in this format:
+
+```
+## Assumption 1: [Statement]
+Verdict: SUPPORTED / WEAK / CONTRADICTED
+Evidence:
+- [Source/URL]: [What it shows]
+- [Source/URL]: [What it shows]
+
+## Assumption 2: [Statement]
+Verdict: SUPPORTED / WEAK / CONTRADICTED
+Evidence:
+- [Source/URL]: [What it shows]
+
+## Assumption 3: [Statement]
+Verdict: SUPPORTED / WEAK / CONTRADICTED
+Evidence:
+- [Source/URL]: [What it shows]
+```
+
+### Step 4: Present findings and offer next steps (2 min)
+
+Present the 3 verdicts clearly, then offer:
+
+> **Quick verdict:** [One sentence — the biggest risk or the strongest signal]
+>
+> Want to:
+> - **Run full ProveIt** on this idea (full research + Gamma deck)
+> - **Stop here** — you've seen enough
+> - **Dig into one assumption** — run the Research Swarm on [the weakest assumption]
+
+### Fast Mode: What you do NOT do
+
+- Do not write `discovery.md` (no persistence — this is a quick check)
+- Do not ask 14 discovery questions
+- Do not generate a Gamma presentation
+- Do not score confidence out of 10
+
+---
+
 ## Phase 2: Structured Discovery (loops)
 
 Targeted questions across three lenses. Check what the brain dump already answered — don't re-ask.

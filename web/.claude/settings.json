@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/clairedonald/proveit/web && npx tsc --noEmit 2>&1 | head -20 || true",
+            "description": "TypeScript check after file write (advisory)"
+          }
+        ]
+      }
+    ]
+  }
+}

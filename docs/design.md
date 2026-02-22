@@ -1,14 +1,14 @@
 # ProveIt — Design Document
 
-**Version:** POC
-**Date:** 2026-02-07
+**Version:** 1.0
+**Date:** 2026-02-22
 **Author:** Claire Donald
 
 ## What is ProveIt?
 
 ProveIt is a Claude Code plugin that helps product managers validate ideas before committing technical resources. It takes a raw idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a Gamma presentation for technical handoff.
 
-**Tagline:** "ProveIt first, then ShipIt."
+**Tagline:** "ProveIt first, then build it."
 
 ## The Problem
 
@@ -23,6 +23,8 @@ ProveIt runs one iterative loop. It is NOT linear — it cycles until confidence
 
 ```
 Brain Dump → Structured Discovery → Research → Findings Review
+                                                      ↓
+                                              Swarm? (optional)
                                                       ↓
                                               Confidence high enough?
                                                No → back to Discovery
@@ -88,9 +90,9 @@ Targeted questions across three lenses. ProveIt checks what the brain dump alrea
 - Move to research when enough context to search effectively (usually ~8 questions total)
 - Never more than 15 minutes of questions before research starts
 
-### Phase 3: Research (loops)
+### Phase 3: Standard Research (loops)
 
-ProveIt goes autonomous. PM waits. Three parallel research tracks:
+ProveIt goes autonomous. PM waits. Delegates to a Sonnet subagent running three parallel tracks:
 
 **Track 1: Competitor Landscape**
 - Existing products (Product Hunt, app stores, SaaS directories)
@@ -112,6 +114,8 @@ ProveIt goes autonomous. PM waits. Three parallel research tracks:
 - Investor activity (recent funding = validation)
 - Tools: `firecrawl_search`, `firecrawl_extract`, `WebSearch`
 
+Output writes to `research-N.md` (N = existing file count + 1). Never overwrites prior rounds.
+
 **Output per competitor/finding:**
 ```
 [Product Name]
@@ -132,13 +136,6 @@ Viability:    4 → 5/10 (competitors exist but only 1 charges, unclear willingn
 Feasibility:  7/10     (no change — needs technical review)
 ```
 
-**What happens next — PM decides:**
-- Scores high enough → "Let's generate the deck"
-- Gaps remain → ProveIt asks targeted follow-up questions, then researches again
-- Kill signal → Present evidence honestly, PM decides to pivot/persist/stop
-- PM has new info → Incorporate, re-score
-- PM wants to stop → Everything saved in `discovery.md`, resume anytime
-
 **Kill Signals (flag clearly, don't decide for PM):**
 - Tarpit detected — 5+ failed startups in this exact space
 - Saturated market — 10+ active competitors, no clear gap
@@ -147,11 +144,51 @@ Feasibility:  7/10     (no change — needs technical review)
 
 Message: "Here's what the evidence shows. The bar for pursuing this just got higher. Here's what would need to be true for this to work despite these signals."
 
+**What happens next — PM decides:**
+- Scores high enough → offer Research Swarm, then outputs
+- Gaps remain → ProveIt asks targeted follow-up questions, then researches again
+- Kill signal → Present evidence honestly, offer Swarm to pressure-test it, PM decides
+- PM has new info → Incorporate, re-score
+- PM wants to stop → Everything saved, resume anytime
+
+### Phase 4.5: Research Swarm (optional — offered after every Phase 4)
+
+After every findings review, ProveIt offers to go deeper. It reads the actual findings and identifies the sharpest unresolved question, then confirms with the PM before running.
+
+**Swarm question:** Crafted by ProveIt (Opus) from real findings — not the raw idea. Examples:
+- "Given Swagup dominates enterprise, is there a real SMB gap?"
+- "Is the stated pain strong enough to drive switching, or is this a tarpit?"
+
+**5 parallel Sonnet agents** spawned in a single call, each writing to their own file:
+
+| Agent | File | Mandate |
+|-------|------|---------|
+| Market Bull | `swarm-N-market-bull.md` | Strongest case for opportunity |
+| Market Bear | `swarm-N-market-bear.md` | Strongest case for failure |
+| Customer Impact | `swarm-N-customer-impact.md` | Pure user perspective |
+| Technical Feasibility | `swarm-N-technical.md` | What's actually buildable |
+| Devil's Advocate | `swarm-N-devils-advocate.md` | Challenges conventional wisdom |
+
+Each agent receives the full `discovery.md` + latest `research-N.md` as context — arguing against real findings, not a blank slate.
+
+**Synthesis agent** then reads all 5 + prior research → writes `swarm-N-synthesis.md` with:
+- Executive summary with confidence-weighted recommendation
+- Direct contradictions between agents, with resolution
+- Bias check (absolute claims, echo chambers, missing angles)
+- Score impact (Desirability/Viability/Feasibility delta)
+- Next steps
+
+ProveIt (Opus) reads the synthesis and updates confidence scores in `discovery.md`.
+
+**Round numbering:** N = existing swarm synthesis file count + 1. Never overwrites prior swarms.
+
 ### Phase 5: Outputs (runs once, when ready)
 
 **1. Gamma Presentation (technical handoff deck)**
 
 Generated via `mcp__claude_ai_Gamma__generate` with format: 'presentation'.
+
+ProveIt reads `discovery.md`, all `research-*.md`, and all `swarm-*-synthesis.md` before generating.
 
 Slides:
 1. The Problem — who has it, how painful, evidence
@@ -164,17 +201,35 @@ Slides:
 8. Remaining Unknowns — what still needs validation
 9. Recommended Next Steps — validation playbook summary
 
-**2. Validation Playbook (appended to discovery.md)**
+**2. Validation Playbook (written to discovery.md)**
 
 Practical experiments tied to remaining unknowns:
 - "Viability is 7/10 — run a landing page test with pricing to test willingness to pay"
 - "Desirability is 8/10 but forum-based — do 5 user interviews to confirm"
 - "Feasibility is 6/10 — get a technical spike on the real-time sync before committing"
-- Suggested quick prototypes or MVP tests
 
-## Persistence: discovery.md
+---
 
-One living document, updated after every phase. This is the primary artefact.
+## File Structure
+
+ProveIt writes separate files per research phase. `discovery.md` is the index — it stays lightweight throughout.
+
+```
+[project-dir]/
+├── discovery.md              # Index: scores, brain dump, Q&A, file references
+├── research-1.md             # Standard research round 1
+├── research-2.md             # Standard research round 2 (if looped)
+├── swarm-1-market-bull.md    # Swarm agent outputs
+├── swarm-1-market-bear.md
+├── swarm-1-customer-impact.md
+├── swarm-1-technical.md
+├── swarm-1-devils-advocate.md
+└── swarm-1-synthesis.md      # Main swarm deliverable
+```
+
+All files are standalone markdown — shareable, pasteable, no dependencies. None are committed to git (covered by `.gitignore`).
+
+### discovery.md template
 
 ```markdown
 # ProveIt: [Idea Name]
@@ -207,23 +262,12 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 - Real-time needs: ...
 - T-shirt size: ...
 
-## Research Findings
-### Round 1 ([date])
-#### Competitors
-- [Product] — overlap, gaps, learnings
-#### Market Evidence
-- [Source] — what it shows
-#### Tarpit Check
-- Pass/Flag with evidence
-#### Viability Signals
-- [Finding]
-
-### Round 2 ([date])
-[triggered by low score]
-...
+## Research Files
+- research-1.md — [one-line summary] ([date])
+- swarm-1-synthesis.md — Deep dive: [question] ([date])
 
 ## Kill Signals
-[Any triggered, with evidence]
+[Any triggered, with evidence. Or "None detected."]
 
 ## Recommendation
 [Go / Kill / Pivot — with reasoning]
@@ -231,13 +275,14 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 ## Validation Playbook
 - [ ] [Experiment 1 — what it tests, how to run it]
 - [ ] [Experiment 2]
-- [ ] [Experiment 3]
 
 ## Gamma Deck
 [Link to generated presentation, or "Not yet generated"]
 ```
 
-**Session resume:** ProveIt's first move in any session is to check if `discovery.md` exists. If yes, read it, summarise where things stand, and ask what the PM wants to tackle next. If no, start fresh with brain dump.
+**Session resume:** ProveIt's first move in any session is to check if `discovery.md` exists. If yes, read it, Glob for `research-*.md` and `swarm-*-synthesis.md`, summarise where things stand, and ask what the PM wants to tackle next.
+
+---
 
 ## Model Strategy
 
@@ -245,12 +290,17 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 |-------|-------|-----|
 | Brain Dump | Opus | Reads between the lines, catches what PM isn't saying |
 | Structured Discovery | Opus | Confidence scoring requires judgement |
-| Research | Sonnet (subagent) | Heavy tool use, structured output, speed |
+| Standard Research | Sonnet (subagent) | Heavy tool use, structured output, speed |
 | Findings Review | Opus | Synthesising messy research into clear signal |
+| Swarm question crafting | Opus | Identifying the sharpest gap from real findings |
+| 5 Swarm agents | Sonnet (parallel subagents) | Parallel, cost-efficient, tool-heavy |
+| Swarm Synthesis | Sonnet (subagent) | Reads and resolves 5 documents |
 | Gamma Deck | Sonnet (subagent) | Structured output from synthesised content |
 | Validation Playbook | Opus | Creative + strategic, connecting gaps to experiments |
 
-Single ProveIt agent runs on Opus. Delegates research and deck generation to Sonnet subagents.
+Single ProveIt agent runs on Opus. All subagents explicitly use `model: "sonnet"`.
+
+---
 
 ## Plugin Structure
 
@@ -265,27 +315,32 @@ proveit/
 │   └── proveit.md           # /proveit skill — entry point
 ├── docs/
 │   └── design.md            # This file
+├── .claude/
+│   └── settings.json        # Permissions config (Bash disabled by default)
+├── .gitignore               # Excludes all generated research files
 ├── setup.sh                 # Automated installation
 ├── README.md                # User-facing docs
 └── CLAUDE.md                # Agent instructions
 ```
 
-Minimal footprint. One agent, one skill, one setup script.
+---
 
 ## MCP Tools Required
 
 | Tool | Used For |
 |------|----------|
 | `WebSearch` | Quick market searches, trend discovery |
+| `WebFetch` | Fallback for page content |
 | `firecrawl_search` | Deep web search with scraped results |
 | `firecrawl_scrape` | Competitor site analysis |
 | `firecrawl_agent` | Autonomous multi-source research |
-| `Gamma generate` | Final presentation output |
-| `Gamma get_themes` | Theme selection for deck |
+| `mcp__claude_ai_Gamma__generate` | Final presentation output |
+
+Firecrawl and Gamma are optional — ProveIt degrades gracefully without them.
+
+---
 
 ## Setup / Onboarding
-
-Same pattern as ShipIt's `setup.sh`:
 
 ```bash
 git clone https://github.com/cla1redonald/proveit.git ~/proveit
@@ -293,31 +348,40 @@ cd ~/proveit
 ./setup.sh
 ```
 
-Script:
+`setup.sh`:
 1. Checks prerequisites (claude, node, jq)
 2. Merges plugin config into `~/.claude/settings.json`
 3. Verifies installation
-4. Prints quick-start: "Start Claude Code in any directory and type: /proveit [your idea]"
+4. Prints quick-start instructions
+
+To uninstall: `./setup.sh --uninstall`
+
+---
 
 ## What This Is NOT
 
 - Not a project management tool
 - Not a technical architecture tool (that's ShipIt)
-- Not a PRD generator (though discovery.md could feed into one)
+- Not a PRD generator (though `discovery.md` could feed into one)
 - Not a replacement for talking to real users
 - Not a decision-maker — it presents evidence, the PM decides
 
-## POC Scope
+---
+
+## Scope
 
 **In:**
 - Single-user (one PM, one idea per session)
 - Core discovery loop (all 5 phases)
-- discovery.md persistence
+- Optional Research Swarm (Phase 4.5)
+- Separate file per research phase
+- `discovery.md` as persistent index
 - Gamma deck generation
 - Validation playbook
 - Confidence scoring
 - Kill signal detection
 - Session resume
+- Shareable — no hardcoded paths, no Obsidian dependency
 
 **Out:**
 - Multi-user collaboration

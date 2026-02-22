@@ -2,6 +2,10 @@
 
 ProveIt is a product validation tool for product managers. One agent, one skill, one loop.
 
+## The Problem It Solves
+
+Products don't fail at launch — they fail at the idea, when nobody checked if the problem was real, the market was big enough, or someone already tried and failed. ProveIt runs that check before the bet is made.
+
 ## What It Does
 
 Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Outputs a confidence score, a `discovery.md` research document, and a Gamma presentation for technical handoff.
@@ -15,6 +19,14 @@ Takes a raw product idea through Desirability, Viability, and light Feasibility 
 Or just `/proveit` to resume an existing session (reads `discovery.md`).
 
 **Where to run it:** In the PM's own project directory (not inside `~/proveit/`). ProveIt creates `discovery.md` in the current working directory.
+
+Or for a quick assumption check (10-15 min):
+
+```
+/proveit:proveit-fast [your idea]
+```
+
+Surfaces the 3 assumptions most likely to kill the idea, with research evidence. No full discovery loop, no Gamma deck.
 
 ## Directory Structure
 
