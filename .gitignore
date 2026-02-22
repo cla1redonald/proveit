@@ -14,4 +14,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+# ProveIt generated research files (session artifacts — not for source control)
 discovery.md
+research-*.md
+swarm-*.md
