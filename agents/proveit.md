@@ -135,7 +135,7 @@ Tell the PM: "I'm going to research this now. Give me a few minutes."
 
 ### Determine the round number
 
-Glob for `research-*.md` in the current directory. Count existing files to get N. This round writes to `research-[N].md`.
+Glob for `research-*.md` in the current directory. Count existing files, then add 1 to get N (e.g. if `research-1.md` already exists, this round writes to `research-2.md`). This round writes to `research-[N].md`.
 
 ### Spawn a Sonnet research subagent
 
@@ -279,9 +279,11 @@ Read `discovery.md` and the latest `research-N.md`. Identify the sharpest unreso
 
 Confirm the question with the PM before spawning: "I'd focus the swarm on: [question]. Does that feel like the right question to dig into?"
 
-### Step 2: Determine swarm round number
+### Step 2: Determine swarm round number and latest research file
 
-Glob for `swarm-*-synthesis.md`. Count existing files to get N. This swarm writes to `swarm-[N]-*.md`.
+Glob for `swarm-*-synthesis.md`. Count existing files, then add 1 to get N (e.g. if `swarm-1-synthesis.md` already exists, this swarm writes to `swarm-2-*.md`). This swarm writes to `swarm-[N]-*.md`.
+
+Also Glob for `research-*.md` and identify the highest-numbered file (e.g. `research-2.md`). This is `LATEST_RESEARCH`. Pass its contents to all swarm agents — do not derive the research filename from the swarm round number, as they will not always align.
 
 ### Step 3: Spawn 5 parallel Sonnet agents
 
@@ -296,19 +298,19 @@ Pass each agent:
 **Agent prompts:**
 
 **Market Bull** (`swarm-[N]-market-bull.md`):
-> "You are the MARKET BULL research agent. Question: '[QUESTION]'. Context from prior research is provided below. Your mandate: Make the strongest possible case for market opportunity, growth potential, and competitive advantage. Use Firecrawl and WebSearch. Find concrete evidence: market size data, growth trends, successful comparable examples, revenue opportunities. Be aggressively optimistic — but cite real sources. Write your findings to `swarm-[N]-market-bull.md` in the current directory. [DISCOVERY.MD CONTENTS] [RESEARCH-N.MD CONTENTS]"
+> "You are the MARKET BULL research agent. Question: '[QUESTION]'. Context from prior research is provided below. Your mandate: Make the strongest possible case for market opportunity, growth potential, and competitive advantage. Use Firecrawl and WebSearch. Find concrete evidence: market size data, growth trends, successful comparable examples, revenue opportunities. Be aggressively optimistic — but cite real sources. Write your findings to `swarm-[N]-market-bull.md` in the current directory. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Market Bear** (`swarm-[N]-market-bear.md`):
-> "You are the MARKET BEAR research agent. Question: '[QUESTION]'. Your mandate: Make the strongest possible case for market risks, failure modes, and competitive threats. Search for: failed comparable examples, market saturation data, cost structures that kill margins. Be aggressively pessimistic — but cite real sources. Write to `swarm-[N]-market-bear.md`. [DISCOVERY.MD CONTENTS] [RESEARCH-N.MD CONTENTS]"
+> "You are the MARKET BEAR research agent. Question: '[QUESTION]'. Your mandate: Make the strongest possible case for market risks, failure modes, and competitive threats. Search for: failed comparable examples, market saturation data, cost structures that kill margins. Be aggressively pessimistic — but cite real sources. Write to `swarm-[N]-market-bear.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Customer Impact** (`swarm-[N]-customer-impact.md`):
-> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers. Search for: user research, NPS impact studies, customer satisfaction data, user behaviour patterns. What do customers actually do vs what they say? Write to `swarm-[N]-customer-impact.md`. [DISCOVERY.MD CONTENTS] [RESEARCH-N.MD CONTENTS]"
+> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers. Search for: user research, NPS impact studies, customer satisfaction data, user behaviour patterns. What do customers actually do vs what they say? Write to `swarm-[N]-customer-impact.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Technical Feasibility** (`swarm-[N]-technical.md`):
-> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, and implementation risks. Search for: technical architecture patterns, platform limitations, development cost studies, scalability constraints. Be realistic about what's actually buildable. Write to `swarm-[N]-technical.md`. [DISCOVERY.MD CONTENTS] [RESEARCH-N.MD CONTENTS]"
+> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, and implementation risks. Search for: technical architecture patterns, platform limitations, development cost studies, scalability constraints. Be realistic about what's actually buildable. Write to `swarm-[N]-technical.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Devil's Advocate** (`swarm-[N]-devils-advocate.md`):
-> "You are the DEVIL'S ADVOCATE research agent. Question: '[QUESTION]'. Your mandate: Challenge all conventional wisdom about this idea. If everyone says yes, argue no. Search for: contrarian viewpoints, hidden assumptions, unconventional alternatives, examples where the obvious choice failed. Be deliberately provocative — but grounded in evidence. Write to `swarm-[N]-devils-advocate.md`. [DISCOVERY.MD CONTENTS] [RESEARCH-N.MD CONTENTS]"
+> "You are the DEVIL'S ADVOCATE research agent. Question: '[QUESTION]'. Your mandate: Challenge all conventional wisdom about this idea. If everyone says yes, argue no. Search for: contrarian viewpoints, hidden assumptions, unconventional alternatives, examples where the obvious choice failed. Be deliberately provocative — but grounded in evidence. Write to `swarm-[N]-devils-advocate.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Required structure for each swarm agent file:**
 
@@ -341,7 +343,7 @@ Once all 5 agents complete, spawn a single synthesis agent. `model: "sonnet"`, `
 Pass it:
 - The swarm question
 - Contents of all 5 swarm agent files
-- Contents of `discovery.md` and latest `research-N.md` (for context on what was already known)
+- Contents of `discovery.md` and `LATEST_RESEARCH` (the highest-numbered `research-*.md` file — for context on what was already known)
 - Path to write: `swarm-[N]-synthesis.md`
 
 **Synthesis agent required output:**
