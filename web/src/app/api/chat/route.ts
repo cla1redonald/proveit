@@ -5,6 +5,7 @@ import { anthropic } from "@/lib/anthropic";
 import { buildChatSystemPrompt } from "@/lib/prompts";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const MessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -73,6 +74,8 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let searchingActive = false;
+      let inToolUseBlock = false;
+      let inputJsonBuffer = "";
 
       try {
         const anthropicStream = await anthropic.messages.create({
@@ -92,14 +95,39 @@ export async function POST(req: NextRequest) {
             event.content_block?.type === "tool_use" &&
             (event.content_block as { type: string; name?: string }).name === "web_search"
           ) {
-            // Inject searching indicator
             controller.enqueue(
               encoder.encode('\ndata: {"type":"searching","active":true}\n')
             );
             searchingActive = true;
+            inToolUseBlock = true;
+            inputJsonBuffer = "";
           }
 
-          // Detect text block resuming — if a search was active, signal it stopped
+          // Accumulate tool input JSON to extract the search query
+          if (
+            inToolUseBlock &&
+            event.type === "content_block_delta" &&
+            "delta" in event &&
+            (event.delta as { type: string }).type === "input_json_delta"
+          ) {
+            inputJsonBuffer += (event.delta as { type: string; partial_json?: string }).partial_json ?? "";
+          }
+
+          // Tool input complete — emit the search query
+          if (inToolUseBlock && event.type === "content_block_stop") {
+            inToolUseBlock = false;
+            try {
+              const parsed = JSON.parse(inputJsonBuffer) as { query?: string };
+              if (parsed.query) {
+                controller.enqueue(
+                  encoder.encode(`\ndata: ${JSON.stringify({ type: "search_query", query: parsed.query })}\n`)
+                );
+              }
+            } catch { /* ignore malformed */ }
+            inputJsonBuffer = "";
+          }
+
+          // Detect text block resuming — signal searching stopped
           if (
             event.type === "content_block_start" &&
             "content_block" in event &&
@@ -121,9 +149,6 @@ export async function POST(req: NextRequest) {
           ) {
             controller.enqueue(encoder.encode(event.delta.text));
           }
-
-          // Handle pause_turn (web search executing) — signal searching:false when text resumes
-          // The searching:false is signaled on content_block_start with type "text" above
         }
 
         // Emit done event

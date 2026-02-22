@@ -275,6 +275,8 @@ export default function ChatInterface() {
   const [activeSession, setActiveSession] = useState<ValidationSession | null>(null);
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [isSearching, setIsSearching] = useState(false);
+  const [searchLog, setSearchLog] = useState<string[]>([]);
+  const [currentQuery, setCurrentQuery] = useState<string | null>(null);
   const [chatError, setChatError] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
   const phaseRef = useRef<DiscoveryPhase>("brain_dump");
@@ -340,6 +342,8 @@ export default function ChatInterface() {
       setCurrentMessage("");
       setChatError(null);
       setIsSearching(false);
+      setSearchLog([]);
+      setCurrentQuery(null);
 
       // Build request payload (strip client-only fields)
       const payload = {
@@ -363,8 +367,17 @@ export default function ChatInterface() {
       };
 
       const handleEvent = (event: StreamEvent) => {
-        if (event.type === "searching") {
+        if (event.type === "search_query") {
+          setCurrentQuery(event.query);
+        } else if (event.type === "searching") {
           setIsSearching(event.active);
+          if (!event.active) {
+            // search finished — move current query to completed log
+            setCurrentQuery((q) => {
+              if (q) setSearchLog((prev) => [...prev, q]);
+              return null;
+            });
+          }
         } else if (event.type === "phase_change") {
           newPhase = event.phase;
           phaseRef.current = event.phase;
@@ -431,6 +444,8 @@ export default function ChatInterface() {
 
       setCurrentMessage("");
       setIsSearching(false);
+      setSearchLog([]);
+      setCurrentQuery(null);
     },
     [activeSession, startStream, updateSession]
   );
@@ -519,10 +534,12 @@ export default function ChatInterface() {
           />
 
           {/* Searching indicator */}
-          {isSearching && (
+          {(isSearching || searchLog.length > 0) && (
             <div className="mt-[var(--space-3)]">
               <SearchingIndicator
                 isSearching={isSearching}
+                searches={searchLog}
+                currentQuery={currentQuery}
                 onTimeout={handleTimeout}
               />
             </div>
