@@ -14,6 +14,18 @@ Takes a raw product idea through Desirability, Viability, and light Feasibility 
 
 Or just `/proveit` to resume an existing session (reads `discovery.md`).
 
+**Where to run it:** In the PM's own project directory (not inside `~/proveit/`). ProveIt creates `discovery.md` in the current working directory.
+
+## Directory Structure
+
+```
+proveit/
+├── agents/proveit.md      # Core agent definition — discovery loop, scoring, outputs
+├── commands/proveit.md    # Skill entry point for /proveit
+├── docs/design.md         # Design decisions and validation framework
+└── .claude/settings.json  # Permissions config (Bash disabled by default)
+```
+
 ## Agent
 
 | Agent | Model | Purpose |
@@ -21,6 +33,12 @@ Or just `/proveit` to resume an existing session (reads `discovery.md`).
 | `@proveit` | Opus | Discovery, scoring, synthesis, outputs |
 
 Research phases are delegated to Sonnet subagents for speed.
+
+## MCP Tools Used
+
+- **Gamma** — Generates technical handoff presentations (`mcp__claude_ai_Gamma__generate`)
+- **Firecrawl** — Competitor/market research (`firecrawl_search`, `firecrawl_scrape`, `firecrawl_agent`)
+- **WebSearch/WebFetch** — Fallback web research
 
 ## Core Principles
 
@@ -33,7 +51,3 @@ Research phases are delegated to Sonnet subagents for speed.
 ## Security
 
 This project commits NO Bash permission allows in `.claude/settings.json`. All Bash commands require explicit user approval. This is intentional — anyone who clones this repo should review and approve commands individually.
-
-## Project Location
-
-ProveIt projects (where PMs run `/proveit`) should be in their own directories. ProveIt creates `discovery.md` in the current working directory.
