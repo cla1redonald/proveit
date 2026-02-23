@@ -1,5 +1,8 @@
 "use client";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 interface StreamingTextProps {
   text: string;
   isStreaming: boolean;
@@ -7,15 +10,30 @@ interface StreamingTextProps {
 
 export default function StreamingText({ text, isStreaming }: StreamingTextProps) {
   return (
-    <span>
-      {text}
+    <div>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--color-supported-fg)", textDecoration: "underline" }}
+            >
+              {children}
+            </a>
+          ),
+        }}
+      >
+        {text}
+      </ReactMarkdown>
       {isStreaming && (
         <span
           className="streaming-cursor"
           aria-hidden="true"
-          aria-label="ProveIt is typing"
         />
       )}
-    </span>
+    </div>
   );
 }

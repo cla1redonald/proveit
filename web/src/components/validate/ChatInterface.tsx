@@ -440,6 +440,57 @@ export default function ChatInterface() {
 
         setActiveSession(finalSession);
         updateSession(finalSession);
+
+        // Auto-trigger: when discovery transitions to research, immediately kick off the research stream
+        if (newPhase === "research") {
+          setCurrentMessage("");
+          setIsSearching(false);
+          setSearchLog([]);
+          setCurrentQuery(null);
+
+          const researchPayload = {
+            sessionId: finalSession.id,
+            messages: finalSession.messages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+            phase: "research" as DiscoveryPhase,
+            scores: newScores,
+          };
+
+          let researchText = "";
+          await startStream(
+            "/api/chat",
+            researchPayload,
+            (chunk) => {
+              researchText += chunk;
+              setCurrentMessage(researchText);
+            },
+            handleEvent
+          );
+
+          if (researchText.trim().length > 0) {
+            const researchMsg: Message = {
+              id: nanoid(),
+              role: "assistant",
+              content: researchText,
+              timestamp: Date.now(),
+            };
+            // Use refs for post-stream values — handleEvent mutates them during the stream
+            const finalPhase = phaseRef.current;
+            const researchSession: ValidationSession = {
+              ...finalSession,
+              messages: [...finalSession.messages, researchMsg],
+              phase: finalPhase,
+              scores: scoresRef.current,
+              killSignals: killSignalsRef.current,
+              researchComplete: finalPhase === "findings" || finalPhase === "complete",
+              updatedAt: Date.now(),
+            };
+            setActiveSession(researchSession);
+            updateSession(researchSession);
+          }
+        }
       }
 
       setCurrentMessage("");
@@ -531,19 +582,17 @@ export default function ChatInterface() {
           <MessageList
             messages={activeSession.messages}
             streamingMessage={isStreaming && currentMessage ? currentMessage : null}
+            beforeStreaming={
+              (isSearching || searchLog.length > 0) ? (
+                <SearchingIndicator
+                  isSearching={isSearching}
+                  searches={searchLog}
+                  currentQuery={currentQuery}
+                  onTimeout={handleTimeout}
+                />
+              ) : undefined
+            }
           />
-
-          {/* Searching indicator */}
-          {(isSearching || searchLog.length > 0) && (
-            <div className="mt-[var(--space-3)]">
-              <SearchingIndicator
-                isSearching={isSearching}
-                searches={searchLog}
-                currentQuery={currentQuery}
-                onTimeout={handleTimeout}
-              />
-            </div>
-          )}
 
           {/* Error display */}
           {(chatError || streamError) && (
