@@ -8,11 +8,13 @@ import AssistantMessage from "./AssistantMessage";
 interface MessageListProps {
   messages: Message[];
   streamingMessage: string | null;
+  beforeStreaming?: React.ReactNode;
 }
 
 export default function MessageList({
   messages,
   streamingMessage,
+  beforeStreaming,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -31,6 +33,9 @@ export default function MessageList({
           )}
         </div>
       ))}
+
+      {/* Slot rendered between committed messages and the streaming message */}
+      {beforeStreaming}
 
       {/* Streaming message — shown below committed messages */}
       {streamingMessage !== null && (
