@@ -215,4 +215,63 @@ describe("POST /api/fast — boundary and error cases", () => {
     const text = await res.text();
     expect(text).toContain('"type":"error"');
   });
+
+  // ─── In-process rate limiting (429) ─────────────────────────────────────────
+  // The fast endpoint has its own rate limiter (10 req / 60s) independent of chat.
+
+  it("returns 429 after the fast rate limit is exhausted", async () => {
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest({ idea }));
+    }
+
+    const res = await POST(makeRequest({ idea }));
+    expect(res.status).toBe(429);
+  });
+
+  it("429 response body contains an error message", async () => {
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest({ idea }));
+    }
+
+    const res = await POST(makeRequest({ idea }));
+    const body = await res.json();
+    expect(body.error).toBeTruthy();
+  });
+
+  it("429 response includes Retry-After header with a positive value", async () => {
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest({ idea }));
+    }
+
+    const res = await POST(makeRequest({ idea }));
+    const retryAfter = res.headers.get("Retry-After");
+    expect(retryAfter).not.toBeNull();
+    expect(Number(retryAfter)).toBeGreaterThan(0);
+  });
+
+  it("does not call Anthropic when the fast rate limit is exceeded", async () => {
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    for (let i = 0; i < 10; i++) {
+      await POST(makeRequest({ idea }));
+    }
+    vi.clearAllMocks();
+
+    await POST(makeRequest({ idea }));
+    expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
 });

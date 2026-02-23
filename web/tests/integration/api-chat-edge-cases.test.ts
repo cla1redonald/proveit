@@ -365,4 +365,76 @@ describe("POST /api/chat — edge cases", () => {
     expect(callArgs.messages[0].content).toBe("Message 2");
     expect(callArgs.messages[47].content).toBe("Message 49");
   });
+
+  // ─── In-process rate limiting (429) ─────────────────────────────────────────
+  // The route's own rate limiter fires before Anthropic is called.
+  // These tests exhaust the real limit and verify the 429 response shape.
+
+  it("returns 429 after the chat rate limit is exhausted", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    // The chat limit is 20 req / 60s. Exhaust it by making 20 successful requests.
+    // beforeEach already called resetRateLimitStores() so the counter starts at 0.
+    for (let i = 0; i < 20; i++) {
+      await POST(makeRequest(validPayload));
+    }
+
+    // The 21st request should be blocked
+    const res = await POST(makeRequest(validPayload));
+    expect(res.status).toBe(429);
+  });
+
+  it("429 response body contains the expected error message", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    for (let i = 0; i < 20; i++) {
+      await POST(makeRequest(validPayload));
+    }
+
+    const res = await POST(makeRequest(validPayload));
+    const body = await res.json();
+    expect(body.error).toBeTruthy();
+    expect(typeof body.error).toBe("string");
+  });
+
+  it("429 response includes Retry-After header", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    for (let i = 0; i < 20; i++) {
+      await POST(makeRequest(validPayload));
+    }
+
+    const res = await POST(makeRequest(validPayload));
+    const retryAfter = res.headers.get("Retry-After");
+    expect(retryAfter).not.toBeNull();
+    expect(Number(retryAfter)).toBeGreaterThan(0);
+  });
+
+  it("429 response includes X-RateLimit-Remaining: 0 header", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    for (let i = 0; i < 20; i++) {
+      await POST(makeRequest(validPayload));
+    }
+
+    const res = await POST(makeRequest(validPayload));
+    expect(res.headers.get("X-RateLimit-Remaining")).toBe("0");
+  });
+
+  it("does not call Anthropic when the rate limit is exceeded", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    for (let i = 0; i < 20; i++) {
+      await POST(makeRequest(validPayload));
+    }
+    vi.clearAllMocks(); // reset call count before the blocked request
+
+    await POST(makeRequest(validPayload));
+    expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
 });
