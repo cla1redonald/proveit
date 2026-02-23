@@ -92,4 +92,50 @@ describe("prompts.ts — buildChatSystemPrompt", () => {
     });
     expect(prompt).toContain("web_search");
   });
+
+  // ─── Conditional research gate (added in discovery phase) ──────────────────
+  // The discovery phase now has a branch: when context is sufficient, evaluate
+  // whether to run research or skip straight to findings. These tests verify
+  // that both the "go to research" path and the "skip research" path are
+  // described in the prompt so the model has the instruction it needs.
+
+  it("discovery phase prompt tells model to emit research phase_change when signals are present", () => {
+    const prompt = buildChatSystemPrompt("discovery", {
+      desirability: null,
+      viability: null,
+      feasibility: null,
+    });
+    // The prompt must contain the phrase that triggers the research transition
+    expect(prompt).toContain('phase_change","phase":"research"');
+  });
+
+  it("discovery phase prompt tells model to skip research and go to findings when evidence is clearly negative", () => {
+    const prompt = buildChatSystemPrompt("discovery", {
+      desirability: null,
+      viability: null,
+      feasibility: null,
+    });
+    // The prompt must describe the skip-to-findings path
+    expect(prompt).toContain('phase_change","phase":"findings"');
+  });
+
+  it("discovery phase prompt includes the low-score threshold that triggers the research skip (1–2)", () => {
+    const prompt = buildChatSystemPrompt("discovery", {
+      desirability: null,
+      viability: null,
+      feasibility: null,
+    });
+    // The scoring criterion that gates the skip is explicit: scores of 1-2
+    expect(prompt).toContain("1–2");
+  });
+
+  it("discovery phase prompt defaults to running research when in doubt", () => {
+    const prompt = buildChatSystemPrompt("discovery", {
+      desirability: null,
+      viability: null,
+      feasibility: null,
+    });
+    // The fallback rule must be present
+    expect(prompt).toContain("When in doubt, run research");
+  });
 });
