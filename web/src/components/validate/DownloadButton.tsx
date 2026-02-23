@@ -15,7 +15,7 @@ export default function DownloadButton({ session }: DownloadButtonProps) {
     setIsGenerating(true);
     try {
       const markdown = generateDiscoveryMarkdown(session);
-      const blob = new Blob([markdown], { type: "text/markdown" });
+      const blob = new Blob([markdown], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const date = new Date().toISOString().split("T")[0];
@@ -34,7 +34,8 @@ export default function DownloadButton({ session }: DownloadButtonProps) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Defer revoke so the browser has time to initiate the download
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch {
       // Could show a toast here — keeping simple for MVP
     } finally {

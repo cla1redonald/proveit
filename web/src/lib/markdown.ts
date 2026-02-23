@@ -22,6 +22,10 @@ export function cleanAssistantText(text: string): string {
     .replace(/<function_calls>[\s\S]*?<\/function_calls>/g, "")
     .replace(/<function_response>[\s\S]*?<\/function_response>/g, "")
     .replace(/<invoke[\s\S]*?<\/invoke>/g, "")
+    // Ensure standalone --- dividers have a blank line before them.
+    // Without this, CommonMark treats them as setext heading markers that
+    // promote the preceding paragraph into an <h2>.
+    .replace(/([^\n])\n(---)\n/g, "$1\n\n$2\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

@@ -121,6 +121,23 @@ describe("cleanAssistantText", () => {
     expect(cleanAssistantText(input)).toBe("");
   });
 
+  // ─── Standalone --- dividers: blank-line insertion ────────────────────────────
+
+  it("inserts blank line before standalone --- to prevent setext heading promotion", () => {
+    // Without the fix, CommonMark turns the paragraph above into an <h2>
+    const input = "Some finding\n---\nNext section";
+    const result = cleanAssistantText(input);
+    // The --- must be preceded by a blank line in the output
+    expect(result).toContain("Some finding\n\n---");
+    expect(result).toContain("Next section");
+  });
+
+  it("does not affect table separator rows (pipes + dashes)", () => {
+    const input = "| Name | Status |\n|------|--------|\n| Harvest | Active |";
+    const result = cleanAssistantText(input);
+    expect(result).toContain("|------|--------|");
+  });
+
   // ─── function_calls / function_response (newer format) ───────────────────────
 
   it("strips <function_calls> block", () => {
