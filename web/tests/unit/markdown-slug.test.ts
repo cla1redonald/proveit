@@ -108,7 +108,7 @@ describe("generateDiscoveryMarkdown — edge cases", () => {
   it("handles empty messages array", () => {
     const session: ValidationSession = { ...baseSession, ideaSummary: "Test idea", messages: [] };
     const md = generateDiscoveryMarkdown(session);
-    expect(md).toContain("## Conversation");
+    expect(md).toContain("## Discovery & Research");
   });
 
   it("handles a session with all scores at their maximum (10)", () => {
@@ -132,9 +132,9 @@ describe("generateDiscoveryMarkdown — edge cases", () => {
       ],
     };
     const md = generateDiscoveryMarkdown(session);
-    expect(md).toContain("tarpit");
-    expect(md).toContain("saturation");
-    expect(md).toContain("no_willingness_to_pay");
+    expect(md).toContain("Tarpit");
+    expect(md).toContain("Saturated market");
+    expect(md).toContain("No willingness to pay");
   });
 
   it("does not include isStreaming in generated markdown (transient field)", () => {
