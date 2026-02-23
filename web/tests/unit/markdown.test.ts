@@ -50,9 +50,9 @@ describe("markdown.ts — generateDiscoveryMarkdown", () => {
     expect(md).toContain("Interesting — who specifically");
   });
 
-  it("labels user messages as PM", () => {
+  it("labels user messages as You", () => {
     const md = generateDiscoveryMarkdown(mockSession);
-    expect(md).toContain("**PM:**");
+    expect(md).toContain("**You:**");
   });
 
   it("labels assistant messages as ProveIt", () => {
@@ -73,7 +73,7 @@ describe("markdown.ts — generateDiscoveryMarkdown", () => {
     };
     const md = generateDiscoveryMarkdown(sessionWithKillSignal);
     expect(md).toContain("Kill Signals");
-    expect(md).toContain("tarpit");
+    expect(md).toContain("Tarpit");
     expect(md).toContain("Seven startups");
   });
 
@@ -89,13 +89,13 @@ describe("markdown.ts — generateDiscoveryMarkdown", () => {
       scores: { desirability: null, viability: null, feasibility: null },
     };
     const md = generateDiscoveryMarkdown(sessionNullScores);
-    expect(md).toContain("Not assessed");
+    expect(md).toContain("—");
   });
 
   it("generates valid markdown structure", () => {
     const md = generateDiscoveryMarkdown(mockSession);
-    expect(md).toMatch(/^# ProveIt:/);
+    expect(md).toMatch(/^# ProveIt Validation Report/);
     expect(md).toContain("## Confidence Scores");
-    expect(md).toContain("## Conversation");
+    expect(md).toContain("## Discovery & Research");
   });
 });
