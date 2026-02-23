@@ -1,27 +1,59 @@
 import "server-only";
 
 /**
- * In-memory IP-based rate limiter using a sliding window counter.
+ * IP-based rate limiter with two backends:
  *
- * Design constraints:
- * - No external dependencies (Redis, Upstash, etc.) — keeps infra simple
- * - Works on Node.js runtime (not Edge, which lacks Map persistence)
- * - Resets on cold start — acceptable for a single-instance Vercel deployment
+ * 1. Upstash Redis (distributed) — used when UPSTASH_REDIS_REST_URL and
+ *    UPSTASH_REDIS_REST_TOKEN are set. Survives cold starts and works across
+ *    multiple Vercel instances. Required for public production deployments.
+ *    Set up at: https://console.upstash.com/
+ *
+ * 2. In-memory sliding window — used when Upstash env vars are absent.
+ *    Resets on cold start; fine for personal / single-instance use.
  *
  * Limits:
  * - /api/chat: 20 requests per IP per 60 seconds
  * - /api/fast: 10 requests per IP per 60 seconds
- *
- * These are deliberately conservative — each request costs real Anthropic credits.
- * A legitimate PM using the app sends ~1 message every 10-30 seconds.
  */
+
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// ─── Upstash distributed limiter ────────────────────────────────────────────
+
+function buildUpstashLimiter(limit: number, windowSeconds: number): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+
+  return new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(limit, `${windowSeconds} s`),
+    analytics: false,
+  });
+}
+
+// Lazily initialised so missing env vars don't crash startup
+let _chatLimiter: Ratelimit | null | undefined;
+let _fastLimiter: Ratelimit | null | undefined;
+
+function getChatLimiter(): Ratelimit | null {
+  if (_chatLimiter === undefined) _chatLimiter = buildUpstashLimiter(20, 60);
+  return _chatLimiter;
+}
+
+function getFastLimiter(): Ratelimit | null {
+  if (_fastLimiter === undefined) _fastLimiter = buildUpstashLimiter(10, 60);
+  return _fastLimiter;
+}
+
+// ─── In-memory fallback ───────────────────────────────────────────────────────
 
 interface WindowEntry {
   count: number;
   windowStart: number;
 }
 
-// Separate stores per endpoint so limits are independent
 const stores = new Map<string, Map<string, WindowEntry>>();
 
 function getStore(endpoint: string): Map<string, WindowEntry> {
@@ -31,34 +63,14 @@ function getStore(endpoint: string): Map<string, WindowEntry> {
   return stores.get(endpoint)!;
 }
 
-/**
- * Purge stale entries periodically to prevent unbounded memory growth.
- * Called on every rate limit check — purges entries older than 2x the window.
- */
 function purgeStale(store: Map<string, WindowEntry>, windowMs: number): void {
   const cutoff = Date.now() - windowMs * 2;
   for (const [key, entry] of store.entries()) {
-    if (entry.windowStart < cutoff) {
-      store.delete(key);
-    }
+    if (entry.windowStart < cutoff) store.delete(key);
   }
 }
 
-export interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetAt: number; // Unix timestamp (ms) when the window resets
-}
-
-/**
- * Check rate limit for a given IP and endpoint.
- *
- * @param ip       - Client IP address (from X-Forwarded-For or connection)
- * @param endpoint - Logical endpoint name (e.g. "chat", "fast")
- * @param limit    - Max requests per window
- * @param windowMs - Window duration in milliseconds
- */
-export function checkRateLimit(
+function checkInMemory(
   ip: string,
   endpoint: string,
   limit: number,
@@ -66,58 +78,71 @@ export function checkRateLimit(
 ): RateLimitResult {
   const store = getStore(endpoint);
   purgeStale(store, windowMs);
-
   const now = Date.now();
-  const key = ip;
-
-  const entry = store.get(key);
+  const entry = store.get(ip);
 
   if (!entry || now - entry.windowStart >= windowMs) {
-    // New window
-    store.set(key, { count: 1, windowStart: now });
+    store.set(ip, { count: 1, windowStart: now });
     return { allowed: true, remaining: limit - 1, resetAt: now + windowMs };
   }
-
   if (entry.count >= limit) {
+    return { allowed: false, remaining: 0, resetAt: entry.windowStart + windowMs };
+  }
+  entry.count += 1;
+  return { allowed: true, remaining: limit - entry.count, resetAt: entry.windowStart + windowMs };
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  resetAt: number; // Unix timestamp ms
+}
+
+export async function checkRateLimit(
+  ip: string,
+  endpoint: "chat" | "fast",
+  limit: number,
+  windowMs: number
+): Promise<RateLimitResult> {
+  const limiter = endpoint === "chat" ? getChatLimiter() : getFastLimiter();
+
+  if (limiter) {
+    // Upstash path
+    const result = await limiter.limit(ip);
     return {
-      allowed: false,
-      remaining: 0,
-      resetAt: entry.windowStart + windowMs,
+      allowed: result.success,
+      remaining: result.remaining,
+      resetAt: result.reset, // Upstash returns reset as Unix ms
     };
   }
 
-  entry.count += 1;
-  return {
-    allowed: true,
-    remaining: limit - entry.count,
-    resetAt: entry.windowStart + windowMs,
-  };
+  // In-memory fallback
+  return checkInMemory(ip, endpoint, limit, windowMs);
 }
 
 /**
  * Extract the real client IP from Next.js request headers.
- * Vercel sets X-Forwarded-For; fall back to a safe default.
  */
 export function getClientIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) {
-    // X-Forwarded-For may be a comma-separated list; first entry is the client
-    return forwarded.split(",")[0].trim();
-  }
-  // Fallback — Vercel always sets X-Forwarded-For, so this is only hit locally
+  if (forwarded) return forwarded.split(",")[0].trim();
   return "127.0.0.1";
 }
 
 /** Rate limit config per endpoint */
 export const RATE_LIMITS = {
-  chat: { limit: 20, windowMs: 60_000 },  // 20 req / 60s
-  fast: { limit: 10, windowMs: 60_000 },  // 10 req / 60s
+  chat: { limit: 20, windowMs: 60_000 },
+  fast: { limit: 10, windowMs: 60_000 },
 } as const;
 
 /**
- * Reset all rate limit state.
+ * Reset in-memory rate limit state.
  * Exported for use in tests only — do not call in production code.
  */
 export function resetRateLimitStores(): void {
   stores.clear();
+  _chatLimiter = undefined;
+  _fastLimiter = undefined;
 }

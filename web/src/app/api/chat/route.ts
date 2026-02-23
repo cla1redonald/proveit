@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   // 0. Rate limiting — checked before any parsing to fail fast
   const ip = getClientIp(req);
   const { limit, windowMs } = RATE_LIMITS.chat;
-  const rateLimit = checkRateLimit(ip, "chat", limit, windowMs);
+  const rateLimit = await checkRateLimit(ip, "chat", limit, windowMs);
   if (!rateLimit.allowed) {
     const retryAfterSec = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
     return new Response(
