@@ -135,7 +135,9 @@ export async function POST(req: NextRequest) {
             inputJsonBuffer += (event.delta as { type: string; partial_json?: string }).partial_json ?? "";
           }
 
-          // Tool input complete — emit the search query
+          // `content_block_stop` fires for every block (text AND tool_use).
+          // The `inToolUseBlock` guard ensures we only act when a web_search
+          // tool-use block has just finished, not on ordinary text block endings.
           if (inToolUseBlock && event.type === "content_block_stop") {
             inToolUseBlock = false;
             try {

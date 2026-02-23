@@ -100,6 +100,16 @@ export interface RateLimitResult {
   resetAt: number; // Unix timestamp ms
 }
 
+/**
+ * Check rate limit for the given IP and endpoint.
+ *
+ * `limit` and `windowMs` are used ONLY by the in-memory fallback path.
+ * When Upstash is configured, the limiter is constructed once at startup with
+ * the values from RATE_LIMITS and these parameters are silently ignored.
+ * Always pass RATE_LIMITS[endpoint].limit / windowMs so both backends stay
+ * consistent — callers should not rely on being able to override Upstash limits
+ * at call time.
+ */
 export async function checkRateLimit(
   ip: string,
   endpoint: "chat" | "fast",
@@ -109,7 +119,8 @@ export async function checkRateLimit(
   const limiter = endpoint === "chat" ? getChatLimiter() : getFastLimiter();
 
   if (limiter) {
-    // Upstash path
+    // Upstash path — limit/windowMs are baked into the limiter at construction
+    // time (see buildUpstashLimiter). The parameters above are not forwarded here.
     const result = await limiter.limit(ip);
     return {
       allowed: result.success,
@@ -118,7 +129,7 @@ export async function checkRateLimit(
     };
   }
 
-  // In-memory fallback
+  // In-memory fallback — limit/windowMs are respected here
   return checkInMemory(ip, endpoint, limit, windowMs);
 }
 
@@ -138,8 +149,12 @@ export const RATE_LIMITS = {
 } as const;
 
 /**
- * Reset in-memory rate limit state.
+ * Reset in-memory rate limit state and force Upstash limiters to reinitialise.
  * Exported for use in tests only — do not call in production code.
+ *
+ * NOTE: This clears the in-memory store and resets the cached Upstash limiter
+ * instances so they are rebuilt on the next call. It does NOT clear any data
+ * stored in Upstash Redis — remote counters persist independently of this call.
  */
 export function resetRateLimitStores(): void {
   stores.clear();

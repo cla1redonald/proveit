@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const securityHeaders = [
+  // Force HTTPS for 1 year, include subdomains.
+  // Only meaningful over HTTPS; browsers ignore it on plain HTTP.
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=31536000; includeSubDomains",
+  },
   // Prevent the app from being embedded in iframes (clickjacking)
   {
     key: "X-Frame-Options",
@@ -23,7 +29,11 @@ const securityHeaders = [
   },
   // Content Security Policy
   // - default-src 'self': only load resources from same origin
-  // - script-src 'self' 'unsafe-inline': Next.js requires unsafe-inline for hydration
+  // - script-src 'self' 'unsafe-inline' 'unsafe-eval': Next.js App Router requires
+  //   unsafe-inline for inline hydration scripts and unsafe-eval for dynamic code
+  //   evaluation used by the React runtime in production builds on Vercel.
+  //   Removing unsafe-eval causes hydration failures; track Next.js roadmap for
+  //   a nonce-based CSP approach before removing it.
   // - style-src 'self' 'unsafe-inline': Tailwind CSS requires unsafe-inline
   // - connect-src 'self': API calls only go to same origin (Anthropic is called server-side)
   // - img-src 'self' data:: allow data URIs for any inline images
