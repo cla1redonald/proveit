@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cleanAssistantText } from "@/lib/markdown";
 
 interface StreamingTextProps {
   text: string;
@@ -26,7 +27,7 @@ export default function StreamingText({ text, isStreaming }: StreamingTextProps)
           ),
         }}
       >
-        {text}
+        {cleanAssistantText(text)}
       </ReactMarkdown>
       {isStreaming && (
         <span
