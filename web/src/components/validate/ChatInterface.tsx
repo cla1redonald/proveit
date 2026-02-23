@@ -546,6 +546,7 @@ export default function ChatInterface() {
   }
 
   const isComplete = activeSession.phase === "complete";
+  const canDownload = activeSession.phase === "findings" || activeSession.phase === "complete";
 
   return (
     <div className="flex flex-col lg:flex-row flex-1" style={{ maxHeight: "calc(100vh - 56px)" }}>
@@ -613,8 +614,8 @@ export default function ChatInterface() {
             </div>
           )}
 
-          {/* Download button — complete phase */}
-          {isComplete && (
+          {/* Download button — available from findings phase onward */}
+          {canDownload && (
             <div className="mt-[var(--space-6)] flex flex-col sm:flex-row gap-[var(--space-4)]">
               <DownloadButton session={activeSession} />
             </div>
