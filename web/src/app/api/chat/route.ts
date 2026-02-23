@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tools: any[] | undefined =
     phase === "research"
-      ? [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }]
+      ? [{ type: "web_search_20250305", name: "web_search", max_uses: 12 }]
       : undefined;
 
   const encoder = new TextEncoder();
