@@ -396,7 +396,7 @@ The web search tool is included in the tools array only when `phase === "researc
 
 ```typescript
 const tools = phase === "research"
-  ? [{ type: "web_search_20250305", name: "web_search", max_uses: 5 }]
+  ? [{ type: "web_search_20250305", name: "web_search", max_uses: 12 }]
   : undefined;
 ```
 
@@ -762,13 +762,46 @@ User-supplied content (the idea, chat messages) appears only in the `messages` a
 
 ### Rate Limiting
 
-**MVP:** No rate limiting is implemented. The Anthropic API's own rate limits act as a backstop.
+IP-based rate limiting is implemented in `src/lib/rate-limit.ts` with two backends:
 
-**Post-MVP recommendation:** Add Vercel's Edge Rate Limiting middleware (`@vercel/kv` + custom middleware) limiting to 10 requests per IP per minute for `/api/fast` and 30 requests per IP per minute for `/api/chat`. Document this here when implemented.
+**Upstash Redis (distributed, recommended for production):** When `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set, uses `@upstash/ratelimit` with a sliding window algorithm. Survives cold starts and works across multiple Vercel instances.
+
+**In-memory fallback:** When Upstash env vars are absent, falls back to an in-process sliding window. Resets on cold start; suitable for local development or single-instance deployments.
+
+Limits:
+- `/api/chat`: 20 requests per IP per 60 seconds
+- `/api/fast`: 10 requests per IP per 60 seconds
+
+Rate limit exceeded responses return HTTP 429 with `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers.
+
+Optional env vars for distributed rate limiting:
+```
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
+```
 
 ### CORS
 
-Route Handlers are only called by the same-origin frontend. No CORS headers are needed and none should be added — this prevents other sites from calling the API routes using the app's Anthropic key.
+`src/middleware.ts` guards all `/api/*` routes against cross-origin POST requests. Requests without an `Origin` header (server-to-server, same-origin browser requests, curl) are passed through unchanged. Requests from a third-party origin receive a 403.
+
+The allowed origin is derived from the `Host` header by default. Override with:
+```
+ALLOWED_ORIGIN=https://your-custom-domain.com
+```
+
+### Security Headers
+
+`next.config.ts` applies the following headers to all routes:
+
+| Header | Value |
+|--------|-------|
+| `Content-Security-Policy` | `default-src 'self'`; scripts, styles self + unsafe-inline; `font-src 'self'` (fonts self-hosted via `next/font`) |
+| `X-Frame-Options` | `DENY` |
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` |
+
+Fonts are loaded via `next/font/google` (self-hosted at build time) rather than a CSS `@import` from `fonts.googleapis.com`, which would require relaxing `style-src` and `font-src` in the CSP.
 
 ### Environment Variables
 
@@ -845,3 +878,21 @@ No other secrets. No database credentials. No third-party API keys.
 **Chosen:** Import `server-only` in `/web/src/lib/anthropic.ts`.
 **Rejected:** Convention-only separation.
 **Rationale:** Next.js will bundle server-only modules into the client bundle if accidentally imported from a Client Component. The `server-only` package throws a build-time error if this happens — it is a hard guardrail, not a convention.
+
+### Decision 8: `next/font/google` over CSS `@import`
+
+**Chosen:** `next/font/google` in `layout.tsx` for Inter and JetBrains Mono.
+**Rejected:** `@import url('https://fonts.googleapis.com/...')` in `globals.css`.
+**Rationale:** A CSS `@import` from an external origin requires relaxing `style-src` and `font-src` in the CSP to allow `fonts.googleapis.com` and `fonts.gstatic.com`. `next/font/google` downloads and self-hosts fonts at build time, serving them from the same origin — no CSP changes required.
+
+### Decision 9: Conditional research phase
+
+**Chosen:** Discovery phase evaluates whether research is warranted before triggering it.
+**Rejected:** Always triggering research after discovery.
+**Rationale:** If the PM's own answers clearly indicate no real problem and no viable business (Desirability and Viability both at 1–2 with no countervailing signal), running 9+ web searches adds noise without changing the outcome. The model is instructed to skip research and emit `phase_change:findings` directly in that case. The bias is toward running research — it is skipped only when discovery answers make it unambiguous.
+
+### Decision 10: Research depth mandate (9 minimum searches)
+
+**Chosen:** System prompt mandates ≥3 searches per track, ≥9 total; `max_uses: 12`.
+**Rejected:** Leaving search count to model discretion with `max_uses: 5`.
+**Rationale:** With `max_uses: 5` the model had to cut corners — it couldn't cover 3 tracks × 3 searches minimum. Raising to 12 gives enough budget. Mandating minimums in the prompt prevents the model from stopping after 2–3 searches and calling it "research". The structured output format (competitor table, market evidence list, viability signals) enforces completeness.

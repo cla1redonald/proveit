@@ -89,10 +89,11 @@ Targeted questions across three lenses. ProveIt checks what the brain dump alrea
 - Update confidence score after each mini-round
 - Move to research when enough context to search effectively (usually ~8 questions total)
 - Never more than 15 minutes of questions before research starts
+- Research is conditional: if the PM's own answers clearly indicate no real problem and no viable business (Desirability and Viability both at 1–2 with no countervailing signal), skip research and transition directly to findings with a plain explanation. Default: run research.
 
 ### Phase 3: Standard Research (loops)
 
-ProveIt goes autonomous. PM waits. Delegates to a Sonnet subagent running three parallel tracks:
+ProveIt goes autonomous. PM waits. Delegates to a Sonnet subagent running three parallel tracks. **Minimum 3 searches per track, 9 searches total.** Do not write the findings summary until all three tracks are complete.
 
 **Track 1: Competitor Landscape**
 - Existing products (Product Hunt, app stores, SaaS directories)

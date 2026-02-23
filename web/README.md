@@ -128,7 +128,7 @@ web/
 - **Tailwind CSS** + shadcn/ui components
 - **Anthropic SDK** — server-side only, never bundled to the client
 - **Zod** — input validation in Route Handlers
-- **Vitest** + React Testing Library — 133 tests
+- **Vitest** + React Testing Library — 180 tests
 - **No database** — session state lives in localStorage
 - **No auth** — public, no user accounts
 - **Vercel** — hosting and deployment
@@ -145,6 +145,10 @@ A few things that are non-obvious and worth knowing before touching the code:
 
 **Session state is client-side only.** The server is stateless. The client sends the full message history and current phase on every request. localStorage is the source of truth for Full Validation sessions. Fast Check results are not stored anywhere — they are intentionally ephemeral.
 
-**Web search only activates in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`. It is omitted for all other phases.
+**Web search only activates in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`, with `max_uses: 12`. It is omitted for all other phases. The research phase is conditional — if discovery answers clearly indicate no real problem and no viable business, the model skips research and transitions directly to findings.
+
+**Rate limiting is built in.** `/api/chat` allows 20 requests/IP/60s; `/api/fast` allows 10. Uses Upstash Redis when `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set; falls back to in-memory for local/single-instance use.
+
+**Fonts are self-hosted.** Inter and JetBrains Mono are loaded via `next/font/google`, which downloads them at build time and serves from the same origin. This keeps `font-src 'self'` in the CSP without needing to allow external font origins.
 
 For full architecture detail, see [ARCHITECTURE.md](./ARCHITECTURE.md).
