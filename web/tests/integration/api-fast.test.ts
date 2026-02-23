@@ -14,6 +14,7 @@ vi.mock("@/lib/anthropic", () => ({
 
 import { POST } from "@/app/api/fast/route";
 import { anthropic } from "@/lib/anthropic";
+import { resetRateLimitStores } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -50,6 +51,7 @@ function makeAsyncIterator(chunks: string[]) {
 describe("POST /api/fast", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetRateLimitStores();
   });
 
   it("returns 400 when idea is too short", async () => {

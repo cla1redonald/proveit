@@ -14,6 +14,7 @@ vi.mock("@/lib/anthropic", () => ({
 
 import { POST } from "@/app/api/chat/route";
 import { anthropic } from "@/lib/anthropic";
+import { resetRateLimitStores } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -52,6 +53,7 @@ function makeAsyncIterator(events: unknown[]) {
 describe("POST /api/chat", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetRateLimitStores();
   });
 
   it("returns 400 when sessionId is missing", async () => {
