@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -71,8 +70,8 @@
     --border-focus:   #e05a2b;
 
     /* ── Typography ── */
-    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New', monospace;
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: var(--font-jetbrains-mono), 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New', monospace;
+    --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 
     /* Type scale */
     --text-xs:   0.75rem;

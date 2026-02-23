@@ -120,4 +120,59 @@ describe("cleanAssistantText", () => {
     // After stripping, only whitespace remains — trim produces ""
     expect(cleanAssistantText(input)).toBe("");
   });
+
+  // ─── Standalone --- dividers: blank-line insertion ────────────────────────────
+
+  it("inserts blank line before standalone --- to prevent setext heading promotion", () => {
+    // Without the fix, CommonMark turns the paragraph above into an <h2>
+    const input = "Some finding\n---\nNext section";
+    const result = cleanAssistantText(input);
+    // The --- must be preceded by a blank line in the output
+    expect(result).toContain("Some finding\n\n---");
+    expect(result).toContain("Next section");
+  });
+
+  it("does not affect table separator rows (pipes + dashes)", () => {
+    const input = "| Name | Status |\n|------|--------|\n| Harvest | Active |";
+    const result = cleanAssistantText(input);
+    expect(result).toContain("|------|--------|");
+  });
+
+  // ─── function_calls / function_response (newer format) ───────────────────────
+
+  it("strips <function_calls> block", () => {
+    const input =
+      'Before\n<function_calls>\n<invoke name="web_search"><parameter name="query">test</parameter></invoke>\n</function_calls>\nAfter';
+    const result = cleanAssistantText(input);
+    expect(result).not.toContain("<function_calls>");
+    expect(result).not.toContain("<invoke");
+    expect(result).toContain("Before");
+    expect(result).toContain("After");
+  });
+
+  it("strips <function_response> block", () => {
+    const input =
+      'Searching...\n<function_response>[{"title":"Result"}]</function_response>\nHere are my findings.';
+    const result = cleanAssistantText(input);
+    expect(result).not.toContain("<function_response>");
+    expect(result).toContain("Searching...");
+    expect(result).toContain("Here are my findings.");
+  });
+
+  it("strips interleaved function_calls and function_response blocks", () => {
+    const input =
+      'Track 1\n<function_calls><invoke name="web_search"><parameter name="query">foo</parameter></invoke></function_calls>\n<function_response>[{}]</function_response>\nTrack 2';
+    const result = cleanAssistantText(input);
+    expect(result).not.toContain("<function_calls>");
+    expect(result).not.toContain("<function_response>");
+    expect(result).not.toContain("<invoke");
+    expect(result).toContain("Track 1");
+    expect(result).toContain("Track 2");
+  });
+
+  it("returns empty string for a message that is purely function_calls markup", () => {
+    const input =
+      '<function_calls><invoke name="web_search"><parameter name="query">q</parameter></invoke></function_calls><function_response>[{}]</function_response>';
+    expect(cleanAssistantText(input)).toBe("");
+  });
 });

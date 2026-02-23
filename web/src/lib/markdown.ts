@@ -10,13 +10,22 @@ const KILL_SIGNAL_LABEL: Record<string, string> = {
 };
 
 /**
- * Strips <tool_call> and <tool_response> markup that the model sometimes
- * includes literally in its text output alongside actual API tool calls.
+ * Strips tool markup that the model sometimes includes literally in its text
+ * output alongside actual API tool calls. Handles both formats:
+ * - <tool_call>/<tool_response> (older format)
+ * - <function_calls>/<function_response>/<invoke> (newer format)
  */
 export function cleanAssistantText(text: string): string {
   return text
     .replace(/<tool_call>[\s\S]*?<\/tool_call>/g, "")
     .replace(/<tool_response>[\s\S]*?<\/tool_response>/g, "")
+    .replace(/<function_calls>[\s\S]*?<\/function_calls>/g, "")
+    .replace(/<function_response>[\s\S]*?<\/function_response>/g, "")
+    .replace(/<invoke[\s\S]*?<\/invoke>/g, "")
+    // Ensure standalone --- dividers have a blank line before them.
+    // Without this, CommonMark treats them as setext heading markers that
+    // promote the preceding paragraph into an <h2>.
+    .replace(/([^\n])\n(---)\n/g, "$1\n\n$2\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

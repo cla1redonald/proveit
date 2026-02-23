@@ -15,6 +15,11 @@ export default function StreamingText({ text, isStreaming }: StreamingTextProps)
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          // Downsize headings for chat context — the model uses ## for sections
+          // but full h2 is too large inside a message bubble.
+          h1: ({ children }) => <p className="font-bold">{children}</p>,
+          h2: ({ children }) => <p className="font-bold">{children}</p>,
+          h3: ({ children }) => <p className="font-semibold">{children}</p>,
           a: ({ href, children }) => (
             <a
               href={href}
