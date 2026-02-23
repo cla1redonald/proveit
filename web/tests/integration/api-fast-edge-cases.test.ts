@@ -25,6 +25,7 @@ vi.mock("@/lib/anthropic", () => ({
 
 import { POST } from "@/app/api/fast/route";
 import { anthropic } from "@/lib/anthropic";
+import { resetRateLimitStores } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -72,6 +73,7 @@ function makeErrorIterator(err: object) {
 describe("POST /api/fast — boundary and error cases", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetRateLimitStores();
   });
 
   // ─── Boundary values ────────────────────────────────────────────────────────

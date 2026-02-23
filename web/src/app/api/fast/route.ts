@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { anthropic } from "@/lib/anthropic";
 import { buildFastCheckPrompt } from "@/lib/prompts";
+import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -16,6 +17,27 @@ const FastCheckSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // 0. Rate limiting — checked before any parsing to fail fast
+  const ip = getClientIp(req);
+  const { limit, windowMs } = RATE_LIMITS.fast;
+  const rateLimit = checkRateLimit(ip, "fast", limit, windowMs);
+  if (!rateLimit.allowed) {
+    const retryAfterSec = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please wait before trying again." }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(retryAfterSec),
+          "X-RateLimit-Limit": String(limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(Math.ceil(rateLimit.resetAt / 1000)),
+        },
+      }
+    );
+  }
+
   // 1. Parse and validate request body
   let body: unknown;
   try {
