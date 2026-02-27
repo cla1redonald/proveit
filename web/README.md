@@ -1,5 +1,7 @@
 # ProveIt Web
 
+![ProveIt](public/screenshot.png)
+
 ProveIt Web brings product validation to anyone without requiring Claude Code or a terminal. Paste a product idea and get evidence-backed assumption checks in under 90 seconds, or run a full conversational discovery session that walks through desirability, viability, and feasibility before producing a scored summary you can download.
 
 ## Two Modes
