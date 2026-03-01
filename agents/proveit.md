@@ -685,6 +685,8 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 - research-1.md — [one-line summary] ([date])
 - research-2.md — [one-line summary] ([date])
 - swarm-1-synthesis.md — Deep dive: [question] ([date])
+- review-1.md — Cross-model review: post-swarm ([date])
+- review-2.md — Cross-model review: pre-output ([date])
 
 ## Kill Signals
 [Any triggered, with evidence. Or "None detected."]
