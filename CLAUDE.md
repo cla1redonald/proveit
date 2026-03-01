@@ -34,6 +34,8 @@ Surfaces the 3 assumptions most likely to kill the idea, with research evidence.
 proveit/
 ├── agents/proveit.md      # Core agent definition — discovery loop, scoring, outputs
 ├── commands/proveit.md    # Skill entry point for /proveit
+├── scripts/
+│   └── openai-review.mjs  # Cross-model review via OpenAI o3
 ├── docs/design.md         # Design decisions and validation framework
 └── .claude/settings.json  # Permissions config (Bash disabled by default)
 ```
