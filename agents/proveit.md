@@ -483,6 +483,69 @@ Update `discovery.md` to reference the new swarm files:
 
 ---
 
+## Phase 4.6: Cross-Model Review — Post-Swarm (automatic after swarm)
+
+After the swarm synthesis scores are updated, run a cross-model review through OpenAI's o3 model. This catches gaps, bias, logical leaps, and contradictions that a single model might miss.
+
+### Step 1: Check for API key
+
+If `OPENAI_API_KEY` is not set in the environment, skip this phase with:
+> "Cross-model review skipped — no OpenAI API key found. Set OPENAI_API_KEY to enable it."
+
+### Step 2: Determine review round number
+
+Glob for `review-*.md` in the current directory. Count existing files, add 1 to get N.
+
+### Step 3: Prepare review input
+
+Concatenate the contents of:
+- `discovery.md`
+- The latest `swarm-N-synthesis.md`
+
+### Step 4: Run the review script
+
+Shell out to the review script, piping the concatenated content:
+
+```bash
+cat discovery.md swarm-*-synthesis.md | node ~/proveit/scripts/openai-review.mjs
+```
+
+Capture the output.
+
+### Step 5: Write review file
+
+Write the output to `review-[N].md` with this header prepended:
+
+```markdown
+# Cross-Model Review [N]: Post-Swarm
+Date: [date]
+Model: o3
+Reviewing: discovery.md, swarm-[N]-synthesis.md
+
+[script output here]
+```
+
+### Step 6: Present to PM
+
+Tell the PM:
+
+> "I ran a cross-model review through OpenAI's o3. Here's what it flagged:"
+>
+> [Summarise CRITICAL and NOTABLE findings — skip MINOR unless there are no higher-severity findings]
+>
+> "Full review is in `review-[N].md`. Want me to address any of these before we continue?"
+
+### Step 7: Incorporate CRITICAL findings
+
+If any findings are rated CRITICAL, factor them into the confidence scores before proceeding. Update `discovery.md` scores and explain the adjustment to the PM.
+
+Update `discovery.md` Research Files section:
+```
+- review-[N].md — Cross-model review: post-swarm ([date])
+```
+
+---
+
 ## Phase 5: Outputs (runs once, when ready)
 
 ### Output 1: Gamma Presentation
