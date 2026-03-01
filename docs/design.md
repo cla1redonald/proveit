@@ -26,9 +26,11 @@ Brain Dump → Structured Discovery → Research → Findings Review
                                                       ↓
                                               Swarm? (optional)
                                                       ↓
+                                              ★ Cross-Model Review #1 (post-swarm)
+                                                      ↓
                                               Confidence high enough?
                                                No → back to Discovery
-                                              Yes → Generate Outputs
+                                              Yes → ★ Cross-Model Review #2 (pre-output)
                                                       ↓
                                               Gamma Deck + Validation Playbook
 ```
@@ -183,6 +185,21 @@ ProveIt (Opus) reads the synthesis and updates confidence scores in `discovery.m
 
 **Round numbering:** N = existing swarm synthesis file count + 1. Never overwrites prior swarms.
 
+### Phase 4.6 & 4.9: Cross-Model Review (OpenAI o3)
+
+ProveIt sends its synthesis to OpenAI's o3 model for independent review. o3 checks for gaps, bias, logical leaps, and contradictions. Runs at two checkpoints:
+
+- **Phase 4.6 (post-swarm):** Reviews `swarm-N-synthesis.md` + `discovery.md` after the swarm, before scores are updated.
+- **Phase 4.9 (pre-output):** Reviews all files before generating the Gamma deck. Fires even if the swarm was skipped.
+
+Results are shown transparently to the PM. CRITICAL findings are incorporated into scores. NOTABLE findings are presented for PM judgement.
+
+**Script:** `scripts/openai-review.mjs` — reads markdown from stdin, sends to o3 with high reasoning effort, returns structured review.
+
+**Prerequisite:** `OPENAI_API_KEY` environment variable. Gracefully skipped if not set.
+
+**Output:** `review-N.md` files in the project directory (covered by `.gitignore`).
+
 ### Phase 5: Outputs (runs once, when ready)
 
 **1. Gamma Presentation (technical handoff deck)**
@@ -318,6 +335,9 @@ proveit/
 │   └── design.md            # This file
 ├── .claude/
 │   └── settings.json        # Permissions config (Bash disabled by default)
+├── scripts/
+│   └── openai-review.mjs     # Cross-model review via OpenAI o3
+├── package.json               # Dependencies (openai)
 ├── .gitignore               # Excludes all generated research files
 ├── setup.sh                 # Automated installation
 ├── README.md                # User-facing docs
@@ -336,6 +356,7 @@ proveit/
 | `firecrawl_scrape` | Competitor site analysis |
 | `firecrawl_agent` | Autonomous multi-source research |
 | `mcp__claude_ai_Gamma__generate` | Final presentation output |
+| `openai` (npm) | Cross-model review — independent bias/gap check via o3 |
 
 Firecrawl and Gamma are optional — ProveIt degrades gracefully without them.
 
