@@ -22,9 +22,11 @@ Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or
 3. **Automated Research** — Competitor analysis, market evidence, tarpit detection — written to its own file each round
 4. **Confidence Scoring** — Desirability/Viability/Feasibility scored out of 10
 5. **Honest Assessment** — Kill signals flagged when evidence is against the idea
-6. **Research Swarm** *(optional)* — 5 parallel agents argue opposing angles on the sharpest open question, synthesised into a scored recommendation
+6. **Deep Dive** *(optional)* — 5 parallel agents argue opposing angles on the sharpest open question, synthesised into a scored recommendation
 7. **Handoff Deck** — Gamma presentation for the technical team
 8. **Validation Playbook** — Suggested experiments to de-risk remaining unknowns
+9. **Brand Identity** *(optional)* — name, logo, colours, fonts, and design tokens created in-session
+10. **Next Steps** — offers `/orchestrate` to start building
 
 ---
 
@@ -111,6 +113,23 @@ It reads `discovery.md`, checks what research has already been done, shows where
 
 ---
 
+## Pipeline
+
+ProveIt connects to BrandIt and ShipIt for a seamless idea-to-product flow:
+
+```
+/proveit → validate → /brandit → brand it → /orchestrate → build it
+```
+
+Each step is optional. ProveIt offers BrandIt in-session (Phase 7) before generating the deck, and suggests `/orchestrate` after.
+
+### Additional Commands
+
+- **`/proveit:dashboard`** — compare all your validated ideas side by side
+- **`/proveit:retro`** — record what happened with an idea to calibrate future scoring
+
+---
+
 ## What You Get
 
 Every output is a standalone markdown file in your working directory — shareable, pasteable, no dependencies.
@@ -135,7 +154,7 @@ One file per standard research round. Each contains:
 
 If ProveIt loops back for a second research round, it writes `research-2.md` — never overwrites prior rounds.
 
-### swarm-N-synthesis.md *(if Research Swarm is run)*
+### swarm-N-synthesis.md *(if Deep Dive is run)*
 
 The main swarm deliverable. Contains:
 - Executive summary with confidence-weighted recommendation
@@ -155,6 +174,10 @@ When confidence is high enough, ProveIt generates a slide deck covering:
 - What to build (high level)
 - T-shirt size estimate and technical risks
 - Recommended next steps
+
+### brand.md *(if Brand Identity phase is run)*
+
+Complete brand guidelines — name, tagline, colours (with full neutral scale and semantic colours), typography (Google Fonts), tone of voice, spacing, border radius, shadows. Plus `brand-tokens.css` and `brand-tokens.json` for direct import into your build.
 
 ---
 
