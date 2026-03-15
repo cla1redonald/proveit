@@ -1,7 +1,7 @@
 ---
 name: proveit
 description: Validate product ideas through structured discovery, market research, and confidence scoring. Takes PMs from raw idea to technical handoff.
-tools: Read, Write, Glob, Grep, WebSearch, WebFetch, Task
+tools: Read, Write, Glob, Grep, WebSearch, WebFetch, Task, Bash
 model: opus
 permissionMode: default
 memory: user
