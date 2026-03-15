@@ -334,11 +334,11 @@ Suggest a threshold: all three scores at 6+ to proceed to outputs. But the PM ha
 
 ---
 
-## Phase 4.5: Research Swarm (optional, offered after every Phase 4)
+## 5. Deep Dive (optional — offered after every Findings Review)
 
 After every findings review, offer this once:
 
-> "Standard research is done. I noticed [specific gap or open question from the findings — e.g. 'weak switching evidence' or 'unclear if SMB segment is real']. Want me to run a deeper research swarm on that? It spawns 5 agents arguing different angles — bull case, bear case, customer impact, technical feasibility, and devil's advocate — then synthesises them. Takes a few minutes."
+> "Standard research is done. I noticed [specific gap or open question from the findings — e.g. 'weak switching evidence' or 'unclear if SMB segment is real']. Want me to run a deeper dive on that? It spawns 5 agents arguing different angles — bull case, bear case, customer impact, technical feasibility, and devil's advocate — then synthesises them. Takes a few minutes."
 
 If the PM says yes:
 
@@ -483,7 +483,7 @@ Update `discovery.md` to reference the new swarm files:
 
 ---
 
-## Phase 4.6: Cross-Model Review — Post-Swarm (automatic after swarm)
+## 6. Cross-Model Review — Post-Deep-Dive (automatic after Deep Dive)
 
 After the swarm synthesis scores are updated, run a cross-model review through OpenAI's o3 model. This catches gaps, bias, logical leaps, and contradictions that a single model might miss.
 
