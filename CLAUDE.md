@@ -8,7 +8,7 @@ Products don't fail at launch — they fail at the idea, when nobody checked if 
 
 ## What It Does
 
-Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Outputs a confidence score, a `discovery.md` research document, and a Gamma presentation for technical handoff.
+Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Optionally creates brand identity in-session via BrandIt. Outputs a confidence score, a `discovery.md` research document, brand assets, and a branded Gamma presentation for technical handoff.
 
 ## How to Use
 
@@ -28,12 +28,28 @@ Or for a quick assumption check (10-15 min):
 
 Surfaces the 3 assumptions most likely to kill the idea, with research evidence. No full discovery loop, no Gamma deck.
 
+```
+/proveit:dashboard
+```
+
+Shows a comparison table of all validated ideas across your projects.
+
+```
+/proveit:retro
+```
+
+Records what happened with an idea — tracks prediction accuracy.
+
 ## Directory Structure
 
 ```
 proveit/
-├── agents/proveit.md      # Core agent definition — discovery loop, scoring, outputs
-├── commands/proveit.md    # Skill entry point for /proveit
+├── agents/proveit.md      # Core agent definition — 10 phases, scoring, outputs
+├── commands/
+│   ├── proveit.md         # Skill entry point for /proveit
+│   ├── proveit-fast.md    # Quick assumption check
+│   ├── proveit-dashboard.md # Portfolio comparison view
+│   └── proveit-retro.md   # Calibration retrospective
 ├── scripts/
 │   └── openai-review.mjs  # Cross-model review via OpenAI o3
 ├── docs/design.md         # Design decisions and validation framework
@@ -53,6 +69,7 @@ Research phases are delegated to Sonnet subagents for speed.
 - **Gamma** — Generates technical handoff presentations (`mcp__claude_ai_Gamma__generate`)
 - **Firecrawl** — Competitor/market research (`firecrawl_search`, `firecrawl_scrape`, `firecrawl_agent`)
 - **WebSearch/WebFetch** — Fallback web research
+- **BrandIt** (via `~/brandit/scripts/generate-logo.mjs`) — In-session brand identity and logo generation (Phase 7)
 
 ## Core Principles
 
