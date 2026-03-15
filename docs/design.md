@@ -1,7 +1,7 @@
 # ProveIt — Design Document
 
-**Version:** 1.0
-**Date:** 2026-02-22
+**Version:** 2.0
+**Date:** 2026-03-15
 **Author:** Claire Donald
 
 ## What is ProveIt?
@@ -348,7 +348,10 @@ proveit/
 ├── agents/
 │   └── proveit.md           # Main ProveIt agent (Opus)
 ├── commands/
-│   └── proveit.md           # /proveit skill — entry point
+│   ├── proveit.md           # /proveit skill — entry point
+│   ├── proveit-fast.md      # /proveit-fast — quick assumption check
+│   ├── proveit-dashboard.md # /proveit:dashboard — portfolio comparison
+│   └── proveit-retro.md     # /proveit:retro — calibration retrospective
 ├── docs/
 │   └── design.md            # This file
 ├── .claude/
@@ -412,7 +415,7 @@ To uninstall: `./setup.sh --uninstall`
 
 **In:**
 - Single-user (one PM, one idea per session)
-- Core discovery loop (all 5 phases)
+- Core discovery loop (10 named phases)
 - Optional Deep Dive (Phase 5)
 - Separate file per research phase
 - `discovery.md` as persistent index
@@ -422,11 +425,14 @@ To uninstall: `./setup.sh --uninstall`
 - Kill signal detection
 - Session resume
 - Shareable — no hardcoded paths, no Obsidian dependency
+- In-session BrandIt integration (Phase 7)
+- Portfolio dashboard (/proveit:dashboard)
+- Calibration retro (/proveit:retro)
+- Research steering
 
 **Out:**
 - Multi-user collaboration
 - Web UI
 - Database persistence
 - Custom frameworks (question set is hardcoded)
-- Historical comparison across ideas
 - Integration with Notion/Linear/Jira
