@@ -204,6 +204,16 @@ After each mini-round, update the Discovery section in `discovery.md`.
 
 ## 3. Research (loops)
 
+### Research Steering (optional)
+
+Before launching research, ask one optional question:
+
+> "Before I dive in — anything I should focus on specifically, or anything I should ignore? For example, a specific market segment, competitor to skip, or ecosystem to look at."
+
+If the PM gives direction, pass it as additional context appended to all three research subagent prompts (competitor landscape, market evidence, viability signals). Also write the steering input to `discovery.md` in the Research Files section as a note: `Research steering: [PM's input]`.
+
+If the PM says "no, just go" or similar, proceed immediately.
+
 Tell the PM: "I'm going to research this now. Give me a few minutes."
 
 ### Determine the round number
