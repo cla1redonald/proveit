@@ -23,16 +23,17 @@ Use Glob to search for `**/discovery.md` under the user's home directory (`~/`).
 - `.npm/`
 - `.nvm/`
 
-### Step 2: Read each discovery.md
+### Step 2: Filter and read each discovery.md
 
-For each file found, read it and extract:
+**First, validate each file is a ProveIt output** — not every `discovery.md` is ours. Check that the file contains a `## Confidence Score` section with at least one `X/10` score pattern. If it doesn't, skip it silently (it's likely an unrelated doc like an architecture discovery file).
 
-- **Idea name** — from the `# ProveIt: [Name]` header
-- **Desirability score** — from `Desirability: X/10` in the Confidence Score section
-- **Viability score** — from `Viability: X/10`
-- **Feasibility score** — from `Feasibility: X/10`
+For each valid file, extract:
+
+- **Idea name** — from the first `# ` header. Accept any prefix format: `# ProveIt: [Name]`, `# [ProjectName]: [Name]`, or just `# [Name]`. Strip the prefix before the colon if present.
+- **Scores** — from the `## Confidence Score` section, match ALL `[Label]: X/10` patterns on the score line. Always look for Desirability, Viability, and Feasibility. If additional scores exist (e.g. `Strategy Alignment: 9/10`), include them as extra columns.
 - **Status** — from `Status: [value]` in the Confidence Score section
 - **Last updated** — from `Last updated: [date]` in the header
+- **Gamma deck** — from the `## Gamma Deck` section. Distinguish between: a URL (deck exists), "Not yet generated" (no deck), or missing section (show `-`).
 
 If any field is missing, show `-` in that column.
 
@@ -59,15 +60,19 @@ Sort ideas by highest combined score (D+V+F) descending. Present as a markdown t
 ```
 ProveIt Portfolio — [N] ideas found
 
-| Idea | D | V | F | Status | Board | Updated |
-|------|---|---|---|--------|-------|---------|
-| [name] | [score] | [score] | [score] | [status] | [board] | [date] |
+| Idea | D | V | F | Status | Board | Deck | Updated |
+|------|---|---|---|--------|-------|------|---------|
+| [name] | [score] | [score] | [score] | [status] | [board] | [yes/no/-] | [date] |
 ```
+
+If any ideas have extra score columns (e.g. Strategy Alignment), add those columns for the ideas that have them and show `-` for ideas that don't.
 
 After the table, show a brief summary:
 - How many ideas total
 - How many are "Ready for handoff" or scored 6+ across all three
+- How many have Gamma decks generated
 - Any kill signals detected
+- How many files were skipped as non-ProveIt (if any)
 
 ### Constraints
 
