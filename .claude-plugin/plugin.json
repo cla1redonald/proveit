@@ -5,7 +5,5 @@
   "author": { "name": "Claire Donald" },
   "homepage": "https://github.com/cla1redonald/proveit",
   "license": "MIT",
-  "keywords": ["product", "validation", "discovery", "research", "pm", "strategy"],
-  "commands": "./commands/",
-  "agents": "./agents/"
+  "keywords": ["product", "validation", "discovery", "research", "pm", "strategy"]
 }

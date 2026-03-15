@@ -4,8 +4,12 @@
   "plugins": [
     {
       "name": "proveit",
-      "source": ".",
-      "description": "Validate product ideas through structured discovery, market research, and confidence scoring."
+      "description": "Validate product ideas through structured discovery, market research, and confidence scoring.",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/cla1redonald/proveit.git"
+      },
+      "homepage": "https://github.com/cla1redonald/proveit"
     }
   ]
 }
