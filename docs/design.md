@@ -22,20 +22,24 @@ PMs have ideas but no structured way to validate them before pulling in engineer
 ProveIt runs one iterative loop. It is NOT linear — it cycles until confidence is high enough.
 
 ```
-Brain Dump → Structured Discovery → Research → Findings Review
+Brain Dump → Discovery → Research → Findings Review
                                                       ↓
-                                              Swarm? (optional)
+                                              Deep Dive (optional)
                                                       ↓
-                                              ★ Cross-Model Review #1 (post-swarm)
+                                              ★ Cross-Model Review (post-deep-dive)
                                                       ↓
                                               Confidence high enough?
                                                No → back to Discovery
-                                              Yes → ★ Cross-Model Review #2 (pre-output)
+                                              Yes → Brand Identity (optional, in-session)
                                                       ↓
-                                              Gamma Deck + Validation Playbook
+                                              ★ Final Review (pre-output)
+                                                      ↓
+                                              Outputs (branded Gamma deck + playbook)
+                                                      ↓
+                                              Next Steps (offer /orchestrate)
 ```
 
-### Phase 1: Brain Dump (runs once)
+### 1. Brain Dump (runs once)
 
 Casual, conversational extraction. Get the raw idea out fast. 5-6 open questions max.
 
@@ -50,7 +54,7 @@ Questions:
 
 After: summarise back in 2-3 sentences, confirm understanding.
 
-### Phase 2: Structured Discovery (loops)
+### 2. Discovery (loops)
 
 Targeted questions across three lenses. ProveIt checks what the brain dump already covered and fills gaps.
 
@@ -93,7 +97,7 @@ Targeted questions across three lenses. ProveIt checks what the brain dump alrea
 - Never more than 15 minutes of questions before research starts
 - Research is conditional: if the PM's own answers clearly indicate no real problem and no viable business (Desirability and Viability both at 1–2 with no countervailing signal), skip research and transition directly to findings with a plain explanation. Default: run research.
 
-### Phase 3: Standard Research (loops)
+### 3. Research (loops)
 
 ProveIt goes autonomous. PM waits. Delegates to a Sonnet subagent running three parallel tracks. **Minimum 3 searches per track, 9 searches total.** Do not write the findings summary until all three tracks are complete.
 
@@ -129,7 +133,7 @@ Learn — patterns to steal
 Status — Active/Dead/Funded/Free
 ```
 
-### Phase 4: Findings Review (loops)
+### 4. Findings Review (loops)
 
 Present structured summary with updated confidence scores:
 
@@ -148,17 +152,17 @@ Feasibility:  7/10     (no change — needs technical review)
 Message: "Here's what the evidence shows. The bar for pursuing this just got higher. Here's what would need to be true for this to work despite these signals."
 
 **What happens next — PM decides:**
-- Scores high enough → offer Research Swarm, then outputs
+- Scores high enough → offer Deep Dive, then outputs
 - Gaps remain → ProveIt asks targeted follow-up questions, then researches again
-- Kill signal → Present evidence honestly, offer Swarm to pressure-test it, PM decides
+- Kill signal → Present evidence honestly, offer Deep Dive to pressure-test it, PM decides
 - PM has new info → Incorporate, re-score
 - PM wants to stop → Everything saved, resume anytime
 
-### Phase 4.5: Research Swarm (optional — offered after every Phase 4)
+### 5. Deep Dive (optional — offered after every Findings Review)
 
 After every findings review, ProveIt offers to go deeper. It reads the actual findings and identifies the sharpest unresolved question, then confirms with the PM before running.
 
-**Swarm question:** Crafted by ProveIt (Opus) from real findings — not the raw idea. Examples:
+**Deep Dive question:** Crafted by ProveIt (Opus) from real findings — not the raw idea. Examples:
 - "Given Swagup dominates enterprise, is there a real SMB gap?"
 - "Is the stated pain strong enough to drive switching, or is this a tarpit?"
 
@@ -185,12 +189,12 @@ ProveIt (Opus) reads the synthesis and updates confidence scores in `discovery.m
 
 **Round numbering:** N = existing swarm synthesis file count + 1. Never overwrites prior swarms.
 
-### Phase 4.6 & 4.9: Cross-Model Review (OpenAI o3)
+### 6 & 8. Cross-Model Review (OpenAI o3)
 
 ProveIt sends its synthesis to OpenAI's o3 model for independent review. o3 checks for gaps, bias, logical leaps, and contradictions. Runs at two checkpoints:
 
-- **Phase 4.6 (post-swarm):** Reviews `swarm-N-synthesis.md` + `discovery.md` after the swarm, before scores are updated.
-- **Phase 4.9 (pre-output):** Reviews all files before generating the Gamma deck. Fires even if the swarm was skipped.
+- **Phase 6 (post-deep-dive):** Reviews `swarm-N-synthesis.md` + `discovery.md` after the Deep Dive, before scores are updated.
+- **Phase 8 (pre-output):** Reviews all files before generating the Gamma deck. Fires even if the Deep Dive was skipped.
 
 Results are shown transparently to the PM. CRITICAL findings are incorporated into scores. NOTABLE findings are presented for PM judgement.
 
@@ -200,7 +204,13 @@ Results are shown transparently to the PM. CRITICAL findings are incorporated in
 
 **Output:** `review-N.md` files in the project directory (covered by `.gitignore`).
 
-### Phase 5: Outputs (runs once, when ready)
+### 7. Brand Identity (optional, in-session)
+
+If confidence scores are high enough, ProveIt offers to run the BrandIt flow in-session before generating the Gamma deck. This creates a complete brand identity — name, logo, colours, fonts, tone of voice, and design tokens — without leaving the ProveIt session. The PM gets 3 brand directions to choose from, with AI-generated logos via DALL-E. Output: `brand.md`, `brand-tokens.css`, `brand-tokens.json`, and logo PNGs. The Gamma deck then uses the real brand instead of placeholders.
+
+Requires `~/brandit/scripts/generate-logo.mjs` for logo compositing. Gracefully degrades without `OPENAI_API_KEY` (skips logo generation).
+
+### 9. Outputs (runs once, when ready)
 
 **1. Gamma Presentation (technical handoff deck)**
 
@@ -225,6 +235,10 @@ Practical experiments tied to remaining unknowns:
 - "Viability is 7/10 — run a landing page test with pricing to test willingness to pay"
 - "Desirability is 8/10 but forum-based — do 5 user interviews to confirm"
 - "Feasibility is 6/10 — get a technical spike on the real-time sync before committing"
+
+### 10. Next Steps
+
+ProveIt presents a clean closing with three options: run `/orchestrate` to build, share the Gamma deck with the team, or loop back for more validation. This is a handoff, not an invocation — Orchestrate runs in its own session.
 
 ---
 
@@ -259,7 +273,7 @@ Desirability: X/10 | Viability: X/10 | Feasibility: X/10
 Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 
 ## Idea (Brain Dump)
-[Raw capture from Phase 1]
+[Raw capture from Brain Dump]
 
 ## Discovery
 ### Desirability
@@ -307,14 +321,18 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 | Phase | Model | Why |
 |-------|-------|-----|
 | Brain Dump | Opus | Reads between the lines, catches what PM isn't saying |
-| Structured Discovery | Opus | Confidence scoring requires judgement |
-| Standard Research | Sonnet (subagent) | Heavy tool use, structured output, speed |
+| Discovery | Opus | Confidence scoring requires judgement |
+| Research | Sonnet (subagent) | Heavy tool use, structured output, speed |
 | Findings Review | Opus | Synthesising messy research into clear signal |
-| Swarm question crafting | Opus | Identifying the sharpest gap from real findings |
-| 5 Swarm agents | Sonnet (parallel subagents) | Parallel, cost-efficient, tool-heavy |
-| Swarm Synthesis | Sonnet (subagent) | Reads and resolves 5 documents |
+| Deep Dive question crafting | Opus | Identifying the sharpest gap from real findings |
+| 5 Deep Dive agents | Sonnet (parallel subagents) | Parallel, cost-efficient, tool-heavy |
+| Deep Dive Synthesis | Sonnet (subagent) | Reads and resolves 5 documents |
 | Gamma Deck | Sonnet (subagent) | Structured output from synthesised content |
 | Validation Playbook | Opus | Creative + strategic, connecting gaps to experiments |
+| Brand Identity (brief) | Opus | Creative judgement, reading PM intent |
+| Brand Identity (directions) | Sonnet (3 parallel subagents) | Parallel, structured output |
+| Brand Identity (logos) | DALL-E (OpenAI) | Image generation |
+| Next Steps | Opus | Simple — presenting options |
 
 Single ProveIt agent runs on Opus. All subagents explicitly use `model: "sonnet"`.
 
@@ -395,7 +413,7 @@ To uninstall: `./setup.sh --uninstall`
 **In:**
 - Single-user (one PM, one idea per session)
 - Core discovery loop (all 5 phases)
-- Optional Research Swarm (Phase 4.5)
+- Optional Deep Dive (Phase 5)
 - Separate file per research phase
 - `discovery.md` as persistent index
 - Gamma deck generation
