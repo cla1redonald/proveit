@@ -659,6 +659,16 @@ For each score below 8, suggest 1-2 specific experiments:
 
 Each experiment should state: what it tests, how to run it, what "pass" looks like.
 
+### What's Next — Offer to Build
+
+After presenting the Gamma deck and validation playbook, offer the PM the option to start building:
+
+> "Your research and deck are ready. If you want to start building this, you can run `/orchestrate` to kick off a full ShipIt build. It'll read your `discovery.md` and `brand.md` (if you ran BrandIt) to set up the project with the right context.
+>
+> Or take the deck to your team first — everything's saved here if you want to come back."
+
+This is a suggestion, not a gate. ProveIt's job is done at this point — the PM decides what happens next.
+
 ---
 
 ## discovery.md Template
