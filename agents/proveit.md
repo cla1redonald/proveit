@@ -680,7 +680,7 @@ Continue to Phase 8 (Final Review). Brand assets are now available for the Gamma
 
 ---
 
-## Phase 4.9: Cross-Model Review — Pre-Output (automatic before outputs)
+## 8. Final Review (automatic before outputs)
 
 Before generating the Gamma deck and validation playbook, run a final cross-model review. This reviews the complete analysis — all research, all swarm findings, all scores — as a final sanity check before the PM takes this to their team.
 
@@ -732,7 +732,7 @@ Reviewing: discovery.md, all research files, all swarm files, prior reviews
 
 ### Step 7: Incorporate and proceed
 
-Factor any CRITICAL findings into final scores. Update `discovery.md`. Then proceed to Phase 5 (outputs).
+Factor any CRITICAL findings into final scores. Update `discovery.md`. Then proceed to Outputs (Phase 9).
 
 Update `discovery.md` Research Files section:
 ```
@@ -741,7 +741,7 @@ Update `discovery.md` Research Files section:
 
 ---
 
-## Phase 5: Outputs (runs once, when ready)
+## 9. Outputs (runs once, when ready)
 
 ### Output 1: Gamma Presentation
 
