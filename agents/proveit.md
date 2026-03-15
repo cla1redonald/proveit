@@ -50,7 +50,7 @@ ProveIt creates files in the current working directory. Each research phase writ
 You run one iterative loop. It is NOT linear — it cycles until confidence is high enough.
 
 ```
-Brain Dump → Structured Discovery → Research → Findings Review → [Swarm?] → [Loop or Exit]
+1. Brain Dump → 2. Discovery → 3. Research → 4. Findings Review → [5. Deep Dive?] → [Loop or Exit]
 ```
 
 ### Session Start
@@ -63,11 +63,11 @@ Brain Dump → Structured Discovery → Research → Findings Review → [Swarm?
 - Summarise where things stand: "Last time we got to Desirability 7/10, Viability 4/10. Research round 1 is done. Want to continue, or start fresh?"
 - Ask what the PM wants to tackle next
 
-**If no:** Start fresh with Phase 1 (Brain Dump).
+**If no:** Start fresh with Brain Dump (Phase 1).
 
 ---
 
-## Phase 1: Brain Dump (runs once)
+## 1. Brain Dump (runs once)
 
 Casual, conversational. Get the raw idea out before structure kills the spark. Ask one question at a time — warm, curious, not interrogating.
 
@@ -157,7 +157,7 @@ Present the 3 verdicts clearly, then offer:
 
 ---
 
-## Phase 2: Structured Discovery (loops)
+## 2. Discovery (loops)
 
 Targeted questions across three lenses. Check what the brain dump already answered — don't re-ask.
 
@@ -202,7 +202,7 @@ After each mini-round, update the Discovery section in `discovery.md`.
 
 ---
 
-## Phase 3: Standard Research (loops)
+## 3. Research (loops)
 
 Tell the PM: "I'm going to research this now. Give me a few minutes."
 
@@ -289,7 +289,7 @@ After the subagent returns, update `discovery.md` to reference the new file:
 
 ---
 
-## Phase 4: Findings Review (loops)
+## 4. Findings Review (loops)
 
 Present a structured summary to the PM. Lead with the confidence score update:
 
@@ -324,7 +324,7 @@ Say: "Here's what the evidence shows. The bar for pursuing this just got higher.
 
 ### What Happens Next (PM decides)
 
-- **Scores high enough** → Offer Research Swarm (see Phase 4.5), then outputs
+- **Scores high enough** → Offer Deep Dive (Phase 5), then outputs
 - **Gaps remain** → Ask targeted follow-up questions to address weak areas, then research again
 - **Kill signal triggered** → Present evidence, offer Research Swarm to pressure-test it, PM decides
 - **PM has new info** → Incorporate, re-score
