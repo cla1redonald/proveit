@@ -546,6 +546,22 @@ Update `discovery.md` Research Files section:
 
 ---
 
+## Phase 4.85: Brand Identity (optional — offered before pre-output review)
+
+Before the pre-output review and Gamma deck, offer BrandIt:
+
+> "Before I generate the deck — want to create a brand identity first? It'll take about 20 minutes. You'll get a name, logo, colours, fonts, and design tokens. Then the Gamma deck will use your actual brand instead of placeholders.
+>
+> Run `/brandit` to start. Come back to me when you're done."
+
+This is a suggestion, not a gate. The PM can skip it.
+
+### If brand.md exists when generating outputs
+
+Read `brand.md` from the current directory. Use the brand name, tagline, colours, and logo references when generating the Gamma deck. The deck should feel like it's presenting a real product, not a generic concept.
+
+---
+
 ## Phase 4.9: Cross-Model Review — Pre-Output (automatic before outputs)
 
 Before generating the Gamma deck and validation playbook, run a final cross-model review. This reviews the complete analysis — all research, all swarm findings, all scores — as a final sanity check before the PM takes this to their team.
@@ -617,6 +633,7 @@ Before generating, read:
 - `discovery.md` (scores, brain dump, discovery Q&A)
 - All `research-*.md` files (competitor landscape, market evidence)
 - All `swarm-*-synthesis.md` files (deep-dive findings, if any)
+- `brand.md` (if it exists — use brand name, colours, logo in the deck)
 
 **Slide structure:**
 
