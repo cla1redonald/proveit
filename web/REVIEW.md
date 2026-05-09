@@ -4,6 +4,19 @@
 **Date:** 2026-02-22
 **Scope:** All source files in `src/` — API routes, lib, hooks, components, pages
 
+> **Status: HISTORICAL — all findings below were addressed in the 2026-05-09 hardening pass.**
+> A second audit was run on 2026-05-09 covering security, reliability, and cost. Its findings (and the fixes for them) landed in commits `61040db` and `81268f3`. Highlights of what's now true that this document predates:
+> - Anthropic SDK upgraded from `0.39.0` → `^0.95.1` (web search blocks now arrive as `server_tool_use`, route handler matches both shapes)
+> - Streaming response uses `Content-Type: text/event-stream` with `Cache-Control: no-transform` and `X-Accel-Buffering: no`
+> - 90-second `AbortSignal` timeout on every Anthropic call
+> - `searching:false` always emitted before `done` / `error`, even when the model ends with a tool call
+> - Rate limiter requires Upstash for production; in-memory fallback documented as dev-only
+> - `getClientIp()` trusts `x-real-ip` first, then the LAST entry of `x-forwarded-for` (no longer trusts the user-controlled first entry)
+> - User idea no longer travels in the URL on `/fast` (sessionStorage handoff)
+> - `DownloadButton` shows inline error feedback on failure
+>
+> Treat the review below as a snapshot of the codebase at 2026-02-22. For current-state guidance, see `ARCHITECTURE.md` and `README.md`.
+
 ---
 
 ### Summary

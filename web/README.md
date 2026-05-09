@@ -130,7 +130,7 @@ web/
 - **Tailwind CSS** + shadcn/ui components
 - **Anthropic SDK** — server-side only, never bundled to the client
 - **Zod** — input validation in Route Handlers
-- **Vitest** + React Testing Library — 180 tests
+- **Vitest** + React Testing Library — 181 tests
 - **No database** — session state lives in localStorage
 - **No auth** — public, no user accounts
 - **Vercel** — hosting and deployment
@@ -143,13 +143,13 @@ A few things that are non-obvious and worth knowing before touching the code:
 
 **The Anthropic client is server-only.** `src/lib/anthropic.ts` imports the `server-only` package, which throws a build error if accidentally imported from a Client Component. Keep it that way — the API key must never reach the browser.
 
-**Streaming is a custom protocol, not SSE.** Both API routes stream `Content-Type: text/plain`. Structured events (phase changes, score updates, web search indicators) are injected as `data: {...}` JSON lines mixed into the plain text stream. The client reads line-by-line and routes accordingly. The Vercel AI SDK (`useChat`) is intentionally excluded — it buffers responses before yielding them, which breaks real-time streaming.
+**Streaming is a custom protocol, not strict SSE.** Both API routes stream `Content-Type: text/event-stream` (with `Cache-Control: no-transform` and `X-Accel-Buffering: no` to prevent CDN/proxy buffering). Structured events (phase changes, score updates, web search indicators) are injected as `data: {...}` JSON lines mixed into the text stream. The client reads line-by-line and routes accordingly — it does not use `EventSource`. The Vercel AI SDK (`useChat`) is intentionally excluded — it buffers responses before yielding them, which breaks real-time streaming.
 
 **Session state is client-side only.** The server is stateless. The client sends the full message history and current phase on every request. localStorage is the source of truth for Full Validation sessions. Fast Check results are not stored anywhere — they are intentionally ephemeral.
 
-**Web search only activates in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`, with `max_uses: 12`. It is omitted for all other phases. The research phase is conditional — if discovery answers clearly indicate no real problem and no viable business, the model skips research and transitions directly to findings.
+**Web search only activates in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`, with `max_uses: 12`. It is omitted for all other phases. The research phase is conditional — if discovery answers clearly indicate no real problem and no viable business, the model skips research and transitions directly to findings. Note: the SDK delivers web-search invocations as `server_tool_use` content blocks (not `tool_use`); the route handler matches both so the Searching… indicator fires correctly.
 
-**Rate limiting is built in.** `/api/chat` allows 20 requests/IP/60s; `/api/fast` allows 10. Uses Upstash Redis when `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set; falls back to in-memory for local/single-instance use.
+**Rate limiting is built in — and Upstash is REQUIRED for production.** `/api/chat` allows 20 requests/IP/60s; `/api/fast` allows 10. The implementation uses Upstash Redis when `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set, and falls back to an in-process sliding window otherwise. The fallback is per-instance and resets on cold start — on Vercel's serverless runtime this means parallel requests across instances effectively bypass the limiter, so a single client can drain the Anthropic credit budget. Always provision Upstash before exposing the deployment to any audience beyond yourself. Client IP detection trusts `x-real-ip` first, then the LAST entry of `x-forwarded-for` (platform-appended); never the first entry, which is user-controlled.
 
 **Fonts are self-hosted.** Inter and JetBrains Mono are loaded via `next/font/google`, which downloads them at build time and serves from the same origin. This keeps `font-src 'self'` in the CSP without needing to allow external font origins.
 

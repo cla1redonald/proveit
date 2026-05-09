@@ -298,7 +298,9 @@ const FastCheckSchema = z.object({
 ```
 
 **Response (streaming):**
-- `Content-Type: text/plain; charset=utf-8`
+- `Content-Type: text/event-stream; charset=utf-8`
+- `Cache-Control: no-cache, no-transform`
+- `X-Accel-Buffering: no`
 - `Cache-Control: no-cache`
 - Body: raw text stream of the assistant's response
 
@@ -359,7 +361,9 @@ const ChatRequestSchema = z.object({
 ```
 
 **Response (streaming):**
-- `Content-Type: text/plain; charset=utf-8`
+- `Content-Type: text/event-stream; charset=utf-8`
+- `Cache-Control: no-cache, no-transform`
+- `X-Accel-Buffering: no`
 - `Cache-Control: no-cache`
 - Body: mixed stream — see protocol below
 
@@ -370,7 +374,7 @@ The response body is a mixed stream of two types of content:
 1. **Text deltas** — raw UTF-8 text chunks, appended directly to the current message display.
 2. **Event lines** — lines starting with `data: ` followed by a JSON object. The client reads line-by-line and parses lines starting with `data: ` as `StreamEvent`.
 
-The server emits event lines by injecting `\ndata: {"type":"..."}\n` into the stream at the appropriate moment. This is a lightweight custom protocol — not SSE — because the content type is `text/plain` and the client uses a manual stream reader, not `EventSource`.
+The server emits event lines by injecting `\ndata: {"type":"..."}\n` into the stream at the appropriate moment. This is a lightweight custom protocol — not strict SSE — and the client uses a manual stream reader, not `EventSource`. The `Content-Type: text/event-stream` header is set so CDNs and proxies recognise the response as a streaming response and do not buffer or transform it; `Cache-Control: no-transform` and `X-Accel-Buffering: no` are belt-and-braces for the same reason.
 
 **Example stream for a research phase turn:**
 ```
@@ -663,13 +667,14 @@ When the native web search tool executes during the research phase, the Anthropi
 
 The Route Handler uses the raw async iterator pattern (`stream: true`). It does not need to explicitly handle `pause_turn` — the async iterator simply blocks during the pause and resumes when the next event arrives. No special server code is needed. The stream connection stays open during the pause.
 
-However, the Route Handler must inject a `searching` event into the stream at the right moment. The way to detect that a search is starting is the `content_block_start` event with `type: "tool_use"` and `name: "web_search"`. When this event is received, immediately enqueue the searching event before continuing to read from the iterator:
+However, the Route Handler must inject a `searching` event into the stream at the right moment. A search is starting when a `content_block_start` event arrives with **either** `type: "tool_use"` (older SDK shape) **or** `type: "server_tool_use"` (the shape used by Anthropic SDK >= 0.50 for server-side tools — web_search, web_fetch, code_execution) and `name: "web_search"`. When this event is received, immediately enqueue the searching event before continuing to read from the iterator:
 
 ```typescript
 for await (const event of anthropicStream) {
   if (
     event.type === "content_block_start" &&
-    event.content_block?.type === "tool_use" &&
+    (event.content_block?.type === "tool_use" ||
+      event.content_block?.type === "server_tool_use") &&
     event.content_block?.name === "web_search"
   ) {
     // Inject searching indicator into the stream
@@ -847,7 +852,7 @@ No other secrets. No database credentials. No third-party API keys.
 
 ### Decision 2: Custom streaming protocol over SSE
 
-**Chosen:** `Content-Type: text/plain` with line-based event injection (`data: {...}` lines).
+**Chosen:** `Content-Type: text/event-stream` with line-based event injection (`data: {...}` lines), plus `Cache-Control: no-transform` and `X-Accel-Buffering: no` headers to defend against CDN/proxy buffering.
 **Rejected:** Server-Sent Events (`Content-Type: text/event-stream`), `@ai-sdk/react` useChat hook.
 **Rationale:** `useChat` from the Vercel AI SDK accumulates the full response before exposing it, which defeats streaming. The custom protocol is lightweight (20 lines of client parsing code) and gives precise control over event timing. SSE would require consistent event formatting; mixing prose and structured events is simpler with the custom line-based approach.
 
