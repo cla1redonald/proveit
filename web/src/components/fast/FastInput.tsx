@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 const MAX_CHARS = 2000;
 
-export default function FastInput() {
+interface FastInputProps {
+  onSubmit: (idea: string) => void;
+}
+
+export default function FastInput({ onSubmit }: FastInputProps) {
   const [idea, setIdea] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-focus on mount
@@ -36,12 +38,7 @@ export default function FastInput() {
       return;
     }
     setError(null);
-    try {
-      sessionStorage.setItem("proveit_fast_idea", idea.trim());
-    } catch {
-      // sessionStorage may throw in private browsing; FastPageContent will show the input again
-    }
-    router.push("/fast");
+    onSubmit(idea.trim());
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
