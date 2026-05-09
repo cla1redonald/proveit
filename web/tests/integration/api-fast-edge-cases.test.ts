@@ -155,8 +155,9 @@ describe("POST /api/fast — boundary and error cases", () => {
     vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
     const req = makeRequest({ idea: "A valid idea that is long enough to pass" });
     const res = await POST(req);
-    expect(res.headers.get("Content-Type")).toBe("text/plain; charset=utf-8");
-    expect(res.headers.get("Cache-Control")).toBe("no-cache");
+    expect(res.headers.get("Content-Type")).toBe("text/event-stream; charset=utf-8");
+    expect(res.headers.get("Cache-Control")).toBe("no-cache, no-transform");
+    expect(res.headers.get("X-Accel-Buffering")).toBe("no");
   });
 
   // ─── Anthropic error propagation through stream ─────────────────────────────

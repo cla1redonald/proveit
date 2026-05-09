@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import { useStream } from "@/hooks/useStream";
 import { useSession } from "@/hooks/useSession";
 import { createSession } from "@/lib/session";
+import { getRelativeTime } from "@/lib/utils";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
 import PhaseIndicator from "./PhaseIndicator";
@@ -76,17 +77,6 @@ function IdeaInputForm({
   // If there's an existing incomplete session — show resume prompt
   if (hasIncompleteSession) {
     const sessionMeta = session;
-
-    function getRelativeTime(ts: number): string {
-      const diffMs = Date.now() - ts;
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMs / 3600000);
-      const diffDays = Math.floor(diffMs / 86400000);
-      if (diffMins < 1) return "Just now";
-      if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
-      if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
-      return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
-    }
 
     function getPhaseLabel(phase: DiscoveryPhase): string {
       switch (phase) {

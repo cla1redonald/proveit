@@ -97,7 +97,7 @@ describe("POST /api/chat", () => {
     const res = await POST(req);
 
     expect(res.status).toBe(200);
-    expect(res.headers.get("Content-Type")).toContain("text/plain");
+    expect(res.headers.get("Content-Type")).toContain("text/event-stream");
   });
 
   it("does not include web search tool outside research phase", async () => {

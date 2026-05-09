@@ -11,7 +11,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.39.0",
+    "@anthropic-ai/sdk": "^0.95.1",
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/typography": "0.5.16",
     "@upstash/ratelimit": "^2.0.8",

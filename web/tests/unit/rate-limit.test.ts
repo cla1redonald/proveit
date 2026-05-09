@@ -131,11 +131,24 @@ describe("checkRateLimit", () => {
 });
 
 describe("getClientIp", () => {
-  it("extracts the first IP from X-Forwarded-For", () => {
+  it("prefers x-real-ip over x-forwarded-for (Vercel-trusted header)", () => {
+    const req = new Request("http://localhost/", {
+      headers: {
+        "x-real-ip": "203.0.113.5",
+        "x-forwarded-for": "1.2.3.4, 5.6.7.8",
+      },
+    });
+    expect(getClientIp(req)).toBe("203.0.113.5");
+  });
+
+  it("extracts the LAST IP from X-Forwarded-For (the platform-appended one)", () => {
+    // The first entry can be supplied by the client and is therefore
+    // user-controlled and untrustworthy. The last entry is appended by the
+    // platform (e.g. Vercel) and reflects what the edge actually saw.
     const req = new Request("http://localhost/", {
       headers: { "x-forwarded-for": "1.2.3.4, 5.6.7.8" },
     });
-    expect(getClientIp(req)).toBe("1.2.3.4");
+    expect(getClientIp(req)).toBe("5.6.7.8");
   });
 
   it("returns the single IP when X-Forwarded-For has no comma", () => {
@@ -145,14 +158,14 @@ describe("getClientIp", () => {
     expect(getClientIp(req)).toBe("203.0.113.5");
   });
 
-  it("trims whitespace from the extracted IP", () => {
+  it("trims whitespace from the LAST IP", () => {
     const req = new Request("http://localhost/", {
-      headers: { "x-forwarded-for": "  10.0.0.1  , 192.168.1.1" },
+      headers: { "x-forwarded-for": "10.0.0.1, 192.168.1.1   " },
     });
-    expect(getClientIp(req)).toBe("10.0.0.1");
+    expect(getClientIp(req)).toBe("192.168.1.1");
   });
 
-  it("falls back to 127.0.0.1 when X-Forwarded-For is absent", () => {
+  it("falls back to 127.0.0.1 when neither header is set", () => {
     const req = new Request("http://localhost/");
     expect(getClientIp(req)).toBe("127.0.0.1");
   });

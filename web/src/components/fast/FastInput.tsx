@@ -36,7 +36,12 @@ export default function FastInput() {
       return;
     }
     setError(null);
-    router.push(`/fast?idea=${encodeURIComponent(idea.trim())}`);
+    try {
+      sessionStorage.setItem("proveit_fast_idea", idea.trim());
+    } catch {
+      // sessionStorage may throw in private browsing; FastPageContent will show the input again
+    }
+    router.push("/fast");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

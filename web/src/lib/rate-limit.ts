@@ -135,10 +135,28 @@ export async function checkRateLimit(
 
 /**
  * Extract the real client IP from Next.js request headers.
+ *
+ * On Vercel, `x-real-ip` is set by the platform and cannot be overridden by
+ * the client — it is the trusted source of truth. `x-forwarded-for` can be
+ * supplied by the user (Vercel appends to it rather than replacing it), so
+ * the FIRST entry is user-controlled and must not be trusted. The LAST
+ * entry is the address Vercel's edge actually saw.
+ *
+ * Order of preference:
+ *   1. x-real-ip (Vercel, trusted)
+ *   2. last entry of x-forwarded-for (platform-appended, trusted)
+ *   3. fallback localhost (only reached for local dev / unit tests)
  */
 export function getClientIp(req: Request): string {
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp && realIp.trim()) return realIp.trim();
+
   const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
+  if (forwarded) {
+    const parts = forwarded.split(",").map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 0) return parts[parts.length - 1];
+  }
+
   return "127.0.0.1";
 }
 

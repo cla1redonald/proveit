@@ -99,15 +99,24 @@ export async function POST(req: NextRequest) {
       let inToolUseBlock = false;
       let inputJsonBuffer = "";
 
+      // Application-level timeout — Vercel's 300s function timeout is not enough
+      // protection on its own (a hung Anthropic stream burns 5min of credits).
+      // 90s aligns with ARCHITECTURE.md §3.
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => abortController.abort(), 90_000);
+
       try {
-        const anthropicStream = await anthropic.messages.create({
-          model: "claude-sonnet-4-6",
-          max_tokens: 8096,
-          system: systemPrompt,
-          messages: truncatedMessages,
-          tools,
-          stream: true,
-        });
+        const anthropicStream = await anthropic.messages.create(
+          {
+            model: "claude-sonnet-4-6",
+            max_tokens: 8096,
+            system: systemPrompt,
+            messages: truncatedMessages,
+            tools,
+            stream: true,
+          },
+          { signal: abortController.signal }
+        );
 
         for await (const event of anthropicStream) {
           // Detect web search tool call starting
@@ -175,16 +184,42 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        // Belt-and-braces: ensure searching:false is emitted before done.
+        // If the model ended with a tool call and no trailing text block,
+        // the spinner would otherwise be stuck on the client.
+        if (searchingActive) {
+          controller.enqueue(
+            encoder.encode('\ndata: {"type":"searching","active":false}\n')
+          );
+          searchingActive = false;
+        }
+
         // Emit done event
         controller.enqueue(encoder.encode('\ndata: {"type":"done"}\n'));
       } catch (err) {
+        // Always clear the searching indicator on error, regardless of cause
+        if (searchingActive) {
+          controller.enqueue(
+            encoder.encode('\ndata: {"type":"searching","active":false}\n')
+          );
+          searchingActive = false;
+        }
+
         const anthropicErr = err as {
           status?: number;
           error?: { type?: string };
           message?: string;
+          name?: string;
         };
 
-        if (
+        // AbortError from our 90s timeout
+        if (anthropicErr.name === "AbortError" || abortController.signal.aborted) {
+          controller.enqueue(
+            encoder.encode(
+              '\ndata: {"type":"error","message":"Response timed out. Your conversation is saved — try sending your message again."}\n'
+            )
+          );
+        } else if (
           anthropicErr.status === 400 &&
           typeof anthropicErr.message === "string" &&
           anthropicErr.message.includes("context_window_exceeded")
@@ -221,6 +256,7 @@ export async function POST(req: NextRequest) {
           );
         }
       } finally {
+        clearTimeout(timeoutId);
         controller.close();
       }
     },
@@ -228,8 +264,15 @@ export async function POST(req: NextRequest) {
 
   return new Response(stream, {
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      // text/event-stream signals to CDNs/proxies (including Vercel edge) that
+      // this is a streaming response and should not be buffered or transformed.
+      // The body is not strict SSE — the client uses a manual stream reader,
+      // not EventSource — but the Content-Type prevents intermediaries from
+      // breaking the stream.
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+      Connection: "keep-alive",
     },
   });
 }

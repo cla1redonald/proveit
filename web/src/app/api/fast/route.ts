@@ -63,14 +63,21 @@ export async function POST(req: NextRequest) {
 
   const stream = new ReadableStream({
     async start(controller) {
+      // 90s application-level timeout (see /api/chat for rationale).
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => abortController.abort(), 90_000);
+
       try {
-        const anthropicStream = await anthropic.messages.create({
-          model: "claude-sonnet-4-6",
-          max_tokens: 8096,
-          system: buildFastCheckPrompt(),
-          messages: [{ role: "user", content: idea }],
-          stream: true,
-        });
+        const anthropicStream = await anthropic.messages.create(
+          {
+            model: "claude-sonnet-4-6",
+            max_tokens: 8096,
+            system: buildFastCheckPrompt(),
+            messages: [{ role: "user", content: idea }],
+            stream: true,
+          },
+          { signal: abortController.signal }
+        );
 
         for await (const event of anthropicStream) {
           if (
@@ -84,9 +91,19 @@ export async function POST(req: NextRequest) {
         // Emit done event for consistency with /api/chat streaming protocol
         controller.enqueue(encoder.encode('\ndata: {"type":"done"}\n'));
       } catch (err) {
-        const anthropicErr = err as { status?: number; error?: { type?: string } };
+        const anthropicErr = err as {
+          status?: number;
+          error?: { type?: string };
+          name?: string;
+        };
 
-        if (anthropicErr.status === 401) {
+        if (anthropicErr.name === "AbortError" || abortController.signal.aborted) {
+          controller.enqueue(
+            encoder.encode(
+              '\ndata: {"type":"error","message":"Response timed out. Please try again."}\n'
+            )
+          );
+        } else if (anthropicErr.status === 401) {
           controller.enqueue(
             encoder.encode(
               '\ndata: {"type":"error","message":"Service configuration error. Contact support."}\n'
@@ -113,6 +130,7 @@ export async function POST(req: NextRequest) {
           );
         }
       } finally {
+        clearTimeout(timeoutId);
         controller.close();
       }
     },
@@ -120,8 +138,10 @@ export async function POST(req: NextRequest) {
 
   return new Response(stream, {
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+      Connection: "keep-alive",
     },
   });
 }

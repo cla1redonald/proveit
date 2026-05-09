@@ -12,14 +12,18 @@ All versions are the current stable releases as of 2026-02-22. Pin these in `pac
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `next` | `15.3.0` | App Router, Route Handlers, server components |
+| `next` | `15.3.9` | App Router, Route Handlers, server components |
 | `react` | `19.0.0` | UI rendering |
 | `react-dom` | `19.0.0` | DOM rendering |
 | `typescript` | `5.9.3` | Type safety across all layers |
-| `@anthropic-ai/sdk` | `0.39.0` | Anthropic API client — server-side only |
+| `@anthropic-ai/sdk` | `^0.95.1` | Anthropic API client — server-side only |
 | `zod` | `3.25.23` | Input validation in Route Handlers |
 | `server-only` | `0.0.1` | Build-time guard preventing server modules from being imported by Client Components |
 | `nanoid` | `5.1.5` | Collision-resistant ID generation for session and message IDs (client-safe, tiny) |
+| `@upstash/ratelimit` | `^2.0.8` | Distributed sliding-window rate limiter (required in production) |
+| `@upstash/redis` | `^1.36.2` | Redis client for the rate limiter |
+| `react-markdown` | `^10.1.0` | Markdown rendering for assistant responses (added post-MVP — see Excluded Packages note) |
+| `remark-gfm` | `^4.0.1` | GitHub-flavored markdown (tables, strikethrough) for `react-markdown` |
 
 ---
 
@@ -78,7 +82,7 @@ shadcn/ui components are copied directly into `/web/src/components/ui/` via the 
 | `prisma` / `drizzle-orm` | No database. |
 | `redis` / `ioredis` | No server-side session management. Stateless Route Handlers. |
 | `openai` | Anthropic SDK only. Never mix providers in a single product without explicit architectural justification. |
-| `marked` / `react-markdown` | The streaming text output is plain text with minimal markdown formatting. Using `@tailwindcss/typography` with `prose` classes handles the display. A full markdown parser adds weight without benefit for this use case. If richer markdown rendering is needed in a future version, evaluate `react-markdown` at that point. |
+| `marked` | Not used — `react-markdown` handles markdown parsing (the original MVP exclusion of `react-markdown` was reversed once the UI required richer rendering of assistant output). |
 | `socket.io` / `pusher` | Streaming is handled via fetch + ReadableStream, which works in all modern browsers and does not require WebSocket infrastructure. |
 | `@sentry/nextjs` | Not included in MVP. Add in the first production hardening pass if error tracking is needed. |
 | `react-query` / `@tanstack/react-query` | Server state management is not needed — all data fetching is ad-hoc streaming fetch calls. React state + localStorage is sufficient. |

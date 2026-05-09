@@ -764,9 +764,11 @@ User-supplied content (the idea, chat messages) appears only in the `messages` a
 
 IP-based rate limiting is implemented in `src/lib/rate-limit.ts` with two backends:
 
-**Upstash Redis (distributed, recommended for production):** When `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set, uses `@upstash/ratelimit` with a sliding window algorithm. Survives cold starts and works across multiple Vercel instances.
+**Upstash Redis (distributed, REQUIRED for production):** When `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are set, uses `@upstash/ratelimit` with a sliding window algorithm. Survives cold starts and works across multiple Vercel instances.
 
-**In-memory fallback:** When Upstash env vars are absent, falls back to an in-process sliding window. Resets on cold start; suitable for local development or single-instance deployments.
+**In-memory fallback (LOCAL DEV ONLY):** When Upstash env vars are absent, falls back to an in-process sliding window. Resets on cold start AND is per-instance — on Vercel's serverless runtime, parallel invocations land on different instances each with a fresh limiter, so in-memory rate limiting effectively fails open under any concurrent load. **Do not run public production traffic without Upstash configured** — a single client can exhaust the Anthropic credit budget by issuing parallel requests.
+
+**Trusted client IP detection (`getClientIp`):** Uses `x-real-ip` (Vercel-set, untrusted-input-resistant) first; falls back to the LAST entry of `x-forwarded-for` (the platform-appended IP) — never the first entry, which is supplied by the client and trivially spoofable.
 
 Limits:
 - `/api/chat`: 20 requests per IP per 60 seconds

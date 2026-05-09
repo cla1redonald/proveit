@@ -94,8 +94,9 @@ describe("POST /api/fast", () => {
     const res = await POST(req);
 
     expect(res.status).toBe(200);
-    expect(res.headers.get("Content-Type")).toContain("text/plain");
-    expect(res.headers.get("Cache-Control")).toBe("no-cache");
+    expect(res.headers.get("Content-Type")).toContain("text/event-stream");
+    expect(res.headers.get("Cache-Control")).toBe("no-cache, no-transform");
+    expect(res.headers.get("X-Accel-Buffering")).toBe("no");
   });
 
   it("streams text content from Anthropic response", async () => {
