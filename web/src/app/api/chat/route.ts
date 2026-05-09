@@ -119,11 +119,16 @@ export async function POST(req: NextRequest) {
         );
 
         for await (const event of anthropicStream) {
-          // Detect web search tool call starting
+          // Detect web search tool call starting.
+          // Anthropic SDK >= 0.50 emits server-side tools (web_search, web_fetch,
+          // code_execution, etc.) as `server_tool_use` blocks; client-callable
+          // tools still arrive as `tool_use`. Accept either to stay forward
+          // compatible.
           if (
             event.type === "content_block_start" &&
             "content_block" in event &&
-            event.content_block?.type === "tool_use" &&
+            (event.content_block?.type === "tool_use" ||
+              event.content_block?.type === "server_tool_use") &&
             (event.content_block as { type: string; name?: string }).name === "web_search"
           ) {
             controller.enqueue(
