@@ -1,73 +1,85 @@
 @import "tailwindcss";
+@import "./roami-tokens.css";
 @plugin "@tailwindcss/typography";
 
-/* ─── ProveIt Design System ─────────────────────────────────────────────────── */
+/* ─── ProveIt Design System (Roami Deep Tay palette) ──────────────────────────
+ * 2026-05-09: ProveIt's brand palette was retired in favour of the shared Roami
+ * design system tokens. The variable names (--bg-base, --text-primary, etc.)
+ * are preserved so component code is unchanged — only the values they resolve
+ * to have shifted. The biggest change is the accent: ProveIt's #e05a2b
+ * orange-red is now Roami's muted copper (#c4956a). See roami-tokens.css for
+ * the source palette.
+ */
 
 @layer base {
   :root {
-    /* ── shadcn/ui HSL channel values (space-separated, no commas) ── */
-    --background:    14 17 21;     /* #0e1115 */
-    --foreground:    240 244 248;  /* #f0f4f8 */
+    /* ── shadcn/ui HSL channel values (space-separated, no commas) ──
+       Updated to align with Roami palette. Currently unused at runtime
+       (no @theme block; components reference the custom bg and text
+       variables directly), but kept in sync so any future shadcn primitive
+       inherits the right palette. */
+    --background:    13 20 28;     /* #0d141c — Roami midnight */
+    --foreground:    240 238 232;  /* #f0eee8 — Roami mist */
 
-    --card:          22 27 34;     /* #161b22 */
-    --card-foreground: 240 244 248;
+    --card:          17 26 36;     /* #111a24 — Roami ink */
+    --card-foreground: 240 238 232;
 
-    --popover:       31 41 55;     /* #1f2937 */
-    --popover-foreground: 240 244 248;
+    --popover:       26 40 50;     /* #1a2832 — Roami tay */
+    --popover-foreground: 240 238 232;
 
-    --primary:       224 90 43;    /* #e05a2b — accent */
-    --primary-foreground: 240 244 248;
+    --primary:       196 149 106; /* #c4956a — Roami copper */
+    --primary-foreground: 17 26 36;
 
-    --secondary:     22 27 34;     /* --bg-surface */
-    --secondary-foreground: 139 148 158;
+    --secondary:     17 26 36;
+    --secondary-foreground: 106 138 138;
 
-    --muted:         22 27 34;
-    --muted-foreground: 72 79 88;  /* --text-muted */
+    --muted:         17 26 36;
+    --muted-foreground: 106 138 138;
 
-    --accent:        31 41 55;     /* --bg-elevated */
-    --accent-foreground: 240 244 248;
+    --accent:        26 40 50;
+    --accent-foreground: 240 238 232;
 
-    --destructive:   248 113 113;  /* --color-contradicted-fg */
-    --destructive-foreground: 240 244 248;
+    --destructive:   160 64 64;     /* #a04040 — Roami error */
+    --destructive-foreground: 240 238 232;
 
-    --border:        255 255 255 / 0.12;  /* --border-default */
-    --input:         255 255 255 / 0.12;
-    --ring:          224 90 43;           /* --border-focus */
+    --border:        224 217 207 / 0.12;  /* warm alpha (Roami stone) */
+    --input:         224 217 207 / 0.12;
+    --ring:          196 149 106;          /* Roami copper */
 
-    --radius: 0.375rem;  /* --radius-md */
+    --radius: 0.5rem;  /* Roami radius-md */
 
-    /* ── ProveIt Brand Colors ── */
+    /* ── ProveIt brand variables (now mapped to Roami tokens) ── */
 
-    /* Background scale */
-    --bg-base:     #0e1115;  /* Page background */
-    --bg-surface:  #161b22;  /* Cards, panels, chat bubbles (ProveIt side) */
-    --bg-elevated: #1f2937;  /* Modals, dropdowns, user chat bubbles */
+    /* Background scale — Roami dark palette */
+    --bg-base:     var(--roami-midnight);  /* #0d141c — page background */
+    --bg-surface:  var(--roami-ink);       /* #111a24 — cards, panels, ProveIt-side chat */
+    --bg-elevated: var(--roami-tay);       /* #1a2832 — modals, user chat */
 
-    /* Text scale */
-    --text-primary:   #f0f4f8;  /* Headings, primary body text */
-    --text-secondary: #8b949e;  /* Secondary labels, metadata, timestamps */
-    --text-muted:     #484f58;  /* Disabled states, placeholder text */
+    /* Text scale — Roami text-on-dark */
+    --text-primary:   var(--roami-mist);   /* #f0eee8 */
+    --text-secondary: var(--roami-sage);   /* #6a8a8a */
+    --text-muted:     #4a3f35;             /* Roami neutral-700, warmer than the cool grey it replaces */
 
-    /* Accent */
-    --color-accent:       #e05a2b;  /* Primary CTA buttons and verdict badges only */
-    --color-accent-hover: #c94e22;  /* Hover state for accent elements */
+    /* Accent — Roami copper (replaces ProveIt's orange-red) */
+    --color-accent:       var(--roami-copper);       /* #c4956a */
+    --color-accent-hover: var(--roami-copper-dark);  /* #a87d55 */
 
-    /* Semantic verdict colors */
-    --color-supported:    #2d6a4f;
-    --color-supported-fg: #52b788;
-    --color-weak:         #7c5800;
-    --color-weak-fg:      #e9a829;
-    --color-contradicted:     #6b1a1a;
-    --color-contradicted-fg:  #f87171;
+    /* Semantic verdict colours — Roami-harmonised */
+    --color-supported:    #2a4d36;             /* darker pine background */
+    --color-supported-fg: var(--roami-pine);   /* #5a7247 */
+    --color-weak:         #5a4416;             /* warm amber background */
+    --color-weak-fg:      #d4a857;             /* amber foreground (kept as semantic, not brand) */
+    --color-contradicted:     #4a2424;         /* muted red background */
+    --color-contradicted-fg:  var(--roami-error);  /* #a04040 */
 
-    /* Kill signal */
-    --color-kill-signal:    #3d1515;
-    --color-kill-signal-fg: #f87171;
+    /* Kill signal — uses contradicted */
+    --color-kill-signal:    #4a2424;
+    --color-kill-signal-fg: var(--roami-error);
 
-    /* Border */
-    --border-subtle:  rgba(255, 255, 255, 0.06);
-    --border-default: rgba(255, 255, 255, 0.12);
-    --border-focus:   #e05a2b;
+    /* Border — warm alpha against Roami dark backgrounds */
+    --border-subtle:  rgba(224, 217, 207, 0.06);  /* Roami stone with alpha */
+    --border-default: rgba(224, 217, 207, 0.14);
+    --border-focus:   var(--roami-copper);
 
     /* ── Typography ── */
     --font-mono: var(--font-jetbrains-mono), 'Fira Code', 'Cascadia Code', ui-monospace, 'Courier New', monospace;

@@ -1,0 +1,75 @@
+/* Roami Design System — Deep Tay
+ * Vendored from @roami/design-system v1.1.0 (private GitHub repo)
+ * Source: https://github.com/cla1redonald/roami-design-system/blob/main/tokens.css
+ *
+ * Update process: copy from the source repo whenever the design system bumps
+ * a major version. Do not edit these tokens here — edit at source.
+ */
+
+:root {
+  /* === COLOUR — Brand === */
+
+  /* Dark palette (heroes, dark sections, footers) */
+  --roami-ink: #111a24;          /* Primary dark — night sky */
+  --roami-tay: #1a2832;          /* Secondary dark — deep water */
+  --roami-midnight: #0d141c;     /* Darkest — footer */
+
+  /* Accent palette */
+  --roami-river: #2a5a5a;        /* Teal — secondary accent */
+  --roami-copper: #c4956a;       /* Copper — primary accent, CTAs, warmth */
+  --roami-copper-dark: #a87d55;  /* Copper hover state */
+  --roami-pine: #5a7247;         /* Pine green — nature, growth */
+
+  /* Light palette (body, content sections) */
+  --roami-cream: #faf6f1;        /* Primary background */
+  --roami-sand: #a89880;         /* Muted accent */
+  --roami-stone: #e0d9cf;        /* Borders, dividers */
+
+  /* Text colours */
+  --roami-heading: #2d2a26;      /* Headings on light bg */
+  --roami-umber: #6b5d4f;        /* Body text on light bg */
+  --roami-mist: #f0eee8;         /* Text on dark bg */
+  --roami-sage: #6a8a8a;         /* Muted text on dark bg */
+
+  /* === COLOUR — Semantic === */
+  --roami-success: #5a7247;      /* Uses pine green */
+  --roami-warning: #c4956a;      /* Uses copper */
+  --roami-error: #a04040;        /* Muted red — not aggressive */
+  --roami-info: #2a5a5a;         /* Uses river teal */
+
+  /* === COLOUR — Neutral Scale (warm undertone) === */
+  --roami-neutral-50: #faf6f1;
+  --roami-neutral-100: #f0eee8;
+  --roami-neutral-200: #e0d9cf;
+  --roami-neutral-300: #c4bdb2;
+  --roami-neutral-400: #a89880;
+  --roami-neutral-500: #8a7d6b;
+  --roami-neutral-600: #6b5d4f;
+  --roami-neutral-700: #4a3f35;
+  --roami-neutral-800: #2d2a26;
+  --roami-neutral-900: #111a24;
+
+  /* === TYPOGRAPHY === */
+  --roami-font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --roami-font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --roami-font-mono: 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+
+  /* === BORDERS === */
+  --roami-radius-sm: 4px;
+  --roami-radius-md: 8px;
+  --roami-radius-lg: 12px;
+  --roami-radius-xl: 16px;
+  --roami-radius-full: 9999px;
+
+  /* === SHADOWS === */
+  --roami-shadow-sm: 0 1px 2px rgba(17, 26, 36, 0.06);
+  --roami-shadow-md: 0 4px 8px rgba(17, 26, 36, 0.08);
+  --roami-shadow-lg: 0 12px 24px rgba(17, 26, 36, 0.12);
+  --roami-shadow-xl: 0 24px 48px rgba(17, 26, 36, 0.16);
+
+  /* === TRANSITIONS === */
+  --roami-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --roami-duration-fast: 150ms;
+  --roami-duration-normal: 300ms;
+  --roami-duration-slow: 500ms;
+}
