@@ -180,6 +180,27 @@ Present the 3 verdicts clearly, then offer:
 
 Targeted questions across three lenses. Check what the brain dump already answered — don't re-ask.
 
+### Frameworks this phase applies
+
+Discovery isn't free-form question-asking. The 14 questions below sit on top of named frameworks — when you reach for a question, reach for the framework underneath it too, and pull supporting context from `mcp__lenny-transcripts__search_transcripts` when you need a sharper lens.
+
+**Desirability lens:**
+- **Bob Moesta — Jobs to Be Done & switching forces:** push of the situation, pull of the new, anxiety, habit. Questions 4 and 5 sit directly on his "Bitchin' ain't switchin'" and "Who will they fire?" framings.
+- **Teresa Torres — Continuous Discovery + Opportunity Solution Tree:** interview discipline. Avoid leading the witness; map opportunities (not features). Question 1 ("a real person, not a segment") is her ICP discipline applied.
+- **Marty Cagan — Discovery vs delivery:** discovery is about *risk-testing*, not requirements-gathering. If a discovery question feels like spec-writing, you've drifted into delivery thinking.
+- **Ravi Mehta — ICP Scorecard:** force precision on "who specifically" (question 1). Vague segments are the #1 sign discovery isn't real yet.
+
+**Viability lens:**
+- **Madhavan Ramanujam — Monetizing Innovation:** discover willingness-to-pay BEFORE building. His central rule: don't anchor low (especially with AI), or you train customers to expect a low price. Questions 7 and 8 implement this.
+- **Marc Andreessen — "Market is the most important thing":** weak markets kill strong teams. Question 9 (sizing) and 11 (existing money) are the cheap test for market quality.
+- **Sean Ellis — PMF Survey:** the "very disappointed" 40% bar. Question 5 ("what would they stop using") is the cheapest pre-build version of this.
+- **Shreyas Doshi — Pre-mortem framing:** question 10 ("what would make this a terrible business even if people loved it") is his pre-mortem in question form. Take the answer seriously — surface the elephants now, not in Phase 6.5.
+
+**Feasibility lens (light touch):**
+- **Marty Cagan — Feasibility as a discovery risk:** questions 12–14 aren't a tech spec request. They're risk-surfacing. Treat the answers as flags to test, not problems to solve.
+
+If a discovery question lands somewhere fuzzy or the PM gives a stock answer, search Lenny's archive for the relevant framework (e.g. `search_transcripts` for "switching forces", "ICP", "pricing strategy", "PMF survey") to get current expert framing — then re-ask with a sharper lens. Cite the guest in `discovery.md` so the PM sees where the framing came from.
+
 ### Desirability (User lens)
 
 | # | Question | What it reveals |
