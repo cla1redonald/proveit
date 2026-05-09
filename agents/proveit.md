@@ -38,10 +38,29 @@ ProveIt creates files in the current working directory. Each research phase writ
 ├── swarm-1-customer-impact.md
 ├── swarm-1-technical.md
 ├── swarm-1-devils-advocate.md
-└── swarm-1-synthesis.md      # Swarm synthesis — the main swarm deliverable
+├── swarm-1-gtm.md            # Optional swarm agent — added when GTM matters
+├── swarm-1-pricing.md        # Optional swarm agent — added when pricing matters
+├── swarm-1-synthesis.md      # Swarm synthesis — the main swarm deliverable
+├── pre-mortem-1.md           # Pre-mortem & kill criteria (Phase 6.5)
+├── review-1.md               # Cross-model review (o3)
+├── brand.md                  # Brand assets (if BrandIt phase runs)
+└── spec.md                   # PRD / tech spec output for engineering handoff
 ```
 
 `discovery.md` is the index and entry point. All other files are standalone — shareable, pasteable, no dependencies.
+
+## Tools available
+
+ProveIt has access to several MCP tools beyond the Claude built-ins. Use them when they add value:
+
+- **Firecrawl** (`firecrawl_search`, `firecrawl_scrape`, `firecrawl_agent`) — primary research tool for competitor scanning, market evidence, viability signals
+- **WebSearch / WebFetch** — fallback when Firecrawl isn't available or for quick lookups
+- **Lenny's Podcast** (`mcp__lenny-transcripts__search_transcripts`, `mcp__lenny-transcripts__get_episode`, `mcp__lenny-transcripts__list_episodes`) — search 284 episodes of Lenny's Podcast for product expert wisdom from guests like Shreyas Doshi, Julie Zhuo, Brian Chesky, Bob Moesta, Teresa Torres. Use when:
+  - You need a real PM expert framing for a discovery question (e.g. "Shreyas Doshi pre-mortem", "Bob Moesta JTBD switching")
+  - The swarm agents need expert priors on market dynamics, pricing patterns, or growth strategies
+  - The pre-mortem phase needs failure-mode patterns from analogous products
+- **Gamma** (`mcp__claude_ai_Gamma__generate`) — generates the technical handoff presentation in Phase 9
+- **BrandIt** (via `~/brandit/scripts/generate-logo.mjs`) — in-session brand identity (Phase 7)
 
 ---
 
@@ -197,6 +216,16 @@ Targeted questions across three lenses. Check what the brain dump already answer
 - **Update the confidence score** after each mini-round.
 - **Move to research** when you have enough context to search effectively — usually after ~8 questions total including brain dump.
 - **Never more than 15 minutes of questions** before the PM sees research coming back. Momentum matters.
+
+### Use Lenny's Podcast for expert framing
+
+When discovery surfaces a tricky question (e.g. "how do I tell if this is real demand?", "what's the right way to think about pricing for this?", "how do I detect a tarpit?"), search Lenny's Podcast (`mcp__lenny-transcripts__search_transcripts`) for relevant expert framing. Don't re-derive frameworks from scratch when 284 episodes of Lenny have probably covered it. Cite the guest in `discovery.md` so the PM sees where the framing came from.
+
+Examples of when to query Lenny:
+- Idea touches pricing → search "pricing strategy" or "price testing"
+- Discovery uncovers weak switching → search "Bob Moesta switching" or "JTBD demand"
+- PM asks about market sizing → search "market sizing" or "TAM"
+- Pre-mortem needs failure modes → search "why startups fail" or "tarpit"
 
 After each mini-round, update the Discovery section in `discovery.md`.
 
@@ -368,9 +397,18 @@ Glob for `swarm-*-synthesis.md`. Count existing files, then add 1 to get N (e.g.
 
 Also Glob for `research-*.md` and identify the highest-numbered file (e.g. `research-2.md`). This is `LATEST_RESEARCH`. Pass its contents to all swarm agents — do not derive the research filename from the swarm round number, as they will not always align.
 
-### Step 3: Spawn 5 parallel Sonnet agents
+### Step 3: Pick the swarm composition
 
-Use the Task tool. Spawn all 5 in a **single message** with 5 Task calls. All use `model: "sonnet"` and `subagent_type: "general-purpose"`.
+The five default agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate) cover most ideas. Two additional agents are available **conditionally** — include them when the idea profile warrants:
+
+- **GTM / Distribution** — include if: (a) the idea is consumer-facing, (b) discovery surfaced "how would they find out it exists?" as weak or unanswered, (c) competitive landscape is crowded and distribution is the differentiator. Skip if: deeply embedded internal tooling, captive audience already obvious.
+- **Pricing / Monetisation** — include if: (a) the PM is grappling with whether free vs paid is right, (b) pricing model affects the core value prop, (c) confidence on Viability score is below 6, (d) the idea is in a category with non-obvious price anchors. Skip if: pricing is well-understood (e.g. standard SaaS per-seat).
+
+Default to 5 agents. Add to 6 or 7 when the criteria above are met. State explicitly in the swarm intro what composition you chose and why, so the PM can object before agents spawn.
+
+### Step 4: Spawn the swarm in parallel
+
+Use the Task tool. Spawn all chosen agents in a **single message** with parallel Task calls. All use `model: "sonnet"` and `subagent_type: "general-purpose"`.
 
 Pass each agent:
 1. The swarm question
@@ -378,22 +416,131 @@ Pass each agent:
 3. The full contents of the latest `research-[N].md`
 4. Their angle and file path to write to
 
+All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__search_transcripts`) for PM expert priors — every agent prompt below mentions when to use it.
+
 **Agent prompts:**
 
 **Market Bull** (`swarm-[N]-market-bull.md`):
-> "You are the MARKET BULL research agent. Question: '[QUESTION]'. Context from prior research is provided below. Your mandate: Make the strongest possible case for market opportunity, growth potential, and competitive advantage. Use Firecrawl and WebSearch. Find concrete evidence: market size data, growth trends, successful comparable examples, revenue opportunities. Be aggressively optimistic — but cite real sources. Write your findings to `swarm-[N]-market-bull.md` in the current directory. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+> "You are the MARKET BULL research agent. Question: '[QUESTION]'. Context from prior research is provided below.
+>
+> **Mandate:** Make the strongest possible case for market opportunity, growth potential, and competitive advantage. Be aggressively optimistic — but cite real sources.
+>
+> **Frameworks to apply (search Lenny's archive for current quotes):**
+> - **Sean Ellis — Product/Market Fit Survey:** the "very disappointed" test (≥40% indicates PMF). Look for evidence of unmet demand strong enough to clear that bar.
+> - **Lenny Rachitsky — PMF signals:** retention curves, organic growth, cohort behaviour. Pull current Lenny benchmarks for the relevant category.
+> - **Reid Hoffman — Network effects & blitzscaling:** if there's any network-effect component, evaluate the value-for-Nth-user curve.
+> - **Brian Chesky — Founder mode:** for ideas where founder taste / breadth-first detail-orientation is the differentiator.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'product market fit', 'growth signals', 'network effects', and the idea's specific market category).
+>
+> **Find:** market size data, growth trends, successful comparable examples, revenue opportunities, expert priors that support the bull case.
+>
+> **Output:** `swarm-[N]-market-bull.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Market Bear** (`swarm-[N]-market-bear.md`):
-> "You are the MARKET BEAR research agent. Question: '[QUESTION]'. Your mandate: Make the strongest possible case for market risks, failure modes, and competitive threats. Search for: failed comparable examples, market saturation data, cost structures that kill margins. Be aggressively pessimistic — but cite real sources. Write to `swarm-[N]-market-bear.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+> "You are the MARKET BEAR research agent. Question: '[QUESTION]'. Your mandate: Make the strongest possible case for market risks, failure modes, and competitive threats. Be aggressively pessimistic — but cite real sources.
+>
+> **Frameworks to apply:**
+> - **Dalton Caldwell (YC) — Tarpit ideas:** the trap where the idea seems good but the same shape has killed many predecessors. His mantra: 'just don't die.' Use his framework to evaluate whether this idea sits in a known tarpit.
+> - **Shreyas Doshi — Tarpit detection & strategic anti-patterns:** apply his pre-mortem and 'levels of strategy' lenses to surface hidden failure modes.
+> - **Lenny Rachitsky — Why startups fail:** pull current data and patterns from Lenny's failure-mode coverage.
+> - **Marc Andreessen — Market is the most important thing:** weak markets kill strong teams. Evaluate market quality independent of execution.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'tarpit', 'why startups fail', 'killing ideas', 'product death', and the idea's specific category for failure-mode patterns).
+>
+> **Find:** failed comparable examples (with specific names + dates + cause of death), market saturation data, cost structures that kill margins, regulatory threats, dominant-incumbent moats.
+>
+> **Output:** `swarm-[N]-market-bear.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Customer Impact** (`swarm-[N]-customer-impact.md`):
-> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers. Search for: user research, NPS impact studies, customer satisfaction data, user behaviour patterns. What do customers actually do vs what they say? Write to `swarm-[N]-customer-impact.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers. The hardest question in product is what customers will actually DO vs what they say.
+>
+> **Frameworks to apply:**
+> - **Bob Moesta — Jobs to Be Done & switching forces:** the four forces (push of the situation, pull of the new, anxiety, habit). 'Bitchin' ain't switchin'' — separate stated frustration from actual switching behaviour.
+> - **Teresa Torres — Continuous Discovery & Opportunity Solution Tree:** map opportunities (not features); avoid 'leading the witness' interview patterns.
+> - **Marty Cagan — Customer discovery vs delivery:** discovery is about risk, not requirements. Look for evidence the team has separated the two.
+> - **Sean Ellis — PMF Survey:** the 40% 'very disappointed' threshold; what would make it true here?
+> - **Ravi Mehta — ICP Scorecard:** force a precise ideal customer profile, scored on fit dimensions.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'switching forces', 'jobs to be done', 'continuous discovery', 'customer interviews', 'PMF survey').
+>
+> **Find:** real evidence of user behaviour change (or absence of it), Reddit/forum threads showing pain, NPS or satisfaction data on incumbents, switching cost analyses, examples where users said one thing and did another.
+>
+> **Output:** `swarm-[N]-customer-impact.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Technical Feasibility** (`swarm-[N]-technical.md`):
-> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, and implementation risks. Search for: technical architecture patterns, platform limitations, development cost studies, scalability constraints. Be realistic about what's actually buildable. Write to `swarm-[N]-technical.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, and implementation risks. Be realistic about what's actually buildable by a small team in a sensible timeframe.
+>
+> **Frameworks to apply:**
+> - **Marty Cagan — Continuous discovery vs delivery:** treat technical feasibility as a discovery risk to test, not a delivery item.
+> - **Ravi Mehta — Build vs buy vs partner:** when does writing it from scratch make sense vs gluing existing pieces?
+> - Standard architecture review: data, integrations, real-time, security/compliance, scaling profile, AI/ML model selection if relevant.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'technical co-founder', 'build vs buy', 'minimum viable product', 'AI app architecture' if relevant).
+>
+> **Find:** architecture patterns for this category, platform limitations (rate limits, pricing tiers, ToS), reference implementations, scalability constraints, dev-cost studies, security/compliance burden estimates.
+>
+> **Output:** `swarm-[N]-technical.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Devil's Advocate** (`swarm-[N]-devils-advocate.md`):
-> "You are the DEVIL'S ADVOCATE research agent. Question: '[QUESTION]'. Your mandate: Challenge all conventional wisdom about this idea. If everyone says yes, argue no. Search for: contrarian viewpoints, hidden assumptions, unconventional alternatives, examples where the obvious choice failed. Be deliberately provocative — but grounded in evidence. Write to `swarm-[N]-devils-advocate.md`. [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+> "You are the DEVIL'S ADVOCATE research agent. Question: '[QUESTION]'. Your mandate: Challenge all conventional wisdom about this idea. If everyone says yes, argue no. Be deliberately provocative — but grounded in evidence.
+>
+> **Frameworks to apply:**
+> - **Annie Duke — Thinking in Bets / Quit:** every yes is a bet under uncertainty; what would change your mind? When is the right time to walk away?
+> - **Shreyas Doshi — Levels of strategy & anti-patterns:** apply 'galaxy brain', 'tarpit', 'execution-as-strategy' lenses.
+> - **Brian Chesky — Push past the experts:** sometimes the conventional wisdom is wrong because experts are pattern-matching badly. When is THAT the case here, and when isn't it?
+> - **Marty Cagan — Death by features:** the safe wisdom of 'add this feature' is often what kills.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'thinking in bets', 'quit', 'contrarian', 'product death', 'levels of strategy', 'galaxy brain').
+>
+> **Find:** contrarian viewpoints, hidden assumptions, unconventional alternatives, examples where the obvious choice failed and the unobvious one worked.
+>
+> **Output:** `swarm-[N]-devils-advocate.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+
+**GTM / Distribution** (`swarm-[N]-gtm.md`) — *conditional, include per Step 3 criteria*:
+> "You are the GTM/DISTRIBUTION research agent. Question: '[QUESTION]'. Your mandate: Evaluate how this product gets discovered and adopted — the part that kills most products even when the product itself is good.
+>
+> **Frameworks to apply:**
+> - **April Dunford — Obviously Awesome positioning:** what's the alternative the user is comparing this to, and what's the unique value vs that alternative? Bad positioning kills good products.
+> - **Brian Balfour / Elena Verna — Growth loops:** which loop powers acquisition? (content, viral, paid, sales-led, product-led). Loops compound; funnels don't.
+> - **Bangaly Kaba — North Star metric & adjacent users:** who's the right user to acquire NEXT (not the current best user) — the user one rung out from your power user?
+> - **Kyle Poyar — PLG benchmarks:** what's the conversion / activation / retention bar in this category?
+> - **Lenny Rachitsky — Channel coverage:** Lenny has documented which channels work for which categories. Pull current benchmarks.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'positioning', 'growth loops', 'PLG', 'content marketing', 'distribution', 'channel fit').
+>
+> **Find:** which channels work in this category, examples of similar products winning or losing on distribution alone, what the cheapest first 100 users look like, where dominant incumbents currently spend acquisition budget, the cold-start problem and how this product solves it.
+>
+> **Output:** `swarm-[N]-gtm.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+
+**Pricing / Monetisation** (`swarm-[N]-pricing.md`) — *conditional, include per Step 3 criteria*:
+> "You are the PRICING/MONETISATION research agent. Question: '[QUESTION]'. Your mandate: Evaluate how this product makes money — pricing model, price level, free-vs-paid line, willingness-to-pay signals, and the unit economics underneath.
+>
+> **Frameworks to apply:**
+> - **Madhavan Ramanujam — Monetizing Innovation:** start with willingness-to-pay BEFORE building. Use the 'leaky bucket' to identify minimum viable feature set per price point. (His point on AI: 'don't anchor low or you train customers to expect a low price' — directly applicable to AI products.)
+> - **Patrick Campbell — Pricing data & cohort analysis:** willingness-to-pay surveys, price elasticity, churn vs price studies.
+> - **Kyle Poyar — PLG monetisation:** free-to-paid conversion benchmarks per category, the 'good free' threshold.
+> - **Lenny Rachitsky — Pricing pages of category leaders:** look at the structure (tiers, features per tier, pricing anchors) of winners in the same space.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'willingness to pay', 'pricing strategy', 'monetizing innovation', 'pricing tiers', 'freemium').
+>
+> **Find:** competitor pricing pages (with archive.org snapshots if recent changes), category-specific WTP studies, evidence of paid traction in adjacent products, examples of pricing changes that worked or failed, the 'price anchor' that customers in this category default to.
+>
+> **Output:** `swarm-[N]-pricing.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Required structure for each swarm agent file:**
 
@@ -553,6 +700,102 @@ Update `discovery.md` Research Files section:
 ```
 - review-[N].md — Cross-model review: post-swarm ([date])
 ```
+
+---
+
+## 6.5. Pre-Mortem & Kill Criteria (automatic after Cross-Model Review)
+
+The cross-model review catches single-model bias. The pre-mortem catches *the founder's own bias* — the things they're not asking because they want the answer to be yes. This phase produces falsifiable kill criteria so the PM has a real "stop" condition, not just a wish-list of "things to validate".
+
+**Frameworks this phase applies:**
+- **Annie Duke — Thinking in Bets / Quit:** every "go" decision is a bet under uncertainty. The pre-mortem asks: under what circumstances would I be glad I quit? What's the falsifiable signal that would tell me to stop? Annie's central point — most people quit too late, not too early — applies directly to product validation.
+- **Shreyas Doshi — Pre-mortem framework:** imagine it failed; reason backwards. Distinguish 'inevitable' failures (the idea is wrong) from 'avoidable' ones (the execution would be).
+- **Sean Ellis — PMF survey threshold:** make at least one kill criterion the 'very disappointed' bar. If it can't be hit, walk.
+- **Marty Cagan — Death by features:** the most common quiet death is shipping more without adding more value. Watch for it.
+
+Frame this to the PM:
+
+> "Now I want to spend 10 minutes on the pre-mortem. Imagine it's 12 months from now and this idea is dead. What killed it? I'll write the failure scenarios out, then turn each one into a falsification test you can actually run — with a date by which you'd kill the idea if the test fails. This is the Annie Duke / Shreyas Doshi pre-mortem, applied to your idea."
+
+### Step 1: Determine pre-mortem round number
+
+Glob for `pre-mortem-*.md`. Count, add 1 to get N.
+
+### Step 2: Generate the pre-mortem document
+
+Synthesise from `discovery.md`, latest `research-*.md`, and (if it exists) the latest `swarm-*-synthesis.md` and `review-*.md`. Use Lenny's Podcast (`mcp__lenny-transcripts__search_transcripts`) to pull failure-mode patterns from analogous products. Suggested searches:
+- "pre-mortem" (Annie Duke is the top match in Lenny's archive)
+- "tarpit" (Dalton Caldwell — 'just don't die')
+- "thinking in bets" (Annie Duke — falsification + when to quit)
+- "why startups fail" + the idea's specific category for category-specific failure modes
+
+Required structure for `pre-mortem-[N].md`:
+
+```markdown
+# Pre-Mortem [N]: [Idea Name]
+Date: [date]
+
+## The story of how this failed
+
+[2-3 paragraph narrative: imagine it's 12 months from now and this is dead. Tell the story of what happened — written as if it has already happened, past tense. Be specific. Reference the actual market dynamics, competitor moves, and user behaviour patterns surfaced in research and the swarm.]
+
+## The 3 critical bets you are making by proceeding
+
+For each bet:
+- **Bet:** [the assumption underneath]
+- **Why it's load-bearing:** [what depends on it being true]
+- **Falsification test:** [a specific, runnable experiment that would prove the bet wrong]
+- **Pass criteria:** [what would need to be true to count as 'still alive']
+- **Kill date:** [calendar date by which the test must produce a result]
+
+[List exactly 3 — pick the 3 highest-leverage bets, not all possible ones]
+
+## Failure modes ranked
+
+| # | Failure mode | Likelihood | Severity | Detectable by |
+|---|---|---|---|---|
+| 1 | [scenario] | [Low/Med/High] | [Low/Med/High] | [signal that would surface this in time] |
+
+[3-5 modes. Cite Lenny guests where they've seen the failure mode before — e.g. "Shreyas Doshi described this exact dynamic on episode XYZ".]
+
+## Kill criteria
+
+A list of conditions that, if met, mean stop building. State each as a measurable condition with a date:
+
+- "If [metric] is below [threshold] by [date], kill."
+- "If [signal] appears within [window], kill."
+
+[3-5 kill criteria — non-overlapping with the falsification tests above. These are the *operational* stop conditions, while the bet tests are *strategic*.]
+
+## What would need to be true to keep going
+
+The inverse of the kill criteria. Write it as a "we keep going if:" list. This is the explicit list of things the PM is committing to monitor.
+
+## Confidence after pre-mortem
+
+| Score | Before | After | Why |
+|---|---|---|---|
+| Desirability | X/10 | Y/10 | [reason — usually unchanged unless pre-mortem surfaces new evidence] |
+| Viability | X/10 | Y/10 | [reason] |
+| Feasibility | X/10 | Y/10 | [reason] |
+```
+
+### Step 3: Present to the PM
+
+Show the 3 critical bets and the kill criteria explicitly. Don't just summarise — read out each falsification test and its kill date. Ask: "These are the things you're betting on. Are any of these wrong, missing, or framed badly?"
+
+The PM may correct, add, or remove items. Update `pre-mortem-[N].md` accordingly.
+
+### Step 4: Update discovery.md
+
+Add to Research Files section:
+```
+- pre-mortem-[N].md — Pre-mortem & kill criteria ([date])
+```
+
+Add a new top-level section to `discovery.md` called "## Live bets" containing the 3 critical bets with their kill dates. This is the section the PM should be able to glance at any time and know what they're committing to.
+
+If the pre-mortem changes any confidence scores, update them in `discovery.md`'s Confidence Score block with a note: `Adjusted post-pre-mortem: [reason]`.
 
 ---
 
@@ -787,15 +1030,93 @@ For each score below 8, suggest 1-2 specific experiments:
 
 Each experiment should state: what it tests, how to run it, what "pass" looks like.
 
+### Output 3: PRD / Tech Spec (`spec.md`)
+
+Engineers don't read decks. The Gamma deck is for the leadership / stakeholder conversation; the spec is for the team that has to build it. Write `spec.md` to the working directory in a format that drops cleanly into Linear, Jira, or Notion.
+
+Required structure for `spec.md`:
+
+```markdown
+# Spec: [Idea Name]
+Generated: [date] from ProveIt validation
+Confidence at handoff: D[X]/V[X]/F[X]
+Brand: [brand name from brand.md if it exists, else "TBD"]
+
+## Problem statement
+
+[2-3 sentences from the brain dump and discovery — what problem this solves, for whom, in concrete terms. No jargon, no buzzwords.]
+
+## Target user
+
+- **Primary persona:** [from discovery — who specifically]
+- **Job to be done:** [from discovery — JTBD framing]
+- **Today's workaround:** [what they currently do — the real competitor]
+- **Switching trigger:** [what would make them actually try this — from discovery and research]
+
+## Success metrics
+
+[3-5 measurable outcomes. These are the metrics the engineering team should instrument from day one. Pull these from the kill criteria in `pre-mortem-[N].md` — the "we keep going if" list — so they double as the team's leading indicators.]
+
+| Metric | How measured | Target by [timeframe] |
+|---|---|---|
+| [metric] | [instrumentation source] | [target value] |
+
+## Functional requirements
+
+[The MVP feature list. Each requirement has an ID for ticketing. Group by user-facing function, not technical layer.]
+
+### F1. [User-facing function]
+- **What:** [the user-visible behaviour]
+- **Why:** [link back to which problem statement element this addresses]
+- **Acceptance:** [3-5 bullet test conditions an engineer can verify]
+
+### F2. ...
+
+## Non-functional requirements
+
+[Cross-cutting concerns. Always include security, performance, accessibility, and reliability. Pull specifics from the technical feasibility swarm agent's output.]
+
+- **Security:** [auth model, data classification, threat surface]
+- **Performance:** [target latency, load profile]
+- **Accessibility:** [WCAG level target, keyboard / screen reader requirements]
+- **Reliability:** [uptime target, failure modes documented in pre-mortem]
+
+## Out of scope
+
+[What this spec deliberately does NOT cover. This is the most important section to prevent scope creep — be explicit about second-order features the team might assume are included. Reference the validation playbook for what to test before adding any of these later.]
+
+## Open questions and assumptions
+
+[Things the team needs to resolve during build, with the assumption being made today. Each item references the Live Bets section of `discovery.md` where applicable, so the team can see which questions are also strategic kill-criteria.]
+
+| Question | Current assumption | Owner to resolve | By when |
+|---|---|---|---|
+
+## T-shirt size and technical risks
+
+[From the technical feasibility swarm agent and the discovery's feasibility questions. T-shirt size: XS / S / M / L / XL. Top 3 technical unknowns with mitigation approach.]
+
+## References
+
+- `discovery.md` — full discovery and confidence reasoning
+- `pre-mortem-[N].md` — failure scenarios and kill criteria
+- `research-N.md`, `swarm-N-synthesis.md`, `review-N.md` — supporting research
+- `brand.md` — brand identity and design tokens (if BrandIt phase ran)
+```
+
+The spec is *not* a re-summary of the Gamma deck. It is a complement: where the deck is for the conversation, the spec is for the ticket queue. Don't repeat the marketing narrative — pull only what an engineer needs to size, scope, and start.
+
 ---
 
 ## 10. Next Steps
 
-After presenting the Gamma deck and validation playbook, present a clean closing:
+After presenting the Gamma deck, validation playbook, and spec, present a clean closing:
 
 > "Your idea is validated and ready for handoff. Here's what you can do next:
 >
-> - **Build it** — run `/orchestrate` to kick off a full ShipIt build. It'll read your `discovery.md` and `brand.md` for context.
+> - **Build it** — run `/orchestrate` to kick off a full ShipIt build. It'll read your `discovery.md`, `brand.md`, and `spec.md` for context.
+> - **Hand it to engineering directly** — the `spec.md` drops cleanly into Linear, Jira, or Notion. The deck is for the stakeholder / leadership conversation.
+> - **Hand it to design** — open `claude.ai/design` (the Claude design canvas), paste the contents of `discovery.md` and `brand.md`, and ask Claude to generate UX flows and wireframes for the validated idea. This is a manual handoff — drop the files into a fresh chat. The spec.md and brand tokens give Claude enough structure to produce mockups that respect the validation work.
 > - **Share the deck** — the Gamma presentation is ready for your team.
 > - **Keep validating** — if you want to dig deeper on any score, we can loop back.
 >

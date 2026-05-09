@@ -189,15 +189,30 @@ This repo commits **zero Bash permission allows** in `.claude/settings.json`. An
 
 ## Frameworks Used
 
-| Framework | Creator | Used For |
-|-----------|---------|----------|
-| Jobs-to-Be-Done | Bob Moesta | Understanding what users hire/fire |
-| "Bitchin' ain't switchin'" | Bob Moesta | Separating complaints from switching behaviour |
-| Opportunity Solution Tree | Teresa Torres | Separating opportunities from solutions |
-| Pre-mortem | Shreyas Doshi | Surfacing risks and elephants early |
-| Tarpit Detection | Dalton Caldwell (YC) | Identifying ideas that seem good but fail |
-| Value Proposition Canvas | Strategyzer | Mapping jobs, pains, gains |
-| PMF Test | Sean Ellis | "Very disappointed" as PMF indicator |
+ProveIt applies named frameworks from product expert thinkers — many sourced from [Lenny's Podcast](https://www.lennysnewsletter.com/podcast) via the [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) integration, which gives the agents and the research swarm a callable tool for current PM expert context.
+
+| Framework | Creator | Used in ProveIt |
+|-----------|---------|-----------------|
+| Jobs-to-Be-Done | Bob Moesta | Customer Impact swarm — understanding what users hire/fire |
+| "Bitchin' ain't switchin'" | Bob Moesta | Discovery + Customer Impact — separating complaints from real switching behaviour |
+| Continuous Discovery + Opportunity Solution Tree | Teresa Torres | Discovery + Customer Impact — interview discipline, mapping opportunities not features |
+| Customer Discovery vs Delivery | Marty Cagan | Tech Feasibility + Devil's Advocate — discovery is risk; delivery is requirements |
+| ICP Scorecard | Ravi Mehta | Customer Impact — forcing precise ideal-customer-profile scoring |
+| Pre-mortem | Shreyas Doshi | Phase 6.5 Pre-Mortem — surfacing risks and elephants early |
+| Thinking in Bets / Quit | Annie Duke | Phase 6.5 Pre-Mortem — falsification tests, kill criteria, when to walk away |
+| Levels of Strategy + Anti-patterns | Shreyas Doshi | Devil's Advocate — galaxy brain, tarpit, execution-as-strategy lenses |
+| Tarpit Detection ("just don't die") | Dalton Caldwell (YC) | Market Bear + Pre-Mortem — identifying ideas that seem good but fail repeatedly |
+| Founder Mode | Brian Chesky | Devil's Advocate — when expert wisdom is wrong because experts are pattern-matching badly |
+| Death by Features | Marty Cagan | Devil's Advocate — the safe wisdom of "ship more" is often what kills |
+| PMF Test ("very disappointed") | Sean Ellis | Discovery + Findings + Pre-Mortem — 40% bar as a kill criterion |
+| Network Effects + Blitzscaling | Reid Hoffman | Market Bull — value-for-Nth-user curve evaluation |
+| Obviously Awesome Positioning | April Dunford | GTM swarm — what's the alternative the user compares this to? |
+| Growth Loops vs Funnels | Brian Balfour / Elena Verna | GTM swarm — which loop powers acquisition; loops compound, funnels don't |
+| North Star + Adjacent Users | Bangaly Kaba | GTM swarm — who is the right user to acquire NEXT (one rung from your power user) |
+| PLG Benchmarks | Kyle Poyar | GTM + Pricing — category conversion / activation / retention bars |
+| Monetizing Innovation (incl. AI anchoring) | Madhavan Ramanujam | Pricing swarm — willingness-to-pay before building; don't anchor low |
+| Pricing data + cohort analysis | Patrick Campbell | Pricing swarm — WTP surveys, price elasticity, churn-vs-price studies |
+| Value Proposition Canvas | Strategyzer | Discovery — mapping jobs, pains, gains |
 
 ---
 
