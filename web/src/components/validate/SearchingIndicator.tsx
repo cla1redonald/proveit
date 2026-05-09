@@ -87,7 +87,7 @@ export default function SearchingIndicator({
 
         {elapsed >= 30 && elapsed < 120 && (
           <p
-            className="font-mono mt-[var(--space-1)]"
+            className="font-sans mt-[var(--space-1)]"
             style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
           >
             Still researching — this can take a minute or two.

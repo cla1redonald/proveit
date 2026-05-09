@@ -10,7 +10,7 @@ export default function UserMessage({ message }: UserMessageProps) {
   return (
     <div className="flex justify-end">
       <div
-        className="font-mono"
+        className="font-sans"
         style={{
           backgroundColor: "var(--bg-elevated)",
           border: "1px solid var(--border-default)",

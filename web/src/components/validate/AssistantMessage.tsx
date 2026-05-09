@@ -15,7 +15,7 @@ export default function AssistantMessage({
   return (
     <div className="flex justify-start">
       <div
-        className="font-mono prose prose-invert max-w-none"
+        className="font-sans prose prose-invert max-w-none"
         style={{
           backgroundColor: "var(--bg-surface)",
           border: "1px solid var(--border-subtle)",

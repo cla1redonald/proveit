@@ -45,7 +45,7 @@ export default function ScorePanel({
       >
         <p className="section-label mb-[var(--space-3)]">CONFIDENCE SCORES</p>
         <p
-          className="font-mono"
+          className="font-sans"
           style={{
             fontSize: "var(--text-sm)",
             color: "var(--text-muted)",
@@ -87,7 +87,7 @@ export default function ScorePanel({
             }}
           >
             <span
-              className="font-mono"
+              className="font-sans"
               style={{
                 fontSize: "var(--text-xs)",
                 letterSpacing: "0.08em",
@@ -98,7 +98,7 @@ export default function ScorePanel({
               {row.label}
             </span>
             <span
-              className="font-mono font-medium tabular-nums"
+              className="font-sans font-medium tabular-nums"
               style={{
                 fontSize: "var(--text-xl)",
                 color: scoreColor(row.value),
@@ -126,7 +126,7 @@ export default function ScorePanel({
                 role="alert"
               >
                 <p
-                  className="font-mono font-medium"
+                  className="font-sans font-medium"
                   style={{
                     fontSize: "var(--text-xs)",
                     color: "var(--color-kill-signal-fg)",
@@ -146,7 +146,7 @@ export default function ScorePanel({
         <div>
           <p className="section-label mb-[var(--space-2)]">KILL SIGNALS</p>
           <p
-            className="font-mono"
+            className="font-sans"
             style={{
               fontSize: "var(--text-sm)",
               color: "var(--text-muted)",

@@ -31,7 +31,7 @@ export default function PhaseIndicator({ phase }: PhaseIndicatorProps) {
         return (
           <div key={p.label} className="flex items-center gap-[var(--space-2)]">
             <span
-              className="font-mono"
+              className="font-sans"
               style={{
                 fontSize: "var(--text-xs)",
                 letterSpacing: "0.08em",
@@ -56,7 +56,7 @@ export default function PhaseIndicator({ phase }: PhaseIndicatorProps) {
             )}
             {i < PHASES.length - 1 && (
               <span
-                className="font-mono"
+                className="font-sans"
                 style={{
                   fontSize: "var(--text-xs)",
                   color: "var(--text-muted)",

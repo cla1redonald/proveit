@@ -73,7 +73,7 @@ export default function ChatInput({
           disabled={inputDisabled}
           placeholder={placeholder}
           rows={1}
-          className="w-full rounded-[var(--radius-md)] border font-mono resize-none overflow-hidden"
+          className="w-full rounded-[var(--radius-md)] border font-sans resize-none overflow-hidden"
           style={{
             backgroundColor: "var(--bg-surface)",
             borderColor: "var(--border-default)",

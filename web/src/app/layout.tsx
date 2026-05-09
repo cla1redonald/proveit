@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Playfair_Display, Fira_Code } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+// Roami Design System fonts.
+// Body uses the system-ui stack — no Google import needed.
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const firaCode = Fira_Code({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-fira-code",
   display: "swap",
 });
 
@@ -28,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${firaCode.variable}`}>
       <body className="min-h-screen">{children}</body>
     </html>
   );

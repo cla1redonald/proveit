@@ -18,9 +18,9 @@ export default function ValidatePage() {
         >
           <Link
             href="/"
-            className="font-mono font-medium"
+            className="font-display"
             style={{
-              fontSize: "var(--text-xl)",
+              fontSize: "var(--text-2xl)",
               color: "var(--text-primary)",
               textDecoration: "none",
             }}

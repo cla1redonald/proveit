@@ -73,7 +73,7 @@ export default function FastInput() {
           onKeyDown={handleKeyDown}
           maxLength={MAX_CHARS}
           placeholder="What's the idea? Describe it in plain terms — who it's for, what problem it solves, and what they do today instead."
-          className="w-full rounded-[var(--radius-md)] border font-mono resize-vertical"
+          className="w-full rounded-[var(--radius-md)] border font-sans resize-vertical"
           style={{
             minHeight: "120px",
             backgroundColor: "var(--bg-surface)",
@@ -103,7 +103,7 @@ export default function FastInput() {
         </div>
         <p
           id="fast-idea-count"
-          className="font-mono text-xs tabular-nums"
+          className="font-sans text-xs tabular-nums"
           style={{ color: charCountColor }}
           aria-live="polite"
         >

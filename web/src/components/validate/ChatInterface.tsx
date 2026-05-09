@@ -110,19 +110,19 @@ function IdeaInputForm({
           }}
         >
           <p
-            className="font-mono mb-[var(--space-2)]"
+            className="font-sans mb-[var(--space-2)]"
             style={{ fontSize: "var(--text-base)", color: "var(--text-primary)" }}
           >
             {truncate(sessionMeta.ideaSummary)}
           </p>
           <p
-            className="font-mono mb-[var(--space-1)]"
+            className="font-sans mb-[var(--space-1)]"
             style={{ fontSize: "var(--text-xs)", color: "var(--text-secondary)" }}
           >
             Status: {getPhaseLabel(sessionMeta.phase)}
           </p>
           <p
-            className="font-mono"
+            className="font-sans"
             style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
           >
             Last active: {getRelativeTime(sessionMeta.updatedAt)}
@@ -140,14 +140,14 @@ function IdeaInputForm({
           {!showConfirm ? (
             <button
               onClick={() => setShowConfirm(true)}
-              className="font-mono text-sm"
+              className="font-sans text-sm"
               style={{ color: "var(--text-secondary)" }}
             >
               Start fresh
             </button>
           ) : (
             <div className="flex items-center gap-[var(--space-3)] flex-wrap">
-              <span className="font-mono text-sm" style={{ color: "var(--text-secondary)" }}>
+              <span className="font-sans text-sm" style={{ color: "var(--text-secondary)" }}>
                 Start fresh? Your previous session will be cleared.
               </span>
               <button
@@ -197,7 +197,7 @@ function IdeaInputForm({
           }}
           maxLength={MAX_CHARS}
           placeholder="What's the idea? Tell me what it does, who it's for, and what problem it solves. Raw is fine — we'll dig in together."
-          className="w-full rounded-[var(--radius-md)] border font-mono resize-vertical"
+          className="w-full rounded-[var(--radius-md)] border font-sans resize-vertical"
           style={{
             minHeight: "160px",
             backgroundColor: "var(--bg-surface)",
@@ -227,7 +227,7 @@ function IdeaInputForm({
         </div>
         <p
           id="validate-idea-count"
-          className="font-mono text-xs tabular-nums"
+          className="font-sans text-xs tabular-nums"
           style={{ color: charCountColor }}
           aria-live="polite"
         >
@@ -244,7 +244,7 @@ function IdeaInputForm({
       </button>
 
       <p
-        className="font-mono"
+        className="font-sans"
         style={{
           fontSize: "var(--text-xs)",
           color: "var(--text-muted)",
@@ -551,7 +551,7 @@ export default function ChatInterface() {
           }}
         >
           <p
-            className="font-mono truncate mr-[var(--space-4)]"
+            className="font-sans truncate mr-[var(--space-4)]"
             style={{
               fontSize: "var(--text-xs)",
               color: "var(--text-secondary)",

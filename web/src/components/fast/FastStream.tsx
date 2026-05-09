@@ -159,7 +159,7 @@ export default function FastStream({ idea }: FastStreamProps) {
 
       {/* Idea summary */}
       <p
-        className="font-mono mb-[var(--space-6)]"
+        className="font-sans mb-[var(--space-6)]"
         style={{
           fontSize: "var(--text-sm)",
           color: "var(--text-secondary)",
@@ -195,7 +195,7 @@ export default function FastStream({ idea }: FastStreamProps) {
       {/* Streaming raw text — shown while parsing is in progress */}
       {!isComplete && streamText.length > 0 && parsedAssumptions.length === 0 && (
         <div
-          className="font-mono whitespace-pre-wrap"
+          className="font-sans whitespace-pre-wrap"
           style={{
             fontSize: "var(--text-base)",
             lineHeight: "var(--leading-relaxed)",
@@ -239,7 +239,7 @@ export default function FastStream({ idea }: FastStreamProps) {
         >
           <p className="section-label mb-[var(--space-3)]">QUICK VERDICT</p>
           <p
-            className="font-mono"
+            className="font-sans"
             style={{
               fontSize: "var(--text-base)",
               lineHeight: "var(--leading-relaxed)",
@@ -261,7 +261,7 @@ export default function FastStream({ idea }: FastStreamProps) {
           }}
         >
           <p
-            className="font-mono mb-[var(--space-3)]"
+            className="font-sans mb-[var(--space-3)]"
             style={{
               fontSize: "var(--text-sm)",
               color: "var(--text-secondary)",

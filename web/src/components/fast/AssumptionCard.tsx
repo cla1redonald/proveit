@@ -74,7 +74,7 @@ export default function AssumptionCard({
             backgroundColor: colors.bg,
             color: colors.fg,
             fontSize: "var(--text-xs)",
-            fontFamily: "var(--font-mono)",
+            fontFamily: "var(--font-sans)",
             fontWeight: 500,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
@@ -95,7 +95,7 @@ export default function AssumptionCard({
 
       {/* Assumption title */}
       <h2
-        className="font-mono font-medium mb-[var(--space-4)]"
+        className="font-sans font-medium mb-[var(--space-4)]"
         style={{
           fontSize: "var(--text-lg)",
           lineHeight: "var(--leading-snug)",
@@ -121,7 +121,7 @@ export default function AssumptionCard({
             aria-expanded={isExpanded}
           >
             <p
-              className="font-mono font-medium mb-[var(--space-2)]"
+              className="font-sans font-medium mb-[var(--space-2)]"
               style={{
                 fontSize: "var(--text-sm)",
                 color: "var(--text-secondary)",
@@ -142,7 +142,7 @@ export default function AssumptionCard({
                 <li key={i}>
                   {item.source && (
                     <p
-                      className="font-mono"
+                      className="font-sans"
                       style={{
                         fontSize: "var(--text-xs)",
                         color: "var(--text-secondary)",
@@ -153,7 +153,7 @@ export default function AssumptionCard({
                     </p>
                   )}
                   <p
-                    className="font-mono"
+                    className="font-sans"
                     style={{
                       fontSize: "var(--text-sm)",
                       lineHeight: "var(--leading-relaxed)",
@@ -172,7 +172,7 @@ export default function AssumptionCard({
       {/* No evidence yet — streaming placeholder */}
       {assumption.evidence.length === 0 && isStreaming && (
         <p
-          className="font-mono"
+          className="font-sans"
           style={{
             fontSize: "var(--text-sm)",
             color: "var(--text-muted)",

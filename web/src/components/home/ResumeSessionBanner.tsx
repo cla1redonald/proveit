@@ -63,7 +63,7 @@ export default function ResumeSessionBanner() {
         }}
       >
         <p
-          className="font-mono mb-[var(--space-2)]"
+          className="font-sans mb-[var(--space-2)]"
           style={{
             fontSize: "var(--text-base)",
             color: "var(--text-primary)",
@@ -72,7 +72,7 @@ export default function ResumeSessionBanner() {
           {truncateIdea(existingSession.ideaSummary)}
         </p>
         <p
-          className="font-mono mb-[var(--space-1)]"
+          className="font-sans mb-[var(--space-1)]"
           style={{
             fontSize: "var(--text-xs)",
             color: "var(--text-secondary)",
@@ -81,7 +81,7 @@ export default function ResumeSessionBanner() {
           Status: {getPhaseLabel(existingSession.phase)}
         </p>
         <p
-          className="font-mono"
+          className="font-sans"
           style={{
             fontSize: "var(--text-xs)",
             color: "var(--text-muted)",
@@ -102,7 +102,7 @@ export default function ResumeSessionBanner() {
         {!showConfirm ? (
           <button
             onClick={() => setShowConfirm(true)}
-            className="font-mono text-sm"
+            className="font-sans text-sm"
             style={{ color: "var(--text-secondary)" }}
           >
             Start fresh
@@ -110,7 +110,7 @@ export default function ResumeSessionBanner() {
         ) : (
           <div className="flex items-center gap-[var(--space-3)]">
             <span
-              className="font-mono text-sm"
+              className="font-sans text-sm"
               style={{ color: "var(--text-secondary)" }}
             >
               Start fresh? Your previous session will be cleared.

@@ -25,7 +25,7 @@ function HowItWorks() {
       {HOW_IT_WORKS_STEPS.map((step) => (
         <div key={step.num} className="flex gap-[var(--space-4)]">
           <span
-            className="font-mono font-medium shrink-0 mt-0.5"
+            className="font-sans font-medium shrink-0 mt-0.5"
             style={{
               fontSize: "var(--text-xs)",
               color: "var(--text-muted)",
@@ -36,7 +36,7 @@ function HowItWorks() {
           </span>
           <div>
             <p
-              className="font-mono font-medium mb-[var(--space-1)]"
+              className="font-sans font-medium mb-[var(--space-1)]"
               style={{
                 fontSize: "var(--text-sm)",
                 color: "var(--text-primary)",
@@ -45,7 +45,7 @@ function HowItWorks() {
               {step.title}
             </p>
             <p
-              className="font-mono"
+              className="font-sans"
               style={{
                 fontSize: "var(--text-sm)",
                 color: "var(--text-secondary)",
@@ -76,8 +76,8 @@ export default function HomePage() {
           style={{ maxWidth: "960px" }}
         >
           <span
-            className="font-mono font-medium"
-            style={{ fontSize: "var(--text-xl)", color: "var(--text-primary)" }}
+            className="font-display"
+            style={{ fontSize: "var(--text-2xl)", color: "var(--text-primary)" }}
           >
             ProveIt
           </span>
@@ -102,11 +102,12 @@ export default function HomePage() {
             </p>
 
             <h1
-              className="font-mono font-medium mb-[var(--space-4)]"
+              className="font-display mb-[var(--space-4)]"
               style={{
-                fontSize: "var(--text-3xl)",
+                fontSize: "var(--text-4xl)",
                 lineHeight: "var(--leading-tight)",
                 color: "var(--text-primary)",
+                letterSpacing: "-0.015em",
               }}
             >
               ProveIt first,<br />
@@ -114,7 +115,7 @@ export default function HomePage() {
             </h1>
 
             <p
-              className="font-mono mb-[var(--space-8)]"
+              className="font-sans mb-[var(--space-8)]"
               style={{
                 fontSize: "var(--text-base)",
                 lineHeight: "var(--leading-normal)",
@@ -146,7 +147,7 @@ export default function HomePage() {
             >
               <p className="section-label mb-[var(--space-3)]">FAST CHECK</p>
               <p
-                className="font-mono mb-[var(--space-1)]"
+                className="font-sans mb-[var(--space-1)]"
                 style={{
                   fontSize: "var(--text-base)",
                   color: "var(--text-secondary)",
@@ -155,7 +156,7 @@ export default function HomePage() {
                 3 assumptions. 15 minutes.
               </p>
               <p
-                className="font-mono mb-[var(--space-5)]"
+                className="font-sans mb-[var(--space-5)]"
                 style={{
                   fontSize: "var(--text-base)",
                   color: "var(--text-secondary)",
@@ -181,7 +182,7 @@ export default function HomePage() {
             >
               <p className="section-label mb-[var(--space-3)]">FULL VALIDATION</p>
               <p
-                className="font-mono mb-[var(--space-1)]"
+                className="font-sans mb-[var(--space-1)]"
                 style={{
                   fontSize: "var(--text-base)",
                   color: "var(--text-secondary)",
@@ -190,7 +191,7 @@ export default function HomePage() {
                 Desirability, viability, feasibility.
               </p>
               <p
-                className="font-mono mb-[var(--space-5)]"
+                className="font-sans mb-[var(--space-5)]"
                 style={{
                   fontSize: "var(--text-base)",
                   color: "var(--text-secondary)",
@@ -218,7 +219,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="pb-[var(--space-8)] text-center">
         <p
-          className="font-mono"
+          className="font-sans"
           style={{
             fontSize: "var(--text-xs)",
             color: "var(--text-muted)",
