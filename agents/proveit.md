@@ -1481,6 +1481,248 @@ Brand: [brand name from brand.md if it exists, else "TBD"]
 
 The spec is *not* a re-summary of the Gamma deck. It is a complement: where the deck is for the conversation, the spec is for the ticket queue. Don't repeat the marketing narrative — pull only what an engineer needs to size, scope, and start.
 
+### Output 4: Design Brief (`design-brief.md`)
+
+Engineers get `spec.md`. Stakeholders get the Gamma deck. Designers — and any other tool that wants to compose visual artefacts (Claude Design, Figma, a contract designer) — get `design-brief.md`. It is the synthesis a designer can read on its own without first absorbing all of `discovery.md`.
+
+The brief is **portable**, not Claude-Design-specific. It is the document a PM can also paste into a designer's Slack DM, attach to a Linear ticket, or drop into Figma's project description.
+
+Before generating, read:
+- `discovery.md` (target user, the one specific moment that matters, voice cues from research quotes)
+- `brand.md` (or `brand-extension.md` / inherited assets — the canonical brand pointer)
+- `spec.md` (functional requirements anchor the artefact list)
+- `pre-mortem-[N].md` (kill criteria become design success criteria; bets become "don't do this")
+
+Required structure for `design-brief.md`:
+
+```markdown
+# Design Brief: [Idea Name]
+Generated: [date] from ProveIt validation
+Confidence at handoff: D[X]/V[X]/F[X]
+Brand: [brand name from brand.md if it exists, else "TBD"]
+
+## What we're designing for
+
+[2-3 sentences. The validated idea, in the voice of the brief — not the validation. Pulled from Brain Dump and discovery, but written outward-facing for a designer who wasn't in the room. Avoid ProveIt jargon ("D/V/F scores", "kill criteria") — translate to plain language.]
+
+## The hero scenario
+
+[ONE specific user, ONE specific moment, what they want.
+
+Not a persona. A scene. Example: "It's Monday morning. Maya, an EM at a 40-engineer infra team, opens her laptop. She has 18 minutes before her first 1:1. She wants to know what her team shipped over the weekend, who's stuck, and what she should ask about today — without scrolling through 8 Slack channels."
+
+If the discovery wasn't specific enough about a moment, ask the PM one focused question to add a moment now: "What's the specific 30-second window we're trying to serve? Who, where, on what device, what just happened, what do they want?" Then write the scene.]
+
+## Three contexts that matter
+
+[The 2-4 user states or moments the design has to handle. Not a feature list — moments. Each one names: the user state, the system state, what the user is trying to do.
+
+1. **First-day empty state** — no signal yet, system has nothing to show, user wonders if it's working.
+2. **Populated digest** — system has signal, user is scanning for what's important.
+3. **Blocker detected** — system surfaces something urgent, user needs to act on it.
+
+Pull from discovery + spec functional requirements. These are the states Claude Design (or a designer) will produce wireframes for.]
+
+## Voice and tone
+
+[Pulled from `brand.md` (or inherited assets). Three things:
+- 2-3 voice adjectives (e.g. "confident, direct, no-marketing-speak")
+- 1-2 example sentences in voice ("Standup updates write themselves" not "Empower your team to elevate their async workflow")
+- 1 anti-pattern ("no AI hedging — never start with 'It seems' or 'You might want to'")]
+
+## Brand reference
+
+[Pointer (not duplication) to `brand.md` / `brand-extension.md` / inherited assets. The brief states which file is canonical and lists the 5–6 tokens any single artefact most needs:
+- Primary colour: `#…`
+- Neutral background: `#…`
+- Heading font: …
+- Body font: …
+- Mono / data font (if specified): …
+- Logo: see `brand.md` § Logo (or describe how to use it inline if logo isn't yet locked)
+
+For PMs handing off to claude.ai/design specifically: "save these tokens once as a Design System on claude.ai/design (Design systems tab, top-level on the home page) — every subsequent project on the canvas can pull from it."]
+
+## What NOT to do
+
+[The brand-safety + scope guardrails. Pulled from discovery (out-of-scope), pre-mortem (don't-do-this-or-it-fails), and brand:
+- Don't recreate competitor UI in mockups (e.g. "no Slack-branded UI; reference by name only")
+- Don't drift from the brand palette to add accent colours unprompted
+- Don't add features beyond `spec.md` § Functional requirements
+- Don't soften the voice — "confident and direct" is a structural lever, not decoration]
+
+## Success criteria for any artefact
+
+[3-4 bullets. Pulled from `pre-mortem-[N].md` kill criteria + spec success metrics, translated into design-evaluable language:
+- A stakeholder can follow the narrative on slide titles alone (for decks)
+- A new [primary persona] can complete onboarding in under [N] minutes (for wireframes)
+- Specifically named numbers and entities ([23 min/day, 47 engineers, the customer name]) appear, not invented placeholders
+- Layout reads at back-of-the-room scale — no <14pt body type on a deck slide]
+
+## Artefacts the PM might want
+
+[Cross-reference to the prompts file:
+- 9-slide stakeholder pitch deck → see `claude-design-prompts.md` § "Stakeholder pitch deck"
+- Home + onboarding wireframes (mobile + desktop, all states) → see § "Wireframes"
+- Logo concept exploration → see § "Logos"
+- Social cards / one-pagers → see § "Social cards"]
+
+## References
+
+- `discovery.md` — full validation evidence and confidence reasoning
+- `brand.md` — full brand system (this brief is the abridged version for designers)
+- `spec.md` — engineering PRD; functional requirements anchor the artefact list above
+- `pre-mortem-[N].md` — what failure looks like; informs what NOT to do
+```
+
+For `contextType: existing` sessions, "What we're designing for" frames the change, not the product as a whole. The hero scenario is the moment the *new* thing affects, not the user's first encounter with the existing product.
+
+### Output 5: Claude Design Prompts (`claude-design-prompts.md`)
+
+A small library of paste-ready prompts the PM drops straight into the prompt box on claude.ai/design. Each prompt is fully populated with the PM's evidence, brand, voice, and "don't do this" constraints — no template syntax, no `[brackets]`, no follow-up needed.
+
+Why this matters: Claude Design produces dramatically better artefacts when the prompt carries specifics. Vague prompts produce plausible-but-invented numbers and bland headers. Specific prompts produce data-dense layouts with the PM's real evidence, mock UIs with named characters, and copy that holds the brand voice across every slide.
+
+Before generating, read:
+- `discovery.md` (statistics, named competitors, named target user, hero moment)
+- `brand.md` / inherited assets (colour, type, voice, what-not-to-do)
+- `spec.md` (functional requirements — the screen list and state list for wireframes)
+- `pre-mortem-[N].md` (kill criteria — the success-metrics anchor for the deck and for the social cards)
+
+Required structure for `claude-design-prompts.md`:
+
+```markdown
+# Claude Design Prompts: [Idea Name]
+Generated: [date] from ProveIt validation
+For: claude.ai/design — paste any of these as the prompt for a new project on the canvas
+
+## How to use this file
+
+1. Open [claude.ai/design](https://claude.ai/design)
+2. Pick the project type matching the artefact you want (Slide deck / Prototype: Wireframe / Other)
+3. Name the project, hit Create
+4. Copy the prompt below for that artefact, paste into the prompt box, send
+5. (Optional but recommended) Set up the brand once as a Design System (top-level "Design systems" tab on the home page) — then it's available to every future project without re-pasting
+
+---
+
+## 1. Stakeholder pitch deck (9 slides)
+
+**Use it when:** You need to make the case for [funding / building / partnering] to a leadership audience.
+**Mode in claude.ai/design:** Slide deck
+**Build time:** ~7-10 minutes
+
+```text
+Make a 9-slide stakeholder pitch deck for [Idea Name] — [one-line description from brain dump].
+
+The audience is [audience from discovery — e.g. "the leadership team at a [company type], evaluating whether to fund this build"]. 15 minutes.
+
+Include slides for: problem, target user, evidence, solution, market, business model, competitive landscape, build plan, asks.
+
+Use these specifics from the validation evidence (don't invent placeholders):
+- [pull 5-7 key statistics/quotes from discovery + research, e.g. "47 engineers surveyed, 82% rate daily standup as low-value to themselves"]
+- [the kill criteria from pre-mortem-N.md as the success-metrics anchor]
+- [the named competitors from research-N.md, not "industry incumbents"]
+
+Use these brand tokens (apply consistently to every slide):
+- Primary colour: [from brand.md]
+- Neutral background: [from brand.md]
+- Heading font: [from brand.md]
+- Body font: [from brand.md]
+- Voice: [from brand.md voice adjectives + don't-do anti-patterns]
+
+I want to test brand consistency, so use these exact tokens for every slide and don't substitute alternatives. Don't recreate competitor UI; reference them by name only. Don't add a teal/blue accent unprompted — the model will introduce one if not constrained.
+```
+
+---
+
+## 2. Wireframes — home + onboarding, mobile + desktop, all states
+
+**Use it when:** You need to test the user flow with a few real users, or hand a designer a starting point.
+**Mode in claude.ai/design:** Prototype → Wireframe
+**Build time:** ~5-7 minutes
+**Important:** the Wireframe mode wants to interview you first. The prompt below explicitly skips this — without that line, you'll get a question instead of wireframes.
+
+```text
+Wireframe the [home and onboarding screens / specific flow] for [Idea Name] — [one-line description].
+
+The home screen is what [primary persona] sees [hero scenario from design-brief.md]: [what they're scanning for].
+
+The onboarding flow is what [secondary persona — e.g. "a new team admin"] goes through to [the setup task].
+
+Show both mobile and desktop layouts.
+
+Show key interaction states: empty state ([first-time, no signal]), loading, populated, and a "[critical event]" alert state.
+
+Use this brand:
+- Primary: [from brand.md]
+- Neutral background: [from brand.md]
+- Headings: [from brand.md]
+- Body: [from brand.md]
+
+Use specific mock content, not lorem ipsum. Real-sounding names, real-sounding stats from the validation, real-sounding entity references — pulled from `discovery.md` where possible.
+
+Skip the interview — proceed directly to wireframes.
+```
+
+---
+
+## 3. Logo concepts — three directions
+
+**Use it when:** Brand has a name but no logo yet, or you want to revisit the logo direction.
+**Mode in claude.ai/design:** Other (freeform)
+**Build time:** ~3 minutes
+**Note:** This is the one place Claude Design overlaps BrandIt. Use Claude Design when you want three *directions* with rationale; use BrandIt when you want a complete brand system in one shot. They compose.
+
+```text
+Three logo concepts for "[Brand Name]" — [one-line product description].
+
+For each direction, show:
+1. The wordmark (the text "[Brand Name]" set in a chosen typeface)
+2. The symbol mark (an icon that could stand alone)
+3. The lockup (wordmark + symbol together)
+
+Three distinct directions:
+- Direction A — [tone 1, from brand voice]: [palette + typography hint]
+- Direction B — [tone 2]: [hint]
+- Direction C — [tone 3]: [hint]
+
+Lay them out side by side at consistent sizes. Show each direction at three sizes (favicon 16px, app icon 64px, hero 256px) so I can judge legibility. Use [neutral background from brand.md].
+
+Add a short rationale paragraph for each direction explaining the design choice in product terms — what the symbol means, what behaviour it could animate, how it reads at small sizes.
+```
+
+---
+
+## 4. Social cards / one-pagers — N stats on a 2×3 grid
+
+**Use it when:** You want shareable assets for posting validation evidence (social, internal, sales).
+**Mode in claude.ai/design:** Other (freeform)
+**Build time:** ~3 minutes
+
+```text
+Generate a set of [N] social media share cards (LinkedIn / X format, 1200×630) for [Idea Name] — [one-line description].
+
+Each card communicates a single key statistic from the validation, paired with a one-line interpretive headline. Use these stats (don't invent placeholders):
+
+1. "[stat from discovery + headline]"
+2. "[stat from research + headline]"
+... (one per stat the PM wants to surface)
+
+Brand:
+- [tokens from brand.md]
+
+Lay all [N] cards on one canvas in a 2×3 grid. Each card: small wordmark in corner, the big stat dominates the layout, the one-line headline reads as quiet support underneath, a footer line with the source/methodology context. Voice: [from brand.md].
+```
+
+---
+
+## Boundary reminder
+
+Each prompt above is tuned for one artefact in one mode. Don't ask the deck mode to also generate logos. Don't ask the wireframe mode to also draft marketing copy. Probes consistently showed that one artefact per project gives the best output — keep them on separate canvases.
+```
+
+When ProveIt writes this file, every `[bracketed slot]` is resolved from the PM's actual `discovery.md` / `brand.md` / `spec.md` first. The PM only ever sees the resolved file.
+
 ---
 
 ## 10. Next Steps
