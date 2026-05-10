@@ -26,6 +26,7 @@ vi.mock("@/lib/anthropic", () => ({
 import { POST } from "@/app/api/fast/route";
 import { anthropic } from "@/lib/anthropic";
 import { resetRateLimitStores } from "@/lib/rate-limit";
+import { recordSpend, resetSpendStores } from "@/lib/spend-ledger";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -74,6 +75,12 @@ describe("POST /api/fast — boundary and error cases", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetRateLimitStores();
+    resetSpendStores();
+    // Reset env so spend-ledger uses defaults ($5 global, $1 per-IP)
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    process.env.DAILY_SPEND_CEILING_USD = "5";
+    process.env.PER_IP_DAILY_CEILING_USD = "1";
   });
 
   // ─── Boundary values ────────────────────────────────────────────────────────
@@ -274,5 +281,74 @@ describe("POST /api/fast — boundary and error cases", () => {
 
     await POST(makeRequest({ idea }));
     expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
+});
+
+// ─── Spend-ledger circuit breaker (v3.3) ─────────────────────────────────────
+
+describe("POST /api/fast — daily spend ledger", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetRateLimitStores();
+    resetSpendStores();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  });
+
+  it("returns 503 with reason=global_cap when global daily ceiling is breached", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "0.10";
+    process.env.PER_IP_DAILY_CEILING_USD = "10";
+    // Already-recorded spend pushes us over
+    await recordSpend("99.99.99.99", 0.10);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    const res = await POST(makeRequest({ idea }));
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.reason).toBe("global_cap");
+    expect(body.error).toMatch(/portfolio piece|capacity|capped/i);
+    expect(res.headers.get("Retry-After")).not.toBeNull();
+  });
+
+  it("returns 503 with reason=per_ip_cap when single IP is over its daily cap", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "100";
+    process.env.PER_IP_DAILY_CEILING_USD = "0.05";
+    // The default fast IP in tests is 127.0.0.1; record under that IP
+    await recordSpend("127.0.0.1", 0.10);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    const res = await POST(makeRequest({ idea }));
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.reason).toBe("per_ip_cap");
+  });
+
+  it("does not call Anthropic when the spend ceiling is breached", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "0.05";
+    process.env.PER_IP_DAILY_CEILING_USD = "10";
+    await recordSpend("99.99.99.99", 0.10);
+
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    await POST(makeRequest({ idea }));
+
+    expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
+
+  it("allows the call when both ceilings have headroom", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "5";
+    process.env.PER_IP_DAILY_CEILING_USD = "1";
+
+    const mockStream = makeAsyncIterator(["ok"]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const idea = "A valid idea that is long enough to pass validation checks";
+    const res = await POST(makeRequest({ idea }));
+
+    expect(res.status).toBe(200);
   });
 });

@@ -15,6 +15,7 @@ vi.mock("@/lib/anthropic", () => ({
 import { POST } from "@/app/api/chat/route";
 import { anthropic } from "@/lib/anthropic";
 import { resetRateLimitStores } from "@/lib/rate-limit";
+import { resetSpendStores } from "@/lib/spend-ledger";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -54,6 +55,11 @@ describe("POST /api/chat", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetRateLimitStores();
+    resetSpendStores();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    process.env.DAILY_SPEND_CEILING_USD = "1000";
+    process.env.PER_IP_DAILY_CEILING_USD = "1000";
   });
 
   it("returns 400 when sessionId is missing", async () => {

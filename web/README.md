@@ -85,6 +85,8 @@ For local dev, Upstash isn't required — the in-memory rate limiter is sufficie
 | `ANTHROPIC_API_KEY` | Always | Server-side Anthropic API key for all AI calls | [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) |
 | `UPSTASH_REDIS_REST_URL` | Production | Upstash Redis REST endpoint for distributed rate limiting | [console.upstash.com/redis](https://console.upstash.com/redis) |
 | `UPSTASH_REDIS_REST_TOKEN` | Production | Upstash Redis REST token | Same project as above |
+| `DAILY_SPEND_CEILING_USD` | Recommended in production | Global daily Anthropic-spend ceiling. Default $5. When breached, `/api/chat` and `/api/fast` return 503 with a friendly message. | Pick a number you're willing to lose if abused |
+| `PER_IP_DAILY_CEILING_USD` | Recommended in production | Per-IP daily Anthropic-spend ceiling. Default $1. Stops VPN-rotation by single users and casual abuse. | — |
 | `ALLOWED_ORIGIN` | Optional | Override the CORS allowed origin (defaults to the request `Host`) | — |
 
 **Web search must be enabled.** Full Validation runs a live web research phase using Anthropic's native web search tool. An admin on your Anthropic Console account must enable it at **Settings → Privacy → Web Search**, otherwise the research phase fails. Fast Check doesn't need it.
@@ -97,6 +99,7 @@ Before exposing this to anyone beyond yourself:
 
 - [x] **Anthropic API key** set in production environment variables
 - [ ] **Upstash provisioned** and `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` set. **Do not skip this.** The in-memory fallback is per-instance on serverless platforms — a single client can drain the Anthropic credit budget by issuing parallel requests across instances. Free tier (10K commands/day) is fine.
+- [ ] **Daily spend ceilings configured** — `DAILY_SPEND_CEILING_USD` and `PER_IP_DAILY_CEILING_USD`. Caps blast radius of cost-spike abuse (viral distribution, VPN-rotation) that per-IP rate limiting alone can't catch. Defaults are $5 / $1 if unset; explicit values give you operational control. See [Architecture notes](#architecture-notes).
 - [ ] **Web search enabled** on the Anthropic Console (Settings → Privacy → Web Search)
 - [ ] **Smoke-test the live URL** after deploy: hit `POST /api/fast` with a real idea and confirm a streamed response with citations comes back. Don't trust "Aliased" output alone.
 
@@ -186,6 +189,8 @@ A few non-obvious decisions worth knowing before touching the code:
 **Web search activates only in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`, with `max_uses: 12`. Anthropic SDK ≥ 0.50 delivers web-search invocations as `server_tool_use` content blocks (not `tool_use`); the route handler matches both shapes so the Searching indicator fires correctly.
 
 **Rate limiting is built in — and Upstash is required for production.** `/api/chat` allows 20 requests per IP per 60s; `/api/fast` allows 10. The implementation uses Upstash Redis when the env vars are set, and falls back to an in-process sliding window otherwise. The fallback is per-instance and resets on cold start — on Vercel's serverless runtime this means parallel requests across instances effectively bypass the limiter, so a single client can drain the Anthropic credit budget. Always provision Upstash before exposing the deployment to any audience beyond yourself.
+
+**Daily spend ledger / circuit breaker (v3.3, complementary to rate limiting).** Per-IP rate limiting handles single-machine abuse. It does NOT stop viral distribution (1000 strangers from a Reddit link) or VPN-rotation. The spend ledger (`src/lib/spend-ledger.ts`) tracks estimated daily Anthropic spend at two layers — global and per-IP — and returns 503 when either ceiling is breached. Cost is estimated per call (Fast = $0.10, chat without research = $0.05, chat in research phase = $0.50, brain_dump with web_search = $0.10) since Anthropic doesn't surface dollar cost in responses. Ceilings come from env (`DAILY_SPEND_CEILING_USD` default $5, `PER_IP_DAILY_CEILING_USD` default $1) so you can change them without redeploying. Backed by the same Upstash instance as the rate limiter; falls open on Upstash errors (better to over-spend a few dollars than block all users on a transient hiccup).
 
 **Client IP detection trusts `x-real-ip` first, then the LAST entry of `x-forwarded-for`.** Never the first entry of `x-forwarded-for` — that's user-controlled and trivially spoofed. The last entry is the address Vercel's edge actually saw.
 

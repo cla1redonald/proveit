@@ -4,9 +4,21 @@ import { z } from "zod";
 import { anthropic } from "@/lib/anthropic";
 import { buildFastCheckPrompt } from "@/lib/prompts";
 import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
+import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
+
+function secondsUntilNextUtcDay(): number {
+  const now = new Date();
+  const next = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + 1,
+    0, 0, 0, 0
+  ));
+  return Math.max(60, Math.ceil((next.getTime() - now.getTime()) / 1000));
+}
 
 const FastCheckSchema = z.object({
   idea: z
@@ -33,6 +45,26 @@ export async function POST(req: NextRequest) {
           "X-RateLimit-Limit": String(limit),
           "X-RateLimit-Remaining": "0",
           "X-RateLimit-Reset": String(Math.ceil(rateLimit.resetAt / 1000)),
+        },
+      }
+    );
+  }
+
+  // 0b. Daily-spend circuit breaker — caps blast radius of cost-spike abuse
+  const fastCost = estimateCost("fast");
+  const spend = await checkSpend(ip, fastCost);
+  if (!spend.allowed) {
+    const retryAfter = secondsUntilNextUtcDay();
+    const reasonCopy = spend.reason === "global_cap"
+      ? "ProveIt is at capacity for today. The site is a portfolio piece — daily AI spend is deliberately capped. Try again tomorrow, or paste your idea into ChatGPT/Claude in the meantime."
+      : "You've used today's free Fast Check budget for this connection. Try again tomorrow.";
+    return new Response(
+      JSON.stringify({ error: reasonCopy, reason: spend.reason }),
+      {
+        status: 503,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(retryAfter),
         },
       }
     );
@@ -90,6 +122,10 @@ export async function POST(req: NextRequest) {
 
         // Emit done event for consistency with /api/chat streaming protocol
         controller.enqueue(encoder.encode('\ndata: {"type":"done"}\n'));
+
+        // Record successful spend in the daily ledger. Errors are swallowed
+        // by recordSpend itself — best-effort, ledger drift is acceptable.
+        await recordSpend(ip, fastCost);
       } catch (err) {
         const anthropicErr = err as {
           status?: number;

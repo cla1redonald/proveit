@@ -4,9 +4,21 @@ import { z } from "zod";
 import { anthropic } from "@/lib/anthropic";
 import { buildChatSystemPrompt } from "@/lib/prompts";
 import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
+import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
+
+function secondsUntilNextUtcDay(): number {
+  const now = new Date();
+  const next = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + 1,
+    0, 0, 0, 0
+  ));
+  return Math.max(60, Math.ceil((next.getTime() - now.getTime()) / 1000));
+}
 
 const MessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -57,6 +69,9 @@ export async function POST(req: NextRequest) {
   }
 
   // 1. Parse and validate request body
+  // (we need `phase` from the body to estimate cost accurately, so the
+  // spend-ledger check happens AFTER parse for /api/chat, unlike /api/fast
+  // where the cost is the same regardless of body content)
   let body: unknown;
   try {
     body = await req.json();
@@ -77,6 +92,27 @@ export async function POST(req: NextRequest) {
   }
 
   const { messages, phase, scores } = parsed.data;
+
+  // 1b. Daily-spend circuit breaker — caps blast radius of cost-spike abuse.
+  // Cost depends on phase (research is the expensive one due to web search).
+  const chatCost = estimateCost("chat", phase);
+  const spend = await checkSpend(ip, chatCost);
+  if (!spend.allowed) {
+    const retryAfter = secondsUntilNextUtcDay();
+    const reasonCopy = spend.reason === "global_cap"
+      ? "ProveIt is at capacity for today. The site is a portfolio piece — daily AI spend is deliberately capped. Try again tomorrow, or fall back to the Fast Check on the home page."
+      : "You've used today's free Full Validation budget for this connection. Try again tomorrow, or use the Fast Check.";
+    return new Response(
+      JSON.stringify({ error: reasonCopy, reason: spend.reason }),
+      {
+        status: 503,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(retryAfter),
+        },
+      }
+    );
+  }
 
   // 2. Truncate messages if too many (keep latest 48, system prompt is separate)
   const truncatedMessages = messages.length > 48 ? messages.slice(messages.length - 48) : messages;
@@ -206,6 +242,9 @@ export async function POST(req: NextRequest) {
 
         // Emit done event
         controller.enqueue(encoder.encode('\ndata: {"type":"done"}\n'));
+
+        // Record successful spend in the daily ledger.
+        await recordSpend(ip, chatCost);
       } catch (err) {
         // Always clear the searching indicator on error, regardless of cause
         if (searchingActive) {

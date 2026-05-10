@@ -30,6 +30,7 @@ vi.mock("@/lib/anthropic", () => ({
 import { POST } from "@/app/api/chat/route";
 import { anthropic } from "@/lib/anthropic";
 import { resetRateLimitStores } from "@/lib/rate-limit";
+import { recordSpend, resetSpendStores } from "@/lib/spend-ledger";
 import { NextRequest } from "next/server";
 
 function makeRequest(body: unknown): NextRequest {
@@ -69,6 +70,11 @@ describe("POST /api/chat — edge cases", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     resetRateLimitStores();
+    resetSpendStores();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    process.env.DAILY_SPEND_CEILING_USD = "5";
+    process.env.PER_IP_DAILY_CEILING_USD = "1";
   });
 
   // ─── sessionId boundaries ───────────────────────────────────────────────────
@@ -436,5 +442,72 @@ describe("POST /api/chat — edge cases", () => {
 
     await POST(makeRequest(validPayload));
     expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
+});
+
+// ─── Spend-ledger circuit breaker (v3.3) ─────────────────────────────────────
+
+describe("POST /api/chat — daily spend ledger", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetRateLimitStores();
+    resetSpendStores();
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  });
+
+  it("returns 503 with reason=global_cap when global daily ceiling is breached", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "0.10";
+    process.env.PER_IP_DAILY_CEILING_USD = "10";
+    await recordSpend("99.99.99.99", 0.50);
+
+    const res = await POST(makeRequest(validPayload));
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.reason).toBe("global_cap");
+    expect(body.error).toMatch(/portfolio piece|capacity|capped/i);
+    expect(res.headers.get("Retry-After")).not.toBeNull();
+  });
+
+  it("returns 503 with reason=per_ip_cap when single IP is over its daily cap", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "100";
+    process.env.PER_IP_DAILY_CEILING_USD = "0.05";
+    await recordSpend("127.0.0.1", 0.10);
+
+    const res = await POST(makeRequest(validPayload));
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.reason).toBe("per_ip_cap");
+  });
+
+  it("does not call Anthropic when spend is over the ceiling", async () => {
+    process.env.DAILY_SPEND_CEILING_USD = "0.05";
+    process.env.PER_IP_DAILY_CEILING_USD = "10";
+    await recordSpend("99.99.99.99", 0.50);
+
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    await POST(makeRequest(validPayload));
+
+    expect(vi.mocked(anthropic.messages.create)).not.toHaveBeenCalled();
+  });
+
+  it("research-phase calls cost more in the ledger than other phases", async () => {
+    // Set a tight ceiling that allows two non-research calls but not one research call
+    process.env.DAILY_SPEND_CEILING_USD = "0.20";
+    process.env.PER_IP_DAILY_CEILING_USD = "10";
+
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    // Record one prior research call ($0.50) — already over the $0.20 ceiling
+    await recordSpend("99.99.99.99", 0.50);
+
+    const researchPayload = { ...validPayload, phase: "research" as const };
+    const res = await POST(makeRequest(researchPayload));
+    expect(res.status).toBe(503);
   });
 });
