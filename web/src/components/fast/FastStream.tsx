@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useStream } from "@/hooks/useStream";
 import AssumptionCard from "./AssumptionCard";
 import StreamingIndicator from "./StreamingIndicator";
+import EmailCaptureForm from "@/components/EmailCaptureForm";
 import type { AssumptionResult, Verdict, StreamEvent } from "@/types";
 
 interface FastStreamProps {
@@ -101,7 +102,7 @@ function extractQuickVerdict(text: string): string {
 
 export default function FastStream({ idea }: FastStreamProps) {
   const router = useRouter();
-  const { isStreaming, error, startStream } = useStream();
+  const { isStreaming, error, errorReason, startStream } = useStream();
   const [streamText, setStreamText] = useState("");
   const [isComplete, setIsComplete] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -265,30 +266,35 @@ export default function FastStream({ idea }: FastStreamProps) {
         <div
           className="mt-[var(--space-6)] rounded-[var(--radius-lg)] border p-[var(--space-5)]"
           style={{
-            borderColor: "var(--color-contradicted-fg)",
-            backgroundColor: "var(--color-contradicted)",
+            borderColor: errorReason ? "var(--border-default)" : "var(--color-contradicted-fg)",
+            backgroundColor: errorReason ? "var(--bg-surface)" : "var(--color-contradicted)",
           }}
         >
           <p
             className="font-sans mb-[var(--space-3)]"
             style={{
               fontSize: "var(--text-sm)",
-              color: "var(--text-secondary)",
+              color: errorReason ? "var(--text-primary)" : "var(--text-secondary)",
             }}
           >
-            Something went wrong. Try again.
+            {errorReason ? error : "Something went wrong. Try again."}
           </p>
-          <button
-            onClick={() => {
-              setStreamText("");
-              setIsComplete(false);
-              hasStarted.current = false;
-              startStream("/api/fast", { idea }, handleText, handleEvent);
-            }}
-            className="outline-btn inline-flex items-center justify-center px-[var(--space-4)] py-[var(--space-2)] rounded-[var(--radius-md)] font-sans text-xs font-medium uppercase tracking-[0.08em] border"
-          >
-            TRY AGAIN
-          </button>
+          {!errorReason && (
+            <button
+              onClick={() => {
+                setStreamText("");
+                setIsComplete(false);
+                hasStarted.current = false;
+                startStream("/api/fast", { idea }, handleText, handleEvent);
+              }}
+              className="outline-btn inline-flex items-center justify-center px-[var(--space-4)] py-[var(--space-2)] rounded-[var(--radius-md)] font-sans text-xs font-medium uppercase tracking-[0.08em] border"
+            >
+              TRY AGAIN
+            </button>
+          )}
+          {errorReason && (
+            <EmailCaptureForm reason={errorReason} ideaExcerpt={idea} />
+          )}
         </div>
       )}
 

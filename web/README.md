@@ -87,6 +87,8 @@ For local dev, Upstash isn't required — the in-memory rate limiter is sufficie
 | `UPSTASH_REDIS_REST_TOKEN` | Production | Upstash Redis REST token | Same project as above |
 | `DAILY_SPEND_CEILING_USD` | Recommended in production | Global daily Anthropic-spend ceiling. Default $5. When breached, `/api/chat` and `/api/fast` return 503 with a friendly message. | Pick a number you're willing to lose if abused |
 | `PER_IP_DAILY_CEILING_USD` | Recommended in production | Per-IP daily Anthropic-spend ceiling. Default $1. Stops VPN-rotation by single users and casual abuse. | — |
+| `SUPABASE_URL` | Recommended in production | Supabase project URL backing the waitlist (users who hit the spend cap and asked to be notified) | [supabase.com](https://supabase.com) |
+| `SUPABASE_PUBLISHABLE_KEY` | Recommended in production | Supabase publishable / anon key. RLS on the waitlist table allows INSERT only — anon key cannot read or modify entries. | Same project as above |
 | `ALLOWED_ORIGIN` | Optional | Override the CORS allowed origin (defaults to the request `Host`) | — |
 
 **Web search must be enabled.** Full Validation runs a live web research phase using Anthropic's native web search tool. An admin on your Anthropic Console account must enable it at **Settings → Privacy → Web Search**, otherwise the research phase fails. Fast Check doesn't need it.

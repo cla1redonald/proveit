@@ -7,6 +7,13 @@ import type { StreamEvent } from "@/types";
 interface UseStreamReturn {
   isStreaming: boolean;
   error: string | null;
+  /**
+   * When the API returns a 503 from the spend-ledger circuit breaker, this
+   * is set to the `reason` field from the response body — `global_cap` or
+   * `per_ip_cap`. Stays null for any other error. Lets the UI decide
+   * whether to show the EmailCaptureForm and which framing to use.
+   */
+  errorReason: "global_cap" | "per_ip_cap" | null;
   startStream: (
     url: string,
     body: unknown,
@@ -19,6 +26,7 @@ interface UseStreamReturn {
 export function useStream(): UseStreamReturn {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorReason, setErrorReason] = useState<"global_cap" | "per_ip_cap" | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const startStream = useCallback(
@@ -29,6 +37,7 @@ export function useStream(): UseStreamReturn {
       onEvent: (event: StreamEvent) => void
     ) => {
       setError(null);
+      setErrorReason(null);
       setIsStreaming(true);
 
       const controller = new AbortController();
@@ -44,6 +53,10 @@ export function useStream(): UseStreamReturn {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ error: "Request failed" }));
+          // Capture the spend-ledger reason if present
+          if (errorData.reason === "global_cap" || errorData.reason === "per_ip_cap") {
+            setErrorReason(errorData.reason);
+          }
           throw new Error(errorData.error || `Request failed with status ${response.status}`);
         }
 
@@ -68,5 +81,5 @@ export function useStream(): UseStreamReturn {
     setIsStreaming(false);
   }, []);
 
-  return { isStreaming, error, startStream, stopStream };
+  return { isStreaming, error, errorReason, startStream, stopStream };
 }

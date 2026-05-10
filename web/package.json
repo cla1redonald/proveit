@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",
+    "@supabase/supabase-js": "^2.105.4",
     "@tailwindcss/postcss": "^4.2.0",
     "@tailwindcss/typography": "0.5.16",
     "@upstash/ratelimit": "^2.0.8",

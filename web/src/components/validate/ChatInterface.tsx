@@ -6,6 +6,7 @@ import { useStream } from "@/hooks/useStream";
 import { useSession } from "@/hooks/useSession";
 import { createSession } from "@/lib/session";
 import { getRelativeTime } from "@/lib/utils";
+import EmailCaptureForm from "@/components/EmailCaptureForm";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
 import PhaseIndicator from "./PhaseIndicator";
@@ -260,7 +261,7 @@ function IdeaInputForm({
 
 export default function ChatInterface() {
   const { session: storedSession, updateSession } = useSession();
-  const { isStreaming, error: streamError, startStream, stopStream } = useStream();
+  const { isStreaming, error: streamError, errorReason: streamErrorReason, startStream, stopStream } = useStream();
 
   const [activeSession, setActiveSession] = useState<ValidationSession | null>(null);
   const [currentMessage, setCurrentMessage] = useState<string>("");
@@ -590,17 +591,25 @@ export default function ChatInterface() {
             <div
               className="mt-[var(--space-4)] rounded-[var(--radius-lg)] border p-[var(--space-4)]"
               style={{
-                borderColor: "var(--color-contradicted-fg)",
-                backgroundColor: "var(--color-contradicted)",
+                borderColor: streamErrorReason ? "var(--border-default)" : "var(--color-contradicted-fg)",
+                backgroundColor: streamErrorReason ? "var(--bg-surface)" : "var(--color-contradicted)",
               }}
               role="alert"
             >
               <p
                 className="font-sans text-sm"
-                style={{ color: "var(--color-contradicted-fg)" }}
+                style={{
+                  color: streamErrorReason ? "var(--text-primary)" : "var(--color-contradicted-fg)",
+                }}
               >
                 {chatError || streamError}
               </p>
+              {streamErrorReason && (
+                <EmailCaptureForm
+                  reason={streamErrorReason}
+                  ideaExcerpt={activeSession.ideaSummary}
+                />
+              )}
             </div>
           )}
 
