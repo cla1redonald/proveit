@@ -1582,6 +1582,8 @@ For `contextType: existing` sessions, "What we're designing for" frames the chan
 
 A small library of paste-ready prompts the PM drops straight into the prompt box on claude.ai/design. Each prompt is fully populated with the PM's evidence, brand, voice, and "don't do this" constraints — no template syntax, no `[brackets]`, no follow-up needed.
 
+> **Bracket resolution contract.** Before writing this file, ProveIt resolves every `[bracketed slot]` from the PM's actual `discovery.md`, `brand.md` (or `## Inherited assets` / `brand-extension.md` for `contextType: existing` sessions), `spec.md`, and `pre-mortem-[N].md`. The PM only ever sees the resolved file. An unresolved slot leaking into a paste-ready prompt is a defect — the PM would paste `[Idea Name]` literally into Claude Design.
+
 Why this matters: Claude Design produces dramatically better artefacts when the prompt carries specifics. Vague prompts produce plausible-but-invented numbers and bland headers. Specific prompts produce data-dense layouts with the PM's real evidence, mock UIs with named characters, and copy that holds the brand voice across every slide.
 
 Before generating, read:
@@ -1723,7 +1725,7 @@ Lay all [N] cards on one canvas in a 2×3 grid. Each card: small wordmark in cor
 Each prompt above is tuned for one artefact in one mode. Don't ask the deck mode to also generate logos. Don't ask the wireframe mode to also draft marketing copy. Probes consistently showed that one artefact per project gives the best output — keep them on separate canvases.
 ```
 
-When ProveIt writes this file, every `[bracketed slot]` is resolved from the PM's actual `discovery.md` / `brand.md` / `spec.md` first. The PM only ever sees the resolved file.
+For `contextType: existing` sessions, brand tokens come from `## Inherited assets` (or `brand-extension.md`), not `brand.md`. Read whichever is canonical before resolving the brand slots in each prompt — the PM should never see "[from brand.md]" leak through when their session is an iteration on an existing brand.
 
 ---
 
