@@ -21,7 +21,7 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "ProveIt — Validate your product idea before you build",
   description:
-    "Run a rapid market and desirability check on your product idea. Fast Check (90 seconds) or Full Validation with AI-powered research.",
+    "The PM validation tool that tells you when your idea is bad. Fast Check in 15 minutes, or Full Validation with evidence, named methodology, and kill signals.",
 };
 
 export default function RootLayout({

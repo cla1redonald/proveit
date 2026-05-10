@@ -153,7 +153,7 @@ export default function HomePage() {
                   color: "var(--text-secondary)",
                 }}
               >
-                3 assumptions. 15 minutes.
+                The 3 assumptions most likely to kill it.
               </p>
               <p
                 className="font-sans mb-[var(--space-5)]"
@@ -162,7 +162,7 @@ export default function HomePage() {
                   color: "var(--text-secondary)",
                 }}
               >
-                No back-and-forth.
+                ~15 minutes. No back-and-forth.
               </p>
               <Link
                 href="/fast"

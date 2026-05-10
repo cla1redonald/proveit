@@ -10,6 +10,7 @@ import type { AssumptionResult, Verdict, StreamEvent } from "@/types";
 
 interface FastStreamProps {
   idea: string;
+  onReset: () => void;
 }
 
 interface ParsedAssumption {
@@ -100,7 +101,7 @@ function extractQuickVerdict(text: string): string {
   return match ? match[1].trim() : "";
 }
 
-export default function FastStream({ idea }: FastStreamProps) {
+export default function FastStream({ idea, onReset }: FastStreamProps) {
   const router = useRouter();
   const { isStreaming, error, errorReason, startStream } = useStream();
   const [streamText, setStreamText] = useState("");
@@ -155,7 +156,7 @@ export default function FastStream({ idea }: FastStreamProps) {
   const quickVerdict = extractQuickVerdict(streamText);
 
   const handleCheckAnother = () => {
-    router.push("/fast");
+    onReset();
   };
 
   const handleFullValidation = () => {

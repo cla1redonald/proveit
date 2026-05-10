@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Fast Check — ProveIt",
-  description: "Rapid assumption check: three verdicts on your idea in under 90 seconds.",
+  description: "Three critical assumptions picked for your idea — the ones most likely to kill it. ~15 minutes, no back-and-forth.",
 };
 
 export default function FastLayout({
