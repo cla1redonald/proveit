@@ -63,14 +63,23 @@ function parseAssumptions(text: string): ParsedAssumption[] {
   return results;
 }
 
+function categoriseAssumption(rawCategory: string): AssumptionResult["category"] {
+  // Map the model's free-text category label onto the v3.2 7-category catalog.
+  // Order matters — check the more specific compound labels before generic ones.
+  const c = rawCategory.toLowerCase();
+  if (c.includes("ai commod") || c.includes("commoditization") || c.includes("commoditisation") || c.includes("foundation model")) return "AI Commoditization";
+  if (c.includes("regulatory") || c.includes("compliance") || c.includes("legal")) return "Regulatory";
+  if (c.includes("defensibility") || c.includes("moat") || c.includes("network effect")) return "Defensibility";
+  if (c.includes("distribution") || c.includes("channel") || c.includes("acquisition")) return "Distribution";
+  if (c.includes("viability") || c.includes("monetisation") || c.includes("monetization") || c.includes("pricing") || c.includes("willingness to pay")) return "Viability";
+  if (c.includes("competition") || c.includes("competitor")) return "Competition";
+  return "Desirability";
+}
+
 function buildAssumptionResult(parsed: ParsedAssumption): AssumptionResult {
   return {
     assumption: parsed.statement || parsed.category,
-    category: parsed.category.includes("Viability")
-      ? "Viability"
-      : parsed.category.includes("Competition") || parsed.category.includes("Competitor")
-        ? "Competition"
-        : "Desirability",
+    category: categoriseAssumption(parsed.category),
     verdict: parsed.verdict ?? "WEAK",
     evidence: parsed.evidenceLines.slice(0, 4).map((line) => {
       const colonIdx = line.indexOf(":");

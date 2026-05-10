@@ -14,9 +14,18 @@ export type DiscoveryPhase =
 
 // ─── Fast Check ───────────────────────────────────────────────────────────────
 
+export type AssumptionCategory =
+  | "Desirability"
+  | "Viability"
+  | "Competition"
+  | "Distribution"
+  | "Defensibility"
+  | "AI Commoditization"
+  | "Regulatory";
+
 export interface AssumptionResult {
   assumption: string;
-  category: "Desirability" | "Viability" | "Competition";
+  category: AssumptionCategory;
   verdict: Verdict;
   evidence: EvidenceItem[];
 }
