@@ -114,7 +114,7 @@ Plugin: always free. Open source on GitHub. Developer-ecosystem gift.
 
 In priority order (per the Phase 5 swarm GTM agent):
 
-1. **Substack** — the primary channel. Three posts in 30 days. Substack Notes daily.
+1. **Substack — [`cla1redonald.substack.com`](https://cla1redonald.substack.com) ("In the work")** — the primary channel. **Shared publication with Claire's other published work** (Roami / personal brand). Three posts in 30 days are *specifically about ProveIt*; the publication itself is broader. Substack Notes daily. The reader subscribes to Claire-as-thinker; individual posts should target ProveIt's audience cleanly without leaning on Roami brand context.
 2. **LinkedIn** — Claire's warm network. Native posts (not link drops). DMs > posts.
 3. **Personal outreach** — friend-cohort DMs for the WoZ test, then warm contacts in week 2.
 4. **Hacker News** — Show HN in week 3, lead with technical architecture (multi-agent swarm, cross-model review). Low-downside technical-audience bet.
@@ -165,11 +165,12 @@ If a strong opportunity in any of the above lands inbound (e.g. a PM podcast ask
 
 ## How this brief relates to Roami
 
-ProveIt is a **separate venture** from Roami. They share Claire as the founder; they don't share brand, audience, voice, or distribution channels.
+ProveIt is a **separate venture** from Roami. They share Claire as the founder **and the `cla1redonald.substack.com` ("In the work") Substack publication as a distribution channel** — but not brand, voice, audience messaging, transactional sender, or domain.
 
-- Roami's brand and audience should not be referenced in ProveIt content
-- ProveIt's domain (`proveit.tools`) was deliberately purchased separately from `roami.group` to keep them separable
+- Roami's brand and audience targeting should not be referenced inside ProveIt content (and vice versa) even on the shared Substack — readers are subscribed to Claire-as-thinker, but each post should target one venture's audience cleanly and stand on its own
+- ProveIt's domain (`proveit.tools`) was deliberately purchased separately from `roami.group` to keep the products separable
 - Claire's `claire@roami.group` email signature is fine on internal/personal communication; ProveIt's transactional sender is `hello@proveit.tools`
+- Substack editorial cadence: ProveIt's 30-day launch ships 3 posts (days 10 / 18 / 26). Roami publishing during the same window stays paused (Roami is in Phase Q until ~mid-June anyway). When Roami exits Phase Q, the shared Substack needs editorial coordination so the two streams don't compete for the same week's slot — flag any near-duplicate cadence to Claire before scheduling
 
 If a PR or marketing piece naturally bridges both ventures (e.g. an article about Claire-as-builder), that's fine — but treat ProveIt and Roami as distinct subjects, not aspects of the same thing.
 
