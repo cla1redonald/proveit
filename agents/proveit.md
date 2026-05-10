@@ -1188,9 +1188,11 @@ BrandIt produces a **brand system** — not UX, not screens, not slides. The bou
 
 | Tool | Produces | Does NOT produce |
 |------|----------|------------------|
-| **BrandIt** (this phase) | Name, tagline, palette (full neutral scale + semantic colours), typography, logo PNG, design tokens (CSS + JSON), tone of voice | UX, wireframes, screens, app icons, marketing copy beyond tagline, UI mockups |
-| **Claude Design** (Phase 10 next-step) | Wireframes, user flows, screens, interaction states. Uses the brand as input. | Brand identity (assumes brand exists), engineering spec, marketing copy |
+| **BrandIt** (this phase) | Full brand system: name, tagline, palette (full neutral scale + semantic colours), typography pairing, logo PNG, design tokens (CSS + JSON), tone of voice | UX, wireframes, screens, marketing copy beyond tagline |
+| **Claude Design** (Phase 10 next-step) | Decks, wireframes, screens, social cards, exploratory logo *directions*, any 2D layout. Reads BrandIt tokens or a saved Design System. | Brand system (no token export), engineering spec, marketing copy beyond what's in an artefact |
 | **Gamma** (Phase 9 Output 1) | Stakeholder slides for the leadership / funding / team conversation. Uses brand for visual cohesion. | UX, engineering spec, brand identity, executable artefacts |
+
+**Logo overlap nuance.** Claude Design and BrandIt overlap on logos. BrandIt produces *one* finished logo as part of a complete brand system. Claude Design produces *three exploratory directions* with rationale, in vector/HTML, in 3 minutes — useful when you want to choose between approaches before committing. They compose: run BrandIt for the brand system; if the PM wants to A/B the logo direction before locking it, the Claude Design "logos" prompt in Phase 10 is the way.
 
 Do not let BrandIt drift into "let me sketch a home page" or "let me write the ad copy". Those belong to Claude Design and the marketing function respectively.
 
@@ -1739,29 +1741,44 @@ After presenting the Gamma deck, validation playbook, and spec, present a clean 
 | `brand.md` (or `brand-extension.md`, or `## Inherited assets`) | Design + marketing | Brand system tokens for downstream design + engineering work. |
 | `pre-mortem-N.md` | The PM, stakeholders | The 3 critical bets and explicit kill criteria. |
 | `scenarios-N.md` (if Wave 3 ran) | The PM | 3 future scenarios + paste-ready experiment artefacts. |
+| `design-brief.md` | Designers, Claude Design canvas, Figma, contract designers | Synthesis a designer can read on its own. Hero scenario, voice, brand pointer, what-not-to-do. |
+| `claude-design-prompts.md` | The PM (operational input for claude.ai/design) | Four paste-ready prompts: deck, wireframes, logos, social cards. Each pre-populated with the PM's evidence and brand. |
 
 ### Suggested closing message
 
-> "Your idea is validated and ready for handoff. Here are the paths:
+> "Your idea is validated and ready for handoff. Here's what's saved and what to do with it.
 >
-> - **Build it** — run `/orchestrate` to kick off a full ShipIt build. It'll read your `discovery.md`, `brand.md` (or inherited assets), and `spec.md` for context.
-> - **Hand it to engineering directly** — `spec.md` drops cleanly into Linear, Jira, or Notion.
-> - **Hand it to design (Claude Design canvas)** — open `claude.ai/design`, paste `discovery.md` + brand assets, ask for UX flows and wireframes. The spec gives Claude enough structure to produce mockups that respect the validation work.
+> **The bundle in this directory:**
+> - `discovery.md` — your full validation, scores, kill criteria. Comes back to this between phases.
+> - `pre-mortem-[N].md` — the 3 critical bets and explicit kill dates.
+> - `spec.md` — engineering PRD. Drops cleanly into Linear / Jira / Notion.
+> - `brand.md` (or inherited assets) — the brand system tokens.
+> - `design-brief.md` — the synthesis a designer or stakeholder can read on its own.
+> - `claude-design-prompts.md` — paste-ready prompts for claude.ai/design.
+> - Gamma deck — the stakeholder narrative, ready to share.
+>
+> **Paths from here:**
+>
+> - **Build it** — run `/orchestrate` in this directory. It reads `discovery.md`, `brand.md`, and `spec.md` as context.
+> - **Hand to engineering** — `spec.md` drops into your ticket queue.
+> - **Hand to design** — open [claude.ai/design](https://claude.ai/design), drop your `brand.md` tokens into a Design System once (top-level "Design systems" tab — set up once, reuse across projects), and paste any prompt from `claude-design-prompts.md` to generate a deck, wireframes, logos, or social cards. When you want validation on a *new* direction, hit **Handoff to Claude Code** in any design's Share menu and run `/proveit` against it — the round-trip works.
 > - **Share the deck** — the Gamma presentation is ready for the stakeholder conversation.
-> - **Run the cheapest experiment first** — if Wave 3 ran, `scenarios-N.md` has the prioritised experiment list with paste-ready artefacts.
-> - **Keep validating** — if you want to dig deeper on any score, we can loop back.
+> - **Run the cheapest experiment first** — if Wave 3 ran, `scenarios-[N].md` has the prioritised experiment list with paste-ready artefacts.
+> - **Keep validating** — if any score wants more depth, we can loop back.
 >
 > Everything's saved. Come back anytime."
 
 ### Boundary reminder
 
-These three downstream tools have **non-overlapping** outputs. The Phase 7 boundary table applies here too:
+These three downstream tools have **non-overlapping** outputs (with one nuance — see logo overlap below). The Phase 7 boundary table applies here too:
 
 | Tool | Produces | Does NOT produce |
 |------|----------|------------------|
-| BrandIt | Brand system | UX, slides, marketing copy beyond tagline |
-| Claude Design | UX, wireframes, screens | Brand identity, engineering spec |
-| Gamma | Stakeholder deck | UX, engineering spec, brand identity |
+| BrandIt | Full brand system: name, tagline, palette, typography pairing, design tokens (CSS + JSON), voice, logo PNG | UX, wireframes, screens, marketing copy beyond tagline |
+| Claude Design | Decks, wireframes, screens, social cards, logos as exploratory directions, any 2D layout. Reads BrandIt tokens or a saved Design System. | Brand system (no token export), engineering spec, marketing copy beyond what's in an artefact |
+| Gamma | Stakeholder deck (the validation narrative) | UX, wireframes, engineering spec, brand identity |
+
+**Logo overlap nuance.** BrandIt produces *one* finished logo as part of a complete brand system. Claude Design produces *three exploratory directions* with rationale, in vector/HTML, in ~3 minutes — useful when the PM wants to choose between approaches before committing. They compose: run BrandIt for the brand system; if the PM wants to A/B the logo direction before locking it, the "Logos" prompt in `claude-design-prompts.md` is the way.
 
 Don't ask Claude Design to also pick a colour palette. Don't ask Gamma to generate wireframes. Don't ask BrandIt to draft an ad. Each tool is at its strongest in its own lane.
 
