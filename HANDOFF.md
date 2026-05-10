@@ -1,165 +1,173 @@
 # Session Handoff — 2026-05-10 (evening)
 
-**Recommended next focus:** Issue #20 monetisation test — ship the paid "ProveIt Bundle" surface designed in this session's gh comment. The integration design, test architecture, AND the underlying email-delivery infrastructure are now all in place; only the Stripe + bundle-assembly build is left.
+**Recommended next focus:** Step back and **properly explore ProveIt's monetisation strategy** before committing to any test. Run `/proveit` in `~/code/proveit-strategy/` against the question. The £19–£29 paid-bundle idea drafted in [issue #20 comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134) was a stumbled-into shape, not a strategic decision — it's *one input* into the exploration, not the answer.
 
 ---
 
-## Session Summary — Claude Design integration shipped (v3.5.0)
+## Session Summary
 
-A focused afternoon session. One feature shipped, one strategic experiment scoped for next session.
+Two things landed end-to-end today:
 
-### What landed
+### 1. ProveIt v3.5.0 — Claude Design integration
 
-**v3.5.0 — Claude Design integration.** Spawned from the morning handoff's primary thread (Option A — "Claude Design integration with ProveIt"). Approached as observation-first: 5 probes against `claude.ai/design` driven via Playwright MCP, then 6 integration questions answered against what was observed, then design drafted, then `/shipit`. Three substantive changes to the agent prompt, one to the web app:
+PR [#23](https://github.com/cla1redonald/proveit/pull/23) merged. [Release v3.5.0](https://github.com/cla1redonald/proveit/releases/tag/v3.5.0). Six commits, all logical chunks (Phase 9 outputs / Phase 10 + boundary nuance / web pointer + test / docs / retro / reviewer fixes).
 
-1. **Phase 9 gains two new outputs** — `design-brief.md` (synthesis any designer can read on its own) and `claude-design-prompts.md` (four paste-ready prompts pre-populated with the PM's evidence: deck, wireframes, logos, social cards).
-2. **Phase 10 closing message rewritten.** Drops the apologetic "open claude.ai/design and paste discovery.md" wording. Surfaces three observed realities — the **Design systems** top-level tab as a one-time brand-token home, the **Handoff to Claude Code** button as a real round-trip, and the paste-ready prompts as the operational input. Bundle table updated to list 7 artefacts.
-3. **Phase 7 + Phase 10 boundary tables nuanced.** BrandIt vs Claude Design now has a logo-overlap paragraph: BrandIt = one finished logo in a complete brand system; Claude Design = three exploratory directions with rationale in 3 minutes. They compose.
-4. **Web app pointer.** Full Validation results view now points completed users to `/proveit` in Claude Code for the full bundle. Stays free for now; Issue #20 will replace this with a paid Stripe surface next session.
+What changed:
+- `agents/proveit.md` Phase 9 gained two new outputs — `design-brief.md` (synthesis any designer can read) and `claude-design-prompts.md` (four paste-ready prompts: deck, wireframes, logos, social cards, each pre-populated with the PM's evidence).
+- Phase 10 closing message rewritten — surfaces the **Design systems** top-level tab on claude.ai/design and the **Handoff to Claude Code** Share-menu button as the real round-trip, not an aspirational one.
+- Phase 7 + Phase 10 boundary tables nuanced with a logo-overlap paragraph (BrandIt = one finished logo in a brand system; Claude Design = three exploratory directions in 3 minutes; they compose).
+- New `FullBundlePointer.tsx` on Full Validation completion → points users to `/proveit` in Claude Code for the full bundle. 3 unit tests added (230/230 passing).
+- README, HANDOFF, CLAUDE.md, docs/design.md, web/README.md, web/ARCHITECTURE.md, web/COPY.md all synced.
 
-### How the design got grounded
+Grounded in a 5-probe Playwright study of `claude.ai/design` driven autonomously after one manual login. Observations + design docs were at `.session-state/` — gitignored, intentionally not committed.
 
-A 5-probe study of `claude.ai/design`, driven autonomously via the Playwright MCP after one manual login. Probes 1–5: un-branded deck, branded deck, wireframes with all states, three logo concepts, and six social cards. The observations doc and design doc are at `.session-state/` (gitignored — session-only, not for source control). Key findings that landed in the integration:
+### 2. Production infrastructure for the live site
 
-- The canvas produces *much* better artefacts when the prompt carries specifics. Probe 1 (vague) made up plausible numbers; Probe 2 (brand + voice) produced a build-vs-buy table, a competitive matrix, and a mock daily digest UI. The prompts file encodes that.
-- The **Design systems** tab is a top-level org-scoped artefact — brand tokens land there once, not pasted per project. The closing message tells PMs to do this once.
-- The **Handoff to Claude Code** button means the canvas → Code direction is a real round-trip, not a wish. This changed how Q3 (Phase 7.5 vs Phase 10) was answered.
-- The Wireframe sub-mode wants to interview you first by default. Prompt 2 in `claude-design-prompts.md` explicitly says "Skip the interview".
-- Claude Design produces three exploratory logo directions in 3 minutes with vector/HTML output and per-direction rationale. This *meaningfully* threatens BrandIt's DALL-E logo step but only that — the rest of BrandIt (palette, type pairing, design tokens) is unaffected. The boundary table now reflects this.
+Done in the same session, post-merge:
 
-### Issue #20 — concrete monetisation test scoped (not yet built)
+- **`proveit.tools` purchased** on GoDaddy (£11 first year, £41/yr renewal). Independent of Roami brand — kept ProveIt's identity separable.
+- **Vercel domains attached** to project `proveit-web` — apex serves the app, `www` 308-redirects via Vercel API.
+- **DNS at GoDaddy** — A `@` and A `www` both point at Vercel `76.76.21.21`. SSL auto-provisioned. Domain was confused mid-session (parking IPs + a swapped CNAME) — fixed by deleting the broken row and adding a clean A record for `www`.
+- **Resend domain verified** for `proveit.tools` via Domain Connect OAuth (DKIM at apex, SPF/MX at `send.proveit.tools` subdomain).
+- **`WAITLIST_FROM_EMAIL=hello@proveit.tools`** set in Vercel production env, redeployed.
+- **End-to-end smoke test passed** — POST /api/waitlist → 200 → email arrived in `cla1re@me.com` with correct From, Reply-To, Supabase dashboard link, and proper formatting.
 
-Mid-session, the question of "how does the web app's design-bundle handoff work" forced the deferred strategic decision. Captured the design as a comment on issue #20: [issue #20 comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134). The test is **deliberately separated from this PR** so results can be attributed cleanly to either ship.
+### 3. Monetisation test design captured (NOT built)
 
-The test design (next session focus):
+Mid-session, the question of "how does the web app's design-bundle handoff work" forced a deferred strategic decision. Captured a concrete experiment design as a comment on [issue #20](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134):
 
-- **Product:** "ProveIt Bundle" — the 5 files (`discovery.md`, `brand.md`, `spec.md`, `design-brief.md`, `claude-design-prompts.md`) emailed to the buyer
-- **Price:** single tier (not yet decided — gut £19–£29; needs 30 min market scan)
-- **Trigger:** end of a Full Validation web session, **replacing** the current waitlist email-capture
-- **Delivery:** Stripe payment link → success webhook → Resend email with files → Supabase order row. No custom checkout, no auth, no download portal.
-- **Metric:** conversion rate of completed Full Validations → paid bundle. Free fallback = the CLI pointer that v3.5.0 just shipped.
+- One product (the 5–7 file ProveIt Bundle, emailed via Resend)
+- One price tier (Claire to set — gut £19–£29, needs proper analysis)
+- One trigger (end of Full Validation, replacing the current waitlist email-capture)
+- One delivery (Stripe payment link → success webhook → Resend → Supabase order row)
+- One metric (conversion rate of completed Full Validations → paid bundle)
+
+**This was opportunistic shaping, not a strategic decision.** Captured to protect it; deferred deliberately so it doesn't conflate with the v3.5 ship. Now Claire wants to step back and think about monetisation properly, with this paid-bundle idea as one option among several — not the answer.
+
+### 4. Memory graduated this session
+
+Three patterns landed via @retro into persistent memory:
+
+- **Expert framework**: *Observation-first before drafting integrations.* The 5-probe study of claude.ai/design surfaced affordances (Handoff-to-Claude-Code button, Design Systems tab, verifier subagent) that priors alone would have missed. (`memory/shared/expert-frameworks.md`)
+- **Common mistake**: *Framing a missing capability as a constraint without checking direction.* The Q6 reframe — "no API → still works because the bridge runs canvas → Code, not the reverse" — flipped the entire Phase 10 copy from apology to confidence. Detection rule: hedging copy ("since we can't programmatically...") in any deliverable is a tell. (`memory/shared/common-mistakes.md`)
+- **Common mistake**: *Conditional-branch asymmetry in paired outputs.* Output 4 had `contextType: existing` guidance; Output 5 didn't. Reviewer caught it; should have been visible during drafting. Detection rule: when adding paired/symmetric structures, walk one concern across every paired item. (`memory/shared/common-mistakes.md`)
 
 ---
 
 ## Current State
 
-- **Branch:** `main`. v3.5.0 merged via PR #23. GitHub release at [v3.5.0](https://github.com/cla1redonald/proveit/releases/tag/v3.5.0).
-- **Last shipped:** Claude Design integration (PR #23, six commits) + post-ship infrastructure work (domain, DNS, Resend) — all complete and end-to-end-tested.
-- **Production deploy:** **[proveit.tools](https://proveit.tools)** (primary). `www.proveit.tools` 308s to apex. Old `proveit-web-zeta.vercel.app` URL still works as an alias. Ready, smoke-tested, served HTTP 200 with valid SSL.
-- **Tests:** **230/230** passing in `web/` (227 + 3 new for `FullBundlePointer`). Plugin agent prompts have no automated tests (markdown specs only).
+- **Branch:** `main`. v3.5.0 + post-ship docs + handoff refresh all on main. Working tree clean.
+- **Last commit:** `bb6cdd9` — `docs(handoff): refresh after evening domain + Resend setup`
+- **Latest GitHub release:** [v3.5.0](https://github.com/cla1redonald/proveit/releases/tag/v3.5.0)
+- **Production deploy:** **[proveit.tools](https://proveit.tools)** (primary). `www.proveit.tools` 308-redirects to apex. Old `proveit-web-zeta.vercel.app` remains a working alias.
+- **Tests:** 230/230 passing in `web/`. Plugin agent prompts have no automated tests (markdown specs only).
 - **Lint / typecheck / build:** all clean.
 - **Open PRs:** 0.
-- **Open GitHub issues:** 3 — #20 (GTM/monetisation strategy — scoped this session, build deferred), #21 (web product roadmap, blocked on #20), #22 (Tier 2 + Tier 3 abuse prevention, deferred).
-- **Domain:** `proveit.tools` purchased on GoDaddy (£11 first year, £41/yr renewal) — registrar GoDaddy, DNS at GoDaddy. UK-based registration. Two A records (`@` and `www`) point at Vercel `76.76.21.21`. `_domainconnect` CNAME present (GoDaddy automation, harmless).
-- **Vercel env vars in production:** `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=1`, `PER_IP_DAILY_CEILING_USD=1`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `WAITLIST_NOTIFY_EMAIL=cla1re@me.com`, **`WAITLIST_FROM_EMAIL=hello@proveit.tools`** (new). Issue #20 build will need `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
-- **Supabase project:** `proveit-web` (`bbpdicijaqoujnpidiho`). One smoke-test row in `waitlist` table to clean up at leisure: email `claude-smoke-test+2026-05-10@proveit.tools`. Issue #20 build will add an `orders` table.
-- **Resend account:** **`proveit.tools` domain verified** (DKIM at apex, SPF/MX at `send.proveit.tools` subdomain — Domain Connect via OAuth). Sender address `hello@proveit.tools` confirmed working end-to-end via smoke test (email landed in `cla1re@me.com` with correct From, Reply-To, formatting). Sandbox sender no longer used.
+- **Open GitHub issues:** 3 — #20 (GTM/monetisation strategy — *primary next-session focus*), #21 (web product roadmap, blocked on #20), #22 (Tier 2 + Tier 3 abuse prevention, deferred).
+- **Domain:** `proveit.tools` (GoDaddy) — DNS at GoDaddy, two A records pointing at Vercel.
+- **Vercel env vars (production):** `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=1`, `PER_IP_DAILY_CEILING_USD=1`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `WAITLIST_NOTIFY_EMAIL=cla1re@me.com`, `WAITLIST_FROM_EMAIL=hello@proveit.tools`.
+- **Supabase project:** `proveit-web` (`bbpdicijaqoujnpidiho`), eu-west-2.
+- **Resend account:** `proveit.tools` domain verified. `hello@proveit.tools` confirmed sending end-to-end.
 - **Lenny MCP:** installed at user scope. Active in any new Claude Code session.
-- **Playwright MCP:** installed during this session; useful for any future hands-on UI verification work.
-- **Vercel MCP plugin:** active — gives runtime log access, deployment listing, etc. without leaving the session.
+- **Playwright MCP:** installed today; available for any future hands-on UI work.
+- **Vercel MCP plugin:** active — runtime logs, deployment listings, domain checks without leaving the session.
 
 ---
 
-## Defence-in-depth currently protecting the live URL
+## Open Issues
 
-| Layer | What it stops |
+### Strategic — primary
+
+**#20 — Monetisation strategy unresolved.** A concrete £19–£29 paid-bundle test was scoped this session ([comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134)) but treating that as the answer would skip the strategic question. Worth properly exploring before building. Dimensions to surface in the exploration:
+
+- **Pricing models** — one-off bundle / subscription / freemium / token-credits / licensing (per validation, per company, per seat)
+- **Audience segments** — PMs at small co vs big tech vs solo founders vs agencies vs internal-tools teams; willingness-to-pay differs by 5–10× across these
+- **Distribution channels** — web direct (current) vs Claude Code plugin marketplace vs B2B sales-led vs partnership / embedded in PM tooling (Linear, Productboard, etc.)
+- **Test methodologies** — price-point A/B vs Wizard of Oz vs van Westendorp pricing interviews vs landing-page funnel test vs paid-pilot programme. Different methods give different fidelity at different costs.
+- **Multi-experiment vs single-experiment** — should we test 2–3 monetisation surfaces in parallel rather than committing to one?
+
+The captured comment is one input, not the answer.
+
+### Build / housekeeping (not blocking)
+
+- Delete the Supabase smoke-test row from today: email `claude-smoke-test+2026-05-10@proveit.tools` in the `waitlist` table. [Supabase dashboard](https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor).
+- Confirm `cla1re@me.com` is the right long-term notification address. Currently set in `WAITLIST_NOTIFY_EMAIL` Vercel env. Was deliberate (typo'd address for spam isolation) but worth re-checking for the post-#20 paid-bundle world where order receipts and customer support are at stake.
+- `agents/proveit.md` is now ~2150 lines after v3.5. Multi-file split is a candidate refactor but not urgent.
+- Tier 2 abuse prevention (#22) remains deferred until Tier 1 ceilings start tripping.
+
+### Files / locations worth knowing
+
+| What | Where |
 |---|---|
-| `x-real-ip` IP detection | Spoofed `x-forwarded-for` headers |
-| Per-IP rate limit (chat 5/min, fast 10/min) | Single-machine bursts |
-| Per-IP daily spend ceiling ($1) | Sustained single-user abuse |
-| Global daily spend ceiling ($1) | Viral distribution / aggregate abuse |
-| 90s app-level Anthropic timeout | Hung streams burning credits |
-| `text/event-stream` + `no-transform` headers | CDN buffering breaking streaming |
-| `server-only` import guards | Anthropic key reaching client bundle |
-| Supabase RLS + anon-INSERT-only policy | Unauthorised reads of the waitlist |
-| Email capture form on 503 | Lost portfolio-interest signal at the friction moment |
-| Real-time Resend notification | You finding out about signups days later |
-| **CLI bundle pointer on Full Validation completion** | Lost intent at the moment of high-value signal — funnels engaged users to the CLI today; will fund the paid bundle test tomorrow |
-| **`hello@proveit.tools` sender (Resend domain verified)** | Spam-filter false positives on transactional emails — DKIM-signed, SPF-aligned, no `onboarding@resend.dev` smell |
-
----
-
-## Pending threads (pick one for the next session)
-
-### A — Issue #20 monetisation test (recommended, scoped this session)
-
-The first concrete monetisation surface for ProveIt. Design captured at [issue #20 comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134). Build scope is small: Stripe payment link + Resend email delivery + Supabase order row + a UI swap on the validation results view (the current `FullBundlePointer` becomes a paid CTA, with the CLI pointer as the fallback below it). Decisions still open: price tier, refund copy, exact trigger placement.
-
-To run: open this directory, read the issue #20 comment, run `/proveit` against "what should the price tier be?" if you want a structured price-test. Otherwise jump straight to a `feat/proveit-bundle-paywall` branch.
-
-### B — Strategic validation: paid product vs portfolio piece (still relevant if #20 needs more thought)
-
-Tracked as Todoist task `6gc9RjXVxFMFFwJG` (p3) and #20. The #20 monetisation test *is* the operationalised version of this question — but if you want strategic clarity *before* building the test (positioning, pricing rationale, brand voice), the existing `~/code/proveit-strategy/` directory is set up to run `/proveit` against this exact question.
-
-### C — Run ProveIt v3.5 against a real idea (Wedding Speech Roaster)
-
-The matured plugin (now with `design-brief.md` + `claude-design-prompts.md`) hasn't been exercised against a real idea since v3.2. The Wedding Speech Roaster validation queued in Todoist `6gc9RjXVxFMFFwJG` was the natural first run. Will surface whether:
-- The two new design outputs feel like a bundle, or are redundant with each other
-- The design-brief's "hero scenario" section gets enough specificity from a normal `discovery.md`, or needs one extra question
-- The Claude Design prompt-population works (i.e. brackets all resolve cleanly)
-
-### D — Tier 2 abuse prevention (only if signals warrant)
-
-Issue #22 captures the full design. Useful only if Tier 1 ceilings start tripping in real usage. No signal yet.
-
-### E — ~~Verify a domain in Resend~~ ✅ Done 2026-05-10 evening
-
-`proveit.tools` purchased and verified end-to-end. Sender address `hello@proveit.tools`. Smoke test passed (email arrived correctly formatted, From / Reply-To / Supabase link all working). One Supabase test row to clean up at leisure (`claude-smoke-test+2026-05-10@proveit.tools`). Issue #20's paid bundle delivery surface can now use this verified sender directly.
-
-### F — Plugin file split
-
-`agents/proveit.md` is now ~2150 lines (added 250 in v3.5). Still readable, but at this size worth considering a multi-file split.
+| Plugin agent definition | `agents/proveit.md` — 2150 lines, single file (split candidate) |
+| Web app | `web/` — Next.js App Router, 230 tests, deployed to proveit.tools |
+| Validation results UI | `web/src/components/validate/ChatInterface.tsx` (FullBundlePointer wired here) + `web/src/components/validate/FullBundlePointer.tsx` |
+| Email/notification flow | `web/src/lib/notifications.ts` + `web/src/app/api/waitlist/route.ts` |
+| Strategic exploration directory | `~/code/proveit-strategy/` — separate working dir, has its own HANDOFF.md, set up specifically to run `/proveit` on strategic questions about ProveIt itself |
+| Memory graduations | `memory/shared/expert-frameworks.md`, `memory/shared/common-mistakes.md`, `memory/agent/proveit.md` |
 
 ---
 
 ## Resume Prompt
 
-Pick a focus from above (or your own), then in a fresh Claude Code session:
+Pick a focus from below (or your own), then in a fresh Claude Code session:
 
 ```bash
-cd ~/code/proveit
+cd ~/code/proveit-strategy   # for Option A (recommended)
+# OR
+cd ~/code/proveit             # for Options B–E
+
 claude
 ```
 
-Paste this — edit the focus line for whichever thread you want:
+Paste this — edit the focus line for whichever thread you want, delete the others:
 
 ```
 /preflight
 
 Then: read HANDOFF.md in this directory. The focus this session is [PICK ONE]:
 
-  Option A — Issue #20 monetisation test: build the paid "ProveIt Bundle"
-             surface designed in the issue #20 comment. Stripe payment link,
-             Resend email delivery, Supabase orders table, swap the
-             FullBundlePointer for a paid CTA + CLI fallback. The strategic
-             frame, the test design, and the success metric are all already
-             in the issue. Decisions still open: price tier, refund copy.
+  Option A — (RECOMMENDED) Properly explore ProveIt's monetisation strategy.
+             Run /proveit on "ProveIt monetisation strategy — explore the
+             options before committing to a test." Treat the captured
+             £19-£29 paid-bundle idea (issue #20 comment) as ONE INPUT, not
+             the answer. Make sure the exploration covers: pricing models
+             (one-off vs subscription vs freemium vs credits vs licensing),
+             audience segments (small-co PMs vs big-tech PMs vs solo
+             founders vs agencies — wtp varies 5-10×), distribution
+             channels (web direct vs Claude Code marketplace vs B2B),
+             test methodologies (A/B vs Wizard of Oz vs van Westendorp
+             vs landing page funnel vs paid pilot), and whether to run
+             multiple parallel experiments. Output a recommendation that
+             closes issue #20 with a decision, OR concludes #20 needs
+             further validation work first. Run from ~/code/proveit-strategy/
+             not the main proveit/ directory.
 
-  Option B — Strategic validation in ~/code/proveit-strategy/: paid product
-             vs portfolio piece. Open that directory's HANDOFF.md.
-             Re-frames as "what should #20's price tier be?" given v3.5.0
-             just shipped the technical foundation.
+  Option B — (downstream of A) Build the monetisation test once the
+             strategic exploration in Option A converges. The captured
+             £19-£29 bundle design is at issue #20 comment 4415247134 and
+             is ready to build if the exploration validates it. Branch
+             feat/proveit-bundle-paywall, work in ~/code/proveit/.
+             Required env: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
+             Adds an "orders" table to Supabase. Replaces the existing
+             FullBundlePointer with a paid CTA + CLI fallback.
 
-  Option C — Run /proveit on the Wedding Speech Roaster idea against the
-             matured v3.5 plugin (now with design-brief.md and
-             claude-design-prompts.md). Surfaces whether the two new design
-             outputs feel coherent and whether prompt slots resolve cleanly
-             from real discovery.
+  Option C — Run /proveit on the Wedding Speech Roaster idea against
+             v3.5 plugin (now with design-brief.md and claude-design-prompts.md).
+             Surfaces whether the two new design outputs feel coherent
+             and whether prompt slots resolve cleanly from real discovery.
 
-  Option D — Verify roami.group (or another domain) in Resend so notification
-             and order-receipt emails come from a real domain. Required for
-             Option A's paid bundle delivery to land in inboxes, not spam.
+  Option D — Plugin file split: agents/proveit.md is 2150 lines after v3.5.
+             Confirm whether Claude Code's plugin model supports a
+             multi-file split with agents/proveit.md as an index, then
+             refactor.
 
-  Option E — Plugin file split: agents/proveit.md is 2150 lines after v3.5.
-             Confirm whether Claude Code's plugin model supports a multi-file
-             split with agents/proveit.md as an index, then refactor.
+  Option E — Tier 2 abuse prevention. Issue #22. Useful only if Tier 1
+             ceilings start tripping in real usage — no signal yet.
 
-Plugin-side improvements ship freely. Web app product work stays gated on
-#20 (the strategic decision in option A/B).
+Trivial cleanups while you're in there (~5 min):
+- Delete the Supabase smoke-test row claude-smoke-test+2026-05-10@proveit.tools
+- Sanity check WAITLIST_NOTIFY_EMAIL=cla1re@me.com is still the right address
 ```
 
-End-of-session expectation: a release for whatever ships, plus an updated HANDOFF.md.
-
-```
-Pick a single option and delete the others before you paste — keeps the session focused.
-```
+End-of-session expectation: a clear recommendation closing or further-shaping #20 (for Option A), or a release for whatever ships (other options), plus an updated HANDOFF.md.
