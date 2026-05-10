@@ -1,11 +1,12 @@
 # ProveIt — Design Document
 
-**Version:** 3.1.0
+**Version:** 3.2.0
 **Date:** 2026-05-10
 **Author:** Claire Donald
 
 ## Changelog
 
+- **3.2.0 (2026-05-10)** — Phase 0 Intake + context-type branching + Brand/Design/Gamma boundary. New first phase before Brain Dump that captures *context type* (new idea vs iteration on existing) and *prior context* (URLs, files, prior research the PM wants read first). Discovery, swarm framing, BrandIt offer, and Gamma deck branding all branch on context type. BrandIt is now genuinely conditional: skipped automatically when `contextType: existing`, with optional lightweight "extend" mode for sub-brands. Explicit boundary table documented in Phase 7 and Phase 10 separating BrandIt (brand system), Claude Design (UX/wireframes), and Gamma (stakeholder deck) — three complementary tools with non-overlapping outputs to prevent drift. All swarm agents, the synthesis agent, the cross-model review, the pre-mortem, and Wave 3 now receive the prior-context payload from Phase 0 alongside `discovery.md`.
 - **3.1.0 (2026-05-10)** — Swarm expansion and Wave 3. Three new swarm agents: Defensibility/Moat (promoted to **default**, anchored by Hamilton Helmer's *7 Powers*), AI Commoditization (conditional, fires for AI-touching ideas), Regulatory (conditional, fires for regulated categories). Swarm composition changed from opt-in (5 defaults + ask to add) to **opt-out** (6 defaults + 4 default-on-conditional = up to 10; PM sees the proposed lineup and can remove any before spawn). Adaptive Fast Check: replaced hardcoded Desirability/Viability/Competition with a 7-category catalog; ProveIt picks the 3 most-likely-to-kill for the specific idea profile and states the reasoning before researching. New **Phase 6.7 Wave 3 — Scenario & Experiment** (optional, offered after Phase 6.5): 3 future scenarios with explicit probability weights + production-ready experiment artefacts (landing page copy, interview scripts, pricing tests, technical spike specs). Customer Impact fold-in: retention/habit anchors added (Adriel Frederick, Albert Cheng, Nir Eyal — *Hooked*). Tech Feasibility fold-in: operations/unit-economics anchors added (Brian Tolkin, Ray Cao). 17 new named expert anchors added (total ~34 across the methodology).
 - **3.0 (2026-05-09)** — Agent maturation pass. Added Phase 6.5 Pre-Mortem & Kill Criteria, Output 3 (`spec.md` PRD), claude.ai/design canvas handoff in Phase 10, and a menu-driven Deep Dive swarm (5 defaults + 2 conditional agents: GTM/Distribution and Pricing/Monetisation). Integrated [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) so the agents and swarm subagents can pull current PM expert context from Lenny's Podcast at runtime. Embedded named frameworks (Annie Duke, Bob Moesta, Teresa Torres, Madhavan Ramanujam, April Dunford, Dalton Caldwell, etc.) directly into agent prompts as durable structure.
 - **2.0 (2026-03-15)** — Phase restructure (named phases, seamless pipeline), in-session BrandIt, Cross-Model Review (o3) checkpoints, Portfolio Dashboard, Calibration Retro, Research Steering.
@@ -28,6 +29,8 @@ PMs have ideas but no structured way to validate them before pulling in engineer
 ProveIt runs one iterative loop. It is NOT linear — it cycles until confidence is high enough.
 
 ```
+★ Intake (Phase 0) ← NEW: context type + prior context
+       ↓
 Brain Dump → Discovery → Research → Findings Review
                                                       ↓
                                               Deep Dive (optional)
@@ -36,11 +39,13 @@ Brain Dump → Discovery → Research → Findings Review
                                                       ↓
                                               ★ Pre-Mortem & Kill Criteria  ← Phase 6.5
                                                       ↓
-                                              ★ Wave 3 — Scenario & Experiment (optional)  ← NEW Phase 6.7
+                                              ★ Wave 3 — Scenario & Experiment (optional)  ← Phase 6.7
                                                       ↓
                                               Confidence high enough?
                                                No → back to Discovery
-                                              Yes → Brand Identity (optional, in-session)
+                                              Yes → Brand Identity (gated on context type)
+                                                       - new      → full BrandIt
+                                                       - existing → skipped (or extend opt-in)
                                                       ↓
                                               ★ Final Review (pre-output)
                                                       ↓
@@ -49,11 +54,27 @@ Brain Dump → Discovery → Research → Findings Review
                                               - Validation Playbook (in discovery.md)
                                               - spec.md PRD (engineering handoff)
                                                       ↓
-                                              Next Steps:
+                                              Next Steps (non-overlapping):
                                               - /orchestrate to build
                                               - claude.ai/design for UX flows
                                               - share deck / hand spec to engineering
 ```
+
+### 0. Intake (added v3.2 — runs once, before Brain Dump)
+
+Phase 0 captures two things that make every subsequent phase sharper, in ~3 minutes / 3 questions:
+
+1. **Context type** — "new business / product idea, or iteration on something existing?" The answer branches the whole flow:
+   - `new` → standard flow including BrandIt offer at Phase 7
+   - `existing` → ask for the parent product/brand URL, fetch it, skip BrandIt by default (with optional "extend" hook), shift swarm framing to inheritance, surface cannibalisation/internal-politics/why-now-not-3-months-ago in Discovery
+
+2. **Prior context** — "Anything I should read before we start? URLs, files, prior research, competitor sites, an old PRD?" ProveIt fetches each (Firecrawl / WebFetch / Read), summarises in 2-3 bullets, and writes them to `discovery.md` under a new `## Prior context` section. This summary becomes part of the input passed to all subsequent phases AND all swarm agents.
+
+3. **Where it lives** *(existing only)* — production URL or app store link, fetched and analysed as the *starting position* for the iteration framing.
+
+Outputs: three new sections at the top of `discovery.md` — `## Context type`, `## Prior context`, `## Inherited assets` (existing only). These get passed to all swarm agents alongside the rest of `discovery.md`.
+
+Constraint: Phase 0 must not exceed 5 minutes. If you're at 5 minutes still in intake, move on. Don't drift into Discovery.
 
 ### 1. Brain Dump (runs once)
 
@@ -288,7 +309,24 @@ Results are shown transparently to the PM. CRITICAL findings are incorporated in
 
 **Output:** `review-N.md` files in the project directory (covered by `.gitignore`).
 
-### 7. Brand Identity (optional, in-session)
+### 7. Brand Identity (gated on context type, added v3.2 gating)
+
+Branching logic from Phase 0's `## Context type`:
+
+- **`new` →** offer full BrandIt as before — name, palette, fonts, logo, tokens, tone of voice. ~20 min. Outputs `brand.md` + `brand-tokens.css` + `brand-tokens.json` + logo PNG.
+- **`existing` →** skip BrandIt by default. Use inherited brand assets in the Gamma deck. Optional "extend" hook offered — produces `brand-extension.md` (sub-brand or campaign palette built on the parent), ~5–10 min, no full token set, no logo.
+
+Brand/Design/Gamma boundary (added v3.2) — three complementary tools with non-overlapping outputs:
+
+| Tool | Produces | Does NOT produce | When |
+|------|----------|------------------|------|
+| **BrandIt** | Brand SYSTEM: name, tagline, palette (full neutral scale + semantic colours), typography (Google Fonts), logo PNG, design tokens (CSS + JSON), tone of voice | UX, wireframes, screens, app icons, marketing copy beyond tagline | Phase 7 (or skipped on `existing`) |
+| **Claude Design** (claude.ai/design canvas) | Product UX: wireframes, user flows, screens, interaction states. Uses brand tokens as input. | Brand identity (assumes brand exists), engineering spec, marketing copy | Phase 10 next-step — manual handoff |
+| **Gamma** | Stakeholder DECK: slides for leadership / funding / team. Uses brand for visual cohesion. | UX, engineering spec, brand identity, executable artefacts | Phase 9 Output 1 |
+
+The boundary is enforced in the relevant phase prompts: BrandIt prompts must not produce wireframes; Claude Design handoff prompts must not invent brand identity (they pass the existing tokens as input); Gamma deck generation must not produce UX or engineering spec.
+
+
 
 If confidence scores are high enough, ProveIt offers to run the BrandIt flow in-session before generating the Gamma deck. This creates a complete brand identity — name, logo, colours, fonts, tone of voice, and design tokens — without leaving the ProveIt session. The PM gets 3 brand directions to choose from, with AI-generated logos via DALL-E. Output: `brand.md`, `brand-tokens.css`, `brand-tokens.json`, and logo PNGs. The Gamma deck then uses the real brand instead of placeholders.
 

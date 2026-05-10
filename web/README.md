@@ -195,12 +195,12 @@ A few non-obvious decisions worth knowing before touching the code:
 
 ## Relationship to the plugin
 
-The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this web app share methodology but diverge significantly on capability. As of v3.1 (2026-05-10), the plugin is ahead:
+The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this web app share methodology but diverge significantly on capability. As of v3.2 (2026-05-10), the plugin is ahead:
 
-- **Plugin** — full pipeline: structured discovery, automated research with [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp), opt-out swarm of up to 10 agents (6 defaults incl. Defensibility + 4 conditional: GTM, Pricing, AI Commoditization, Regulatory), cross-model review (OpenAI o3), Phase 6.5 Pre-Mortem, Phase 6.7 Wave 3 scenario planning + real experiment artefacts, optional in-session BrandIt, Gamma deck, engineering spec.md, claude.ai/design handoff
-- **Web** — discovery + research + scoring + downloadable `discovery.md` summary. No swarm, no BrandIt, no Gamma deck, no Lenny, no Wave 3. The lighter version, deliberately.
+- **Plugin** — full pipeline: Phase 0 Intake (context type + prior-context URL/file fetch), structured discovery, automated research with [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp), opt-out swarm of up to 10 agents (6 defaults incl. Defensibility + 4 conditional: GTM, Pricing, AI Commoditization, Regulatory), cross-model review (OpenAI o3), Phase 6.5 Pre-Mortem, Phase 6.7 Wave 3 scenario planning + real experiment artefacts, optional in-session BrandIt (gated on context type — skipped automatically for iterations on existing brands), Gamma deck, engineering spec.md, claude.ai/design canvas handoff with explicit boundary table
+- **Web** — discovery + research + scoring + downloadable `discovery.md` summary. No Phase 0 Intake yet (cold start). No swarm, no BrandIt, no Gamma deck, no Lenny, no Wave 3. The lighter version, deliberately.
 
-Web app parity with the plugin's Deep Dive swarm and Wave 3 is gated on the strategic product decision (plugin-only vs paid web product). Until that call is made, the plugin is the canonical surface for a serious validation. The web app exists for evaluators and PMs without Claude Code installed.
+Web app parity with Phase 0 Intake, the Deep Dive swarm, Wave 3, and the Brand/Design/Gamma boundary handoff is gated on the strategic product decision (plugin-only vs paid web product). Until that call is made, the plugin is the canonical surface for a serious validation. The web app exists for evaluators and PMs without Claude Code installed.
 
 ---
 

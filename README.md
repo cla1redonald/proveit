@@ -57,6 +57,7 @@ The full validation runs as a series of named phases. Each one writes its own fi
 
 | Phase | What it does | Why it matters |
 |---|---|---|
+| **0. Intake** | Captures *context type* (new idea vs iteration on existing) and *prior context* (URLs, files, prior research the PM wants read first). 3 questions, ~3 minutes. | Lets ProveIt start warm rather than cold. Branches the rest of the flow — existing-iteration sessions automatically skip BrandIt and shift swarm framing toward inheritance. |
 | 1. Brain Dump | Casual extraction — gets the idea out conversationally before frameworks kick in | Preserves the spark; PMs lose ideas in scaffolding |
 | 2. Discovery | Targeted questions across Desirability, Viability, Feasibility (14 questions, anchored by Bob Moesta, Teresa Torres, Marty Cagan, Madhavan Ramanujam, Sean Ellis) | Identifies gaps before research; turns vague intent into testable claims |
 | 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
@@ -65,10 +66,10 @@ The full validation runs as a series of named phases. Each one writes its own fi
 | 6. Cross-Model Review | OpenAI o3 reads everything and flags gaps, bias, logical leaps | Single-model bias is real; an independent reviewer catches it |
 | **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
 | **6.7. Wave 3 — Scenario & Experiment** *(optional)* | 3 future scenarios with probability weights + real experiment artefacts (landing page copy, interview scripts, pricing-test page, technical spike spec) | Turns "things to validate" into paste-and-run assets. Anchored by Annie Duke, Lane Shackleton, Teresa Torres. |
-| 7. Brand Identity *(optional)* | In-session BrandIt run — name, logo, colours, fonts, tokens | Real brand on the deck instead of placeholders |
+| 7. Brand Identity *(gated on context type)* | For new ideas: full BrandIt run — name, logo, colours, fonts, tokens. For iterations on existing brand: skipped automatically; optional lightweight BrandIt-extend produces a campaign / sub-brand on top of the parent. | The deck and downstream design work need real brand assets. Skip it cleanly when the brand already exists; don't ask the PM to invent something they have. |
 | 8. Final Review | Cross-model review #2 before outputs | Belt-and-braces |
 | 9. Outputs | **Three** artefacts: Gamma deck (stakeholders) + `spec.md` PRD (engineering) + Validation Playbook (PM) | Different audiences, different artefacts |
-| 10. Next Steps | Clean handoff: `/orchestrate` to build, claude.ai/design for UX, or hand spec to engineering directly | This is the bridge between "idea" and "shippable" |
+| 10. Next Steps | Three downstream tool paths with non-overlapping outputs: `/orchestrate` to build · claude.ai/design canvas for UX (manual handoff) · hand `spec.md` to engineering directly. Plus the Gamma deck for stakeholders and Wave 3 scenarios if it ran. | This is the bridge between "idea" and "shippable". The Brand/Design/Gamma boundary is documented to prevent tool drift — each tool has a single output type. |
 
 Additional commands:
 
