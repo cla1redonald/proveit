@@ -43,6 +43,13 @@ Day-30 review: **June 10, 2026.** Three pre-committed numbers must all hit (200 
 - Procurement-blocked PMs at large/regulated orgs — real pain, addressable later via inbound
 - Mid-size tech-enabled companies with weak product orgs — B2B sale, side-door inbound only
 
+**Dual reader on Substack — read this before drafting Substack posts.** ProveIt content on `cla1redonald.substack.com` will be read by **two distinct audiences** in the same inbox:
+
+1. **PMs evaluating ProveIt as a tool** — the primary product audience above. They want to know if it'll help them validate ideas, what the kill-signal output looks like, whether it's worth a £4.99 download.
+2. **Roami buyers** (fractional CPTO clients, advisory leads, NED prospects, AI-leadership hiring contacts) reading ProveIt posts as **evidence of Claire's capability**. They're not buying the tool; they're evaluating Claire-as-builder. The methodological discipline behind ProveIt (10-agent swarm, named methodologies, kill criteria, build-in-public) IS the Roami pitch in active form.
+
+Posts should target the PM audience as the primary read, but **don't suppress the second-order Roami signal** — it's a feature, not a leak. A post that walks a PM through ProveIt's adversarial discipline simultaneously demonstrates Claire's operating model to a fractional buyer. Treat the dual readership as designed, not accidental.
+
 ---
 
 ## Narrative spine
@@ -165,14 +172,17 @@ If a strong opportunity in any of the above lands inbound (e.g. a PM podcast ask
 
 ## How this brief relates to Roami
 
-ProveIt is a **separate venture** from Roami. They share Claire as the founder **and the `cla1redonald.substack.com` ("In the work") Substack publication as a distribution channel** — but not brand, voice, audience messaging, transactional sender, or domain.
+**ProveIt is a Roami portfolio piece — an example of the work Claire does as Roami, not a firewalled venture.** ProveIt keeps its own user-facing brand (distinct domain, transactional sender, PM-facing voice) so the PM buying or trialling the tool gets a clean product experience. But in build-in-public storytelling and on the shared Substack, ProveIt is *"what Roami builds"* — evidence of Claire's capability, not a separate company.
 
-- Roami's brand and audience targeting should not be referenced inside ProveIt content (and vice versa) even on the shared Substack — readers are subscribed to Claire-as-thinker, but each post should target one venture's audience cleanly and stand on its own
-- ProveIt's domain (`proveit.tools`) was deliberately purchased separately from `roami.group` to keep the products separable
-- Claire's `claire@roami.group` email signature is fine on internal/personal communication; ProveIt's transactional sender is `hello@proveit.tools`
-- Substack editorial cadence: ProveIt's 30-day launch ships 3 posts (days 10 / 18 / 26). Roami publishing during the same window stays paused (Roami is in Phase Q until ~mid-June anyway). When Roami exits Phase Q, the shared Substack needs editorial coordination so the two streams don't compete for the same week's slot — flag any near-duplicate cadence to Claire before scheduling
+What this means in practice:
 
-If a PR or marketing piece naturally bridges both ventures (e.g. an article about Claire-as-builder), that's fine — but treat ProveIt and Roami as distinct subjects, not aspects of the same thing.
+- **PM-facing surfaces** (`proveit.tools`, in-product copy, transactional emails from `hello@proveit.tools`) stay branded as ProveIt only. The PM doesn't need to know about Roami.
+- **Founder-narrative surfaces** (Substack posts, LinkedIn, GitHub README, conference talks, profile pages) **can and should frame ProveIt as "what I built at Roami"** or "an example of the Roami AgentOps approach" when the framing serves the piece. That's the Roami credibility signal — don't artificially scrub it.
+- **Substack** (`cla1redonald.substack.com` "In the work") carries both Roami advisory thinking AND ProveIt build/launch posts. The implicit through-line is "Claire builds and advises on AI-native operating models" — ProveIt is one such build.
+- **Domain split stays**: `proveit.tools` for the product, `roami.group` for advisory; `hello@proveit.tools` is product-side transactional, `claire@roami.group` is founder-side.
+- **Editorial coordination on the shared Substack**: ProveIt's launch (days 10/18/26) lands during Roami's Phase Q quiet period — no collision now. When Roami exits Phase Q (~mid-June), slot coordination matters so the two streams don't compete same-week.
+
+For PR/marketing agents: a piece on Claire-as-builder bridges both naturally; that's not the exception, that's the through-line. **Don't separate them artificially in the founder narrative — the connection is the value proposition.**
 
 ---
 
