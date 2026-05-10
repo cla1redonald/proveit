@@ -380,13 +380,13 @@ describe("POST /api/chat — edge cases", () => {
     const mockStream = makeAsyncIterator([]);
     vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
 
-    // The chat limit is 20 req / 60s. Exhaust it by making 20 successful requests.
+    // The chat limit is 5 req / 60s. Exhaust it by making 5 successful requests.
     // beforeEach already called resetRateLimitStores() so the counter starts at 0.
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       await POST(makeRequest(validPayload));
     }
 
-    // The 21st request should be blocked
+    // The 6th request should be blocked
     const res = await POST(makeRequest(validPayload));
     expect(res.status).toBe(429);
   });
@@ -395,7 +395,7 @@ describe("POST /api/chat — edge cases", () => {
     const mockStream = makeAsyncIterator([]);
     vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       await POST(makeRequest(validPayload));
     }
 

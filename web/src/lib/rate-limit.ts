@@ -12,7 +12,7 @@ import "server-only";
  *    Resets on cold start; fine for personal / single-instance use.
  *
  * Limits:
- * - /api/chat: 20 requests per IP per 60 seconds
+ * - /api/chat: 5 requests per IP per 60 seconds
  * - /api/fast: 10 requests per IP per 60 seconds
  */
 
@@ -38,7 +38,7 @@ let _chatLimiter: Ratelimit | null | undefined;
 let _fastLimiter: Ratelimit | null | undefined;
 
 function getChatLimiter(): Ratelimit | null {
-  if (_chatLimiter === undefined) _chatLimiter = buildUpstashLimiter(20, 60);
+  if (_chatLimiter === undefined) _chatLimiter = buildUpstashLimiter(5, 60);
   return _chatLimiter;
 }
 
@@ -162,7 +162,7 @@ export function getClientIp(req: Request): string {
 
 /** Rate limit config per endpoint */
 export const RATE_LIMITS = {
-  chat: { limit: 20, windowMs: 60_000 },
+  chat: { limit: 5, windowMs: 60_000 },
   fast: { limit: 10, windowMs: 60_000 },
 } as const;
 

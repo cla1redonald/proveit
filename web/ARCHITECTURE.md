@@ -64,7 +64,7 @@ Server-side libraries (src/lib/, all "server-only" where applicable)
 
 API Route Handlers (server-side only)
 ├── POST /api/fast                         — single-shot Fast Check (rate-limited 10/min)
-└── POST /api/chat                         — streaming Full Validation turns (rate-limited 20/min)
+└── POST /api/chat                         — streaming Full Validation turns (rate-limited 5/min)
 
 Middleware
 └── src/middleware.ts                      — origin guard for /api/* (CORS, derives allowed origin from Host)
@@ -798,7 +798,7 @@ IP-based rate limiting is implemented in `src/lib/rate-limit.ts` with two backen
 **Trusted client IP detection (`getClientIp`):** Uses `x-real-ip` (Vercel-set, untrusted-input-resistant) first; falls back to the LAST entry of `x-forwarded-for` (the platform-appended IP) — never the first entry, which is supplied by the client and trivially spoofable.
 
 Limits:
-- `/api/chat`: 20 requests per IP per 60 seconds
+- `/api/chat`: 5 requests per IP per 60 seconds
 - `/api/fast`: 10 requests per IP per 60 seconds
 
 Rate limit exceeded responses return HTTP 429 with `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers.
