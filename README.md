@@ -2,45 +2,133 @@
 
 > *"Products don't fail at launch. They fail at the idea — when nobody checked if the problem was real, the market was big enough, or someone already tried and failed. You're about to make that bet. ProveIt checks the odds first."*
 
-ProveIt takes a raw product idea through Desirability (do users want it?), Viability (can it be a business?), and light Feasibility (how big is the build?) — then generates a research document and Gamma presentation for technical handoff.
+ProveIt is an evidence-based product validation tool for product managers. It takes a raw idea through structured discovery, automated competitor and market research, a configurable adversarial swarm, a falsifiable pre-mortem, and a triple-output handoff bundle (stakeholder deck + engineering spec + validation playbook).
+
+It exists as **two surfaces** that share the same methodology:
+
+- **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via OpenAI o3, and a Gamma deck output. This README covers the plugin.
+- **A web app** at **[proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app)** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
 
 ---
 
-## When to Run It
+## Why I built this
+
+Product managers I've worked with — and I've been one — have a recurring failure mode: they fall in love with an idea, do the work to write the PRD, get it on the roadmap, and only then discover the problem wasn't real, the market was already saturated, or the willingness-to-pay didn't exist. By that point, momentum and sunk cost mean the project ships anyway.
+
+The available answers were all wrong-shaped:
+- **A blank ChatGPT tab** — no structure, no method, no honesty about kill signals
+- **A discovery sprint with 5 customer interviews** — useful but slow, and biased toward the people who agree to a 30-minute call
+- **A formal stage-gate process** — too heavy, too late, kills the spark of the idea
+
+ProveIt is what I wanted: a fast, structured, evidence-based preflight check that's honest enough to flag kill signals and rigorous enough to produce a real engineering handoff if the idea survives. It's grounded in named PM expert frameworks (Bob Moesta, Annie Duke, Teresa Torres, April Dunford, Madhavan Ramanujam, and others — see [Methodology](#methodology)), not in vibes.
+
+---
+
+## Table of contents
+
+- [When to run it](#when-to-run-it)
+- [What it does](#what-it-does)
+- [Methodology](#methodology)
+- [Pipeline (BrandIt + ShipIt)](#pipeline-brandit--shipit)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Resuming a session](#resuming-a-session)
+- [What you get](#what-you-get)
+- [Security model](#security-model)
+- [Repository layout](#repository-layout)
+- [Design notes](#design-notes)
+- [License](#license)
+
+---
+
+## When to run it
 
 Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or put something on the roadmap. It's a preflight check, not a post-analysis.
 
-- **Fast check (10-15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill the idea
-- **Full validation (1-2 hrs):** `/proveit:proveit [your idea]` — structured discovery + research + confidence scoring + handoff deck
+- **Fast check (10–15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill the idea
+- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm, pre-mortem, brand identity, handoff bundle
 
 ---
 
-## What It Does
+## What it does
 
-1. **Brain Dump** — Get the raw idea out fast, no frameworks
-2. **Structured Discovery** — Targeted questions across desirability, viability, and feasibility
-3. **Automated Research** — Competitor analysis, market evidence, tarpit detection — written to its own file each round
-4. **Confidence Scoring** — Desirability/Viability/Feasibility scored out of 10
-5. **Honest Assessment** — Kill signals flagged when evidence is against the idea
-6. **Deep Dive** *(optional)* — 5 parallel agents argue opposing angles on the sharpest open question, synthesised into a scored recommendation
-7. **Handoff Deck** — Gamma presentation for the technical team
-8. **Validation Playbook** — Suggested experiments to de-risk remaining unknowns
-9. **Brand Identity** *(optional)* — name, logo, colours, fonts, and design tokens created in-session
-10. **Next Steps** — offers `/orchestrate` to start building
+The full validation runs as a series of named phases. Each one writes its own file to your working directory; nothing is buried in a giant document.
+
+| Phase | What it does | Why it matters |
+|---|---|---|
+| 1. Brain Dump | Casual extraction — gets the idea out conversationally before frameworks kick in | Preserves the spark; PMs lose ideas in scaffolding |
+| 2. Discovery | Targeted questions across Desirability, Viability, Feasibility (14 questions, anchored by Bob Moesta, Teresa Torres, Marty Cagan, Madhavan Ramanujam, Sean Ellis) | Identifies gaps before research; turns vague intent into testable claims |
+| 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
+| 4. Findings Review | Confidence scores updated, kill signals flagged honestly | Stops the easy yes; surfaces the hard no |
+| 5. Deep Dive *(optional)* | Menu-driven swarm of 5–7 parallel agents arguing opposing angles, then synthesised | Uses the swarm to pressure-test the sharpest open question, not the whole idea |
+| 6. Cross-Model Review | OpenAI o3 reads everything and flags gaps, bias, logical leaps | Single-model bias is real; an independent reviewer catches it |
+| **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
+| 7. Brand Identity *(optional)* | In-session BrandIt run — name, logo, colours, fonts, tokens | Real brand on the deck instead of placeholders |
+| 8. Final Review | Cross-model review #2 before outputs | Belt-and-braces |
+| 9. Outputs | **Three** artefacts: Gamma deck (stakeholders) + `spec.md` PRD (engineering) + Validation Playbook (PM) | Different audiences, different artefacts |
+| 10. Next Steps | Clean handoff: `/orchestrate` to build, claude.ai/design for UX, or hand spec to engineering directly | This is the bridge between "idea" and "shippable" |
+
+Additional commands:
+
+- **`/proveit:dashboard`** — compare all your validated ideas side by side
+- **`/proveit:retro`** — record what actually happened with an idea to calibrate future scoring
+
+---
+
+## Methodology
+
+ProveIt's discovery questions and swarm agents apply named frameworks from product expert thinkers — many sourced live during research from [Lenny's Podcast](https://www.lennysnewsletter.com/podcast) via the [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) integration. The agents both *carry* the embedded framework attributions AND *call* the MCP at runtime to pull current quotes from the relevant guests.
+
+| Framework | Creator | Used in |
+|-----------|---------|---------|
+| Jobs-to-Be-Done · Switching forces · "Bitchin' ain't switchin'" | Bob Moesta | Discovery + Customer Impact swarm |
+| Continuous Discovery + Opportunity Solution Tree | Teresa Torres | Discovery + Customer Impact |
+| Customer Discovery vs Delivery · Death by Features | Marty Cagan | Tech Feasibility + Devil's Advocate |
+| ICP Scorecard | Ravi Mehta | Customer Impact |
+| Pre-mortem · Levels of Strategy · Anti-patterns | Shreyas Doshi | Phase 6.5 + Devil's Advocate |
+| Thinking in Bets / Quit | Annie Duke | Phase 6.5 — falsification, kill criteria |
+| Tarpit Detection ("just don't die") | Dalton Caldwell (YC) | Market Bear + Pre-Mortem |
+| Founder Mode | Brian Chesky | Devil's Advocate |
+| PMF Test ("very disappointed") | Sean Ellis | Discovery, Findings, Pre-Mortem |
+| Network Effects + Blitzscaling | Reid Hoffman | Market Bull |
+| Obviously Awesome Positioning | April Dunford | GTM swarm |
+| Growth Loops vs Funnels | Brian Balfour / Elena Verna | GTM swarm |
+| North Star + Adjacent Users | Bangaly Kaba | GTM swarm |
+| PLG Benchmarks | Kyle Poyar | GTM + Pricing |
+| Monetizing Innovation (incl. AI anchoring) | Madhavan Ramanujam | Pricing swarm |
+| Pricing data + cohort analysis | Patrick Campbell | Pricing swarm |
+| Value Proposition Canvas | Strategyzer | Discovery |
+| "Market is the most important thing" | Marc Andreessen | Market Bear |
+
+---
+
+## Pipeline (BrandIt + ShipIt)
+
+ProveIt connects to two sister tools for an idea-to-product flow:
+
+```
+/proveit  →  /brandit  →  claude.ai/design  →  /orchestrate
+ validate    brand it    design the UI       build it
+```
+
+Each step is optional. ProveIt offers BrandIt in-session before generating the deck, and suggests `/orchestrate` after handing off the `spec.md` PRD.
 
 ---
 
 ## Prerequisites
 
 **Required:**
-- **Claude Code** (latest version) — [install](https://claude.ai/download)
-- **Node.js** — [install](https://nodejs.org)
+- **Claude Code** (latest) — [install](https://claude.ai/download)
+- **Node.js** ≥ 20 — [install](https://nodejs.org)
 
-**MCP Tools** (configure in Claude Code settings):
-- **Firecrawl** — deep web research and competitor analysis
-- **Gamma** — generates the technical handoff presentation
+**Recommended MCP integrations:**
+- **Firecrawl** — deep web research and competitor analysis (required for serious research; ProveIt falls back to WebSearch/WebFetch without it)
+- **Gamma** — generates the technical handoff presentation in Phase 9 (skipped gracefully if absent)
+- **Lenny's Podcast MCP** — runtime PM expert priors. Install with `claude mcp add -t http -s user lenny-transcripts https://lenny-mcp.onrender.com/mcp`. Source: [akshayvkt/lenny-mcp](https://github.com/akshayvkt/lenny-mcp).
 
-ProveIt works without Firecrawl (falls back to WebSearch/WebFetch) and without Gamma (skips deck generation), but both are recommended for the full experience.
+**Optional:**
+- `OPENAI_API_KEY` — enables the o3 cross-model review in Phase 6 and Phase 8, plus DALL-E logo generation in BrandIt. Skipped gracefully if missing.
 
 ---
 
@@ -84,7 +172,7 @@ Add these keys to `~/.claude/settings.json` (merge — don't replace the whole f
 
 ---
 
-## Quick Start
+## Quick start
 
 Create a directory for your idea and start validating:
 
@@ -98,124 +186,123 @@ Then in Claude Code:
 /proveit I want to build a habit tracker for remote teams
 ```
 
-ProveIt will ask about the idea conversationally, run structured discovery, research competitors and market evidence, score confidence, and flag any kill signals honestly.
+ProveIt will get the idea out conversationally, run structured discovery, research competitors and market evidence, score confidence, and flag any kill signals honestly. After research, it offers a Deep Dive on the sharpest open question, runs a pre-mortem with falsifiable kill criteria, then produces the handoff bundle.
 
-## Resuming a Session
+For the rapid version (10–15 min, 3 critical assumptions only):
 
-ProveIt saves everything across files in your working directory. To resume:
+```
+/proveit:proveit-fast I want to build a habit tracker for remote teams
+```
+
+---
+
+## Resuming a session
+
+Everything ProveIt writes lives in your working directory. To resume:
 
 ```bash
 cd ~/my-idea
 /proveit
 ```
 
-It reads `discovery.md`, checks what research has already been done, shows where you left off, and picks up from there.
+It reads `discovery.md`, checks what research has already been done, summarises where you left off, and picks up from there.
 
 ---
 
-## Pipeline
+## What you get
 
-ProveIt connects to BrandIt and ShipIt for a seamless idea-to-product flow:
+Every output is a standalone markdown file in your working directory — shareable, pasteable, no dependencies. None are committed to git.
 
-```
-/proveit → validate → /brandit → brand it → /orchestrate → build it
-```
+### `discovery.md` — the index
 
-Each step is optional. ProveIt offers BrandIt in-session (Phase 7) before generating the deck, and suggests `/orchestrate` after.
-
-### Additional Commands
-
-- **`/proveit:dashboard`** — compare all your validated ideas side by side
-- **`/proveit:retro`** — record what happened with an idea to calibrate future scoring
-
----
-
-## What You Get
-
-Every output is a standalone markdown file in your working directory — shareable, pasteable, no dependencies.
-
-### discovery.md
-
-The index. Stays lightweight throughout the session:
-- Confidence scores (updated after every phase)
+Stays lightweight throughout the session:
+- Confidence scores (Desirability / Viability / Feasibility, updated after every phase)
 - Brain dump and discovery Q&A
-- Links to all research files
+- **Live Bets** (added by Phase 6.5) — the 3 critical bets with calendar kill dates, glanceable any time
+- Links to all research and swarm files
 - Kill signals (if any)
 - Recommendation
 - Validation playbook
 
-### research-N.md
+### `research-N.md` — one file per research round
 
-One file per standard research round. Each contains:
-- Competitor landscape (what exists, what failed, what's funded)
-- Market evidence (real people expressing the pain)
-- Tarpit check
-- Viability signals (pricing, market size, investor activity)
+Each contains: competitor landscape (active + dead + funded), market evidence (real users expressing the pain on Reddit/HN/forums), tarpit check, viability signals (pricing, market size, investor activity). Loops never overwrite — `research-2.md` lives alongside `research-1.md`.
 
-If ProveIt loops back for a second research round, it writes `research-2.md` — never overwrites prior rounds.
+### `swarm-N-*.md` — Deep Dive output (if Phase 5 runs)
 
-### swarm-N-synthesis.md *(if Deep Dive is run)*
+5 to 7 parallel agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate, plus optional GTM and Pricing) each writing their angle. A synthesis agent reads all of them and produces `swarm-N-synthesis.md` with executive summary, direct contradictions, bias check, score impact, and next steps.
 
-The main swarm deliverable. Contains:
-- Executive summary with confidence-weighted recommendation
-- Direct contradictions between opposing agents, with resolution
-- Bias check (absolute claims, echo chambers, missing perspectives)
-- Impact on Desirability/Viability/Feasibility scores
-- Next steps
+### `pre-mortem-N.md` — falsifiable kill criteria (Phase 6.5, added v3.0)
 
-The five individual agent files (`swarm-N-market-bull.md`, `swarm-N-market-bear.md`, etc.) are also written for deep dives.
+The decision-support artefact. Contains: a past-tense story of how the idea failed, the 3 critical bets being made by proceeding (each with a falsification test, pass criteria, and calendar kill date), failure modes ranked by likelihood × severity, operational kill criteria, and a "we keep going if" inverse list.
 
-### Gamma Presentation
+### `review-N.md` — cross-model review (if `OPENAI_API_KEY` is set)
 
-When confidence is high enough, ProveIt generates a slide deck covering:
-- The problem and who has it
-- Market landscape and positioning
-- Business model and market size
-- What to build (high level)
-- T-shirt size estimate and technical risks
-- Recommended next steps
+OpenAI o3 reads everything and flags gaps, bias, logical leaps, contradictions. CRITICAL findings get incorporated into scores. NOTABLE findings are surfaced for PM judgement.
 
-### brand.md *(if Brand Identity phase is run)*
+### `brand.md` — brand identity (if BrandIt phase runs)
 
-Complete brand guidelines — name, tagline, colours (with full neutral scale and semantic colours), typography (Google Fonts), tone of voice, spacing, border radius, shadows. Plus `brand-tokens.css` and `brand-tokens.json` for direct import into your build.
+Complete brand guidelines: name, tagline, colours (full neutral scale + semantic), typography (Google Fonts), tone of voice, spacing, border radius, shadows. Plus `brand-tokens.css` and `brand-tokens.json` for direct import into your build, and logo PNGs (DALL-E generated).
+
+### `spec.md` — engineering PRD (Phase 9 Output 3, added v3.0)
+
+A structured PRD that drops cleanly into Linear, Jira, or Notion. Critically, the success metrics in `spec.md` are pulled directly from the kill criteria in `pre-mortem-N.md` — so the team's leading indicators are the same conditions the PM committed to monitor. No metric divergence between strategy and delivery.
+
+### Gamma presentation
+
+Stakeholder / leadership deck — 9 slides covering the problem, market landscape, opportunity, target user, business model, what to build (high-level, not technical), size and complexity, remaining unknowns + Live Bets, and recommended next steps.
 
 ---
 
-## Security
+## Security model
 
-This repo commits **zero Bash permission allows** in `.claude/settings.json`. Anyone who clones this repo will be prompted to approve every command individually. This is intentional — see [ShipIt's security rationale](https://github.com/cla1redonald/shipit-v2) for why shared repos should not pre-approve command execution.
+This repo commits **zero Bash permission allows** in `.claude/settings.json`. Anyone who clones it will be prompted to approve every command individually. This is intentional — see [ShipIt's security rationale](https://github.com/cla1redonald/shipit-v2) for why shared repos should never pre-approve command execution.
+
+The agent never sees your API keys directly — they're only loaded by the Claude Code runtime when calling the relevant MCP server. Generated research files are gitignored by default to prevent accidental exposure of competitor analysis or business strategy.
 
 ---
 
-## Frameworks Used
+## Repository layout
 
-ProveIt applies named frameworks from product expert thinkers — many sourced from [Lenny's Podcast](https://www.lennysnewsletter.com/podcast) via the [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) integration, which gives the agents and the research swarm a callable tool for current PM expert context.
+```
+proveit/
+├── agents/proveit.md           # The main agent definition (Opus model)
+├── commands/                   # Slash command entry points
+│   ├── proveit.md              # /proveit — full validation
+│   ├── proveit-fast.md         # /proveit-fast — 10-15 min preflight
+│   ├── proveit-dashboard.md    # /proveit:dashboard — portfolio comparison
+│   └── proveit-retro.md        # /proveit:retro — calibration retrospective
+├── docs/
+│   ├── design.md               # Long-form design doc (v3.0)
+│   ├── plans/                  # Dated plans for major changes
+│   └── specs/                  # Dated implementation specs
+├── scripts/openai-review.mjs   # Cross-model review (o3) script
+├── web/                        # The standalone web app (proveit-web-zeta.vercel.app)
+├── .claude/settings.json       # No bash allows by default
+├── setup.sh                    # Install / uninstall script
+└── CLAUDE.md                   # Agent-side instructions
+```
 
-| Framework | Creator | Used in ProveIt |
-|-----------|---------|-----------------|
-| Jobs-to-Be-Done | Bob Moesta | Customer Impact swarm — understanding what users hire/fire |
-| "Bitchin' ain't switchin'" | Bob Moesta | Discovery + Customer Impact — separating complaints from real switching behaviour |
-| Continuous Discovery + Opportunity Solution Tree | Teresa Torres | Discovery + Customer Impact — interview discipline, mapping opportunities not features |
-| Customer Discovery vs Delivery | Marty Cagan | Tech Feasibility + Devil's Advocate — discovery is risk; delivery is requirements |
-| ICP Scorecard | Ravi Mehta | Customer Impact — forcing precise ideal-customer-profile scoring |
-| Pre-mortem | Shreyas Doshi | Phase 6.5 Pre-Mortem — surfacing risks and elephants early |
-| Thinking in Bets / Quit | Annie Duke | Phase 6.5 Pre-Mortem — falsification tests, kill criteria, when to walk away |
-| Levels of Strategy + Anti-patterns | Shreyas Doshi | Devil's Advocate — galaxy brain, tarpit, execution-as-strategy lenses |
-| Tarpit Detection ("just don't die") | Dalton Caldwell (YC) | Market Bear + Pre-Mortem — identifying ideas that seem good but fail repeatedly |
-| Founder Mode | Brian Chesky | Devil's Advocate — when expert wisdom is wrong because experts are pattern-matching badly |
-| Death by Features | Marty Cagan | Devil's Advocate — the safe wisdom of "ship more" is often what kills |
-| PMF Test ("very disappointed") | Sean Ellis | Discovery + Findings + Pre-Mortem — 40% bar as a kill criterion |
-| Network Effects + Blitzscaling | Reid Hoffman | Market Bull — value-for-Nth-user curve evaluation |
-| Obviously Awesome Positioning | April Dunford | GTM swarm — what's the alternative the user compares this to? |
-| Growth Loops vs Funnels | Brian Balfour / Elena Verna | GTM swarm — which loop powers acquisition; loops compound, funnels don't |
-| North Star + Adjacent Users | Bangaly Kaba | GTM swarm — who is the right user to acquire NEXT (one rung from your power user) |
-| PLG Benchmarks | Kyle Poyar | GTM + Pricing — category conversion / activation / retention bars |
-| Monetizing Innovation (incl. AI anchoring) | Madhavan Ramanujam | Pricing swarm — willingness-to-pay before building; don't anchor low |
-| Pricing data + cohort analysis | Patrick Campbell | Pricing swarm — WTP surveys, price elasticity, churn-vs-price studies |
-| Value Proposition Canvas | Strategyzer | Discovery — mapping jobs, pains, gains |
+---
+
+## Design notes
+
+A few decisions worth knowing if you're evaluating the engineering:
+
+**Frameworks are embedded as durable structure, MCP search is for runtime context.** The agents carry named expert frameworks (Annie Duke, Bob Moesta, Madhavan Ramanujam, etc.) directly in their prompts — that's load-bearing, not decorative. The Lenny MCP gives them a callable tool to verify and extend during research, not the source of truth. Pure runtime-search would be fragile (agents reinvent queries every session); pure prompt-bake would age (embedded framings go stale). Hybrid wins.
+
+**The swarm is menu-driven, not fixed.** Defaulting to 5 agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate) covers most ideas. Two more — GTM/Distribution and Pricing/Monetisation — fire conditionally, when the idea profile warrants. Forcing 7 on every run is expensive and noisy; missing them on consumer-facing or pricing-uncertain ideas is malpractice.
+
+**Pre-mortem produces calendar kill dates, not "things to validate".** The falsification tests in `pre-mortem-N.md` each have an explicit "kill date" and "pass criteria". The PM is committing in writing to a stop condition. This is Annie Duke's central point applied to product validation: people quit too late, not too early.
+
+**The success metrics in `spec.md` come from the pre-mortem.** Engineering's leading indicators are the same conditions the PM is using as kill criteria. No metric divergence between strategy and delivery — a quiet but important property of the handoff bundle.
+
+**Single agent on Opus, all subagents on Sonnet.** Cost-efficient. Opus does the judgement work (discovery scoring, deep-dive question crafting, pre-mortem framing, validation playbook). Sonnet does the structured/parallel work (research subagents, swarm agents, deck generation, brand directions).
+
+**Files are standalone Markdown.** Every output is shareable, pasteable, has no proprietary dependencies. The PM can stop using ProveIt mid-session and the artefacts remain useful.
 
 ---
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
