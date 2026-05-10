@@ -379,6 +379,9 @@ KILL SIGNAL CALLOUT LABEL
 NEXT STEPS SECTION LABEL
 "NEXT STEPS"
 
+FULL BUNDLE POINTER (shown below Download button when phase === "complete")
+"Want the full handoff bundle — discovery.md, brand.md, spec.md, design-brief.md, and paste-ready Claude Design prompts? Run /proveit in Claude Code — same idea, free, full pipeline."
+
 DOWNLOAD BUTTON
 "DOWNLOAD SUMMARY"
 

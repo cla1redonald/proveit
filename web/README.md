@@ -26,6 +26,8 @@ Conversational. A chat interface guides you through:
 4. **Findings** — confidence scores, kill signals (when evidence supports them), recommendation
 5. **Download** — a `discovery.md` summary you can paste into Linear, Notion, Slack, or anywhere
 
+On completion, a pointer below the Download button surfaces the full plugin pipeline (`/proveit` in Claude Code) for PMs who want the seven-artefact bundle: `discovery.md`, `brand.md`, `spec.md`, Gamma deck, `design-brief.md`, and paste-ready Claude Design prompts.
+
 The session persists in localStorage so you can close the tab and resume later from the same browser.
 
 ---
@@ -38,7 +40,7 @@ The session persists in localStorage so you can close the tab and resume later f
 - **Tailwind CSS v4** + shadcn/ui primitives
 - **Zod** for input validation in route handlers
 - **Upstash Redis** for distributed rate limiting (with an in-memory fallback for local dev only)
-- **Vitest** + React Testing Library — 181 tests across unit + integration
+- **Vitest** + React Testing Library — 230 tests across unit + integration
 - **Vercel** for hosting; Node.js runtime on the route handlers (Edge would break the Anthropic SDK)
 - **No database, no auth** — server is stateless, session state lives in the browser
 
@@ -161,7 +163,7 @@ web/
 │   │   │                                    # + AssistantMessage + StreamingText
 │   │   │                                    # + ChatInput + PhaseIndicator
 │   │   │                                    # + SearchingIndicator + ScorePanel
-│   │   │                                    # + DownloadButton
+│   │   │                                    # + DownloadButton + FullBundlePointer
 │   │   └── ui/                              # shadcn/ui primitives (button, card, etc.)
 │   ├── hooks/                               # useStream + useSession
 │   ├── lib/
@@ -174,7 +176,7 @@ web/
 │   │   └── utils.ts              # cn() + getRelativeTime
 │   ├── middleware.ts             # Origin guard for /api/*
 │   └── types/index.ts            # All shared TypeScript interfaces
-└── tests/                        # Unit + integration (181 tests)
+└── tests/                        # Unit + integration (230 tests)
 ```
 
 For the long-form architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
@@ -221,10 +223,11 @@ The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this we
 - In-session BrandIt (full brand identity generation)
 - Gamma deck output (Phase 9 Output 1)
 - Engineering `spec.md` PRD output (Phase 9 Output 3)
+- `design-brief.md` and `claude-design-prompts.md` (Phase 9 Outputs 4 + 5 — v3.5)
 - Lenny's Podcast MCP integration (runtime PM expert priors)
 - Calendar kill dates on bets (the web is single-session; no persistent date tracking yet)
 
-The web app exists for evaluators and PMs without Claude Code installed. For full-depth validation including swarm + Gamma + spec, run the plugin.
+The web app exists for evaluators and PMs without Claude Code installed. For full-depth validation including swarm + Gamma + spec + Claude Design handoff, run the plugin.
 
 ---
 
