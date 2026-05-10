@@ -21,38 +21,60 @@ ProveIt Web is a public Next.js 15 App Router application. It exposes the ProveI
 
 ## 2. Component Diagram
 
+Reflects actual `src/` tree as of 2026-05-10. Updated after the security/typography pass and the FastPageContent refactor.
+
 ```
 Browser
 │
-├── / (Home)
-│   ├── IdeaInput (Client)          — textarea + mode toggle
-│   └── ModeSelector (Client)       — Fast vs Full toggle
+├── / (Home — src/app/page.tsx, Server Component)
+│   ├── HowItWorks (inline, Server)        — three-step "how it works" panel
+│   └── ResumeSessionBanner (Client)       — reads localStorage; shows resume / start-fresh
 │
-├── /fast (Fast Check)
-│   ├── FastLayout (Server)         — page shell, meta
-│   ├── FastStream (Client)         — initiates POST /api/fast, renders stream
-│   │   ├── AssumptionCard (Client) — individual verdict card (x3)
-│   │   └── StreamingIndicator (Client) — live typing animation
-│   └── RestartButton (Client)      — clears state, routes back to /
+├── /fast (Fast Check — src/app/fast/page.tsx, Server shell)
+│   └── FastPageContent (Client)           — owns idea state, switches between input / stream
+│       ├── FastInput (Client)             — textarea + RUN FAST CHECK; calls onSubmit(idea)
+│       └── FastStream (Client)            — initiates POST /api/fast, parses streaming response
+│           ├── AssumptionCard (Client)    — individual verdict card (x3)
+│           └── StreamingIndicator (Client) — live typing animation
 │
-└── /validate (Full Validation)
-    ├── ValidateLayout (Server)     — page shell, meta
-    ├── ChatInterface (Client)      — orchestrates full session
-    │   ├── MessageList (Client)    — renders conversation history
-    │   │   ├── UserMessage (Client)
-    │   │   └── AssistantMessage (Client)
-    │   │       └── StreamingText (Client) — token-level stream render
-    │   ├── ChatInput (Client)      — text input + send
-    │   ├── PhaseIndicator (Client) — Brain Dump / Discovery / Research / Results
-    │   ├── SearchingIndicator (Client) — shown during pause_turn gap
-    │   ├── ScorePanel (Client)     — live Desirability/Viability/Feasibility scores
-    │   └── DownloadButton (Client) — generates + downloads discovery.md
-    └── SessionManager (Client)     — reads/writes localStorage, resume banner
+└── /validate (Full Validation — src/app/validate/page.tsx, Server shell)
+    └── ChatInterface (Client)              — orchestrates session; idea input form + chat UI
+        ├── MessageList (Client)            — renders conversation history
+        │   ├── UserMessage (Client)
+        │   └── AssistantMessage (Client)
+        │       └── StreamingText (Client) — token-level stream render
+        ├── ChatInput (Client)              — text input + send / stop button
+        ├── PhaseIndicator (Client)         — Brain Dump / Discovery / Research / Findings / Complete
+        ├── SearchingIndicator (Client)     — search-query log + dots during research phase
+        ├── ScorePanel (Client)             — live Desirability/Viability/Feasibility + kill signals
+        └── DownloadButton (Client)         — generates + downloads discovery.md (with inline error)
+
+Hooks (src/hooks/)
+├── useStream                              — wraps fetch + ReadableStream for /api/* calls
+└── useSession                             — reads/writes localStorage; createSession / clearSession
+
+Server-side libraries (src/lib/, all "server-only" where applicable)
+├── anthropic.ts                           — Anthropic SDK client (server-only guard)
+├── prompts.ts                             — Fast Check + Full Validation system prompts
+├── rate-limit.ts                          — Upstash + in-memory limiter, getClientIp helper
+├── streaming.ts                           — line-based stream parser shared by hooks
+├── markdown.ts                            — discovery.md generation for download
+├── session.ts                             — localStorage schema + CRUD
+└── utils.ts                               — cn() + getRelativeTime()
 
 API Route Handlers (server-side only)
-├── POST /api/fast                  — single-shot Fast Check
-└── POST /api/chat                  — streaming Full Validation turns
+├── POST /api/fast                         — single-shot Fast Check (rate-limited 10/min)
+└── POST /api/chat                         — streaming Full Validation turns (rate-limited 20/min)
+
+Middleware
+└── src/middleware.ts                      — origin guard for /api/* (CORS, derives allowed origin from Host)
+
+Tokens / theme
+└── src/app/roami-tokens.css               — vendored Roami Design System tokens (Deep Tay palette)
+└── src/app/globals.css                    — maps ProveIt CSS vars onto Roami tokens; Playfair / system-ui / Fira Code stack
 ```
+
+Removed since the original spec: `IdeaInput`, `ModeSelector`, `FastLayout`, `RestartButton`, `ValidateLayout`, `SessionManager`. The home page renders entry-point cards directly (no `ModeSelector`); `FastPageContent` replaces the URL-query handoff that previously connected `IdeaInput` to `FastStream`; layout files exist as `app/{fast,validate}/layout.tsx` but only set metadata, no rendering surface; session reads/writes are handled by the `useSession` hook + `lib/session.ts`, not a `SessionManager` component.
 
 ---
 
