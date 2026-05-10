@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Fira_Code } from "next/font/google";
 import "./globals.css";
+import PostHogProvider from "@/components/PostHogProvider";
 
 // Roami Design System fonts.
 // Body uses the system-ui stack — no Google import needed.
@@ -31,7 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${playfair.variable} ${firaCode.variable}`}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <PostHogProvider>{children}</PostHogProvider>
+      </body>
     </html>
   );
 }

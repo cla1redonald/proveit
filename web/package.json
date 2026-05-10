@@ -22,6 +22,7 @@
     "lucide-react": "0.511.0",
     "nanoid": "5.1.5",
     "next": "^15.3.9",
+    "posthog-js": "^1.372.10",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-markdown": "^10.1.0",

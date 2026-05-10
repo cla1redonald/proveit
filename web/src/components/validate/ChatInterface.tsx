@@ -7,6 +7,7 @@ import { useSession } from "@/hooks/useSession";
 import { createSession } from "@/lib/session";
 import { getRelativeTime } from "@/lib/utils";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
+import { captureEvent } from "@/lib/posthog";
 import MessageList from "./MessageList";
 import ChatInput from "./ChatInput";
 import PhaseIndicator from "./PhaseIndicator";
@@ -299,6 +300,8 @@ export default function ChatInterface() {
     killSignalsRef.current = [];
     setShowChat(true);
 
+    captureEvent("validation_started", { idea_length: idea.length });
+
     // Immediately send first user message and get ProveIt's opening
     sendMessage(idea, session);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -376,6 +379,12 @@ export default function ChatInterface() {
           setActiveSession((prev) =>
             prev ? { ...prev, phase: event.phase, updatedAt: Date.now() } : prev
           );
+          captureEvent("validation_phase_changed", { phase: event.phase });
+          if (event.phase === "complete") {
+            captureEvent("validation_completed");
+          } else if (event.phase === "findings") {
+            captureEvent("validation_research_complete");
+          }
         } else if (event.type === "scores") {
           newScores = event.scores;
           scoresRef.current = event.scores;

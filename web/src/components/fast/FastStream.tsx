@@ -6,6 +6,7 @@ import { useStream } from "@/hooks/useStream";
 import AssumptionCard from "./AssumptionCard";
 import StreamingIndicator from "./StreamingIndicator";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
+import { captureEvent } from "@/lib/posthog";
 import type { AssumptionResult, Verdict, StreamEvent } from "@/types";
 
 interface FastStreamProps {
@@ -133,8 +134,10 @@ export default function FastStream({ idea, onReset }: FastStreamProps) {
     } else if (event.type === "done") {
       setIsComplete(true);
       setIsSearching(false);
+      captureEvent("fast_check_completed");
     } else if (event.type === "error") {
       setIsSearching(false);
+      captureEvent("fast_check_errored");
     }
   }, []);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { captureEvent } from "@/lib/posthog";
 
 interface EmailCaptureFormProps {
   /** The 503 reason — shapes the framing copy */
@@ -56,6 +57,7 @@ export default function EmailCaptureForm({
       }
 
       setStatus("success");
+      captureEvent("waitlist_submitted", { reason });
       onSubmitted?.();
     } catch {
       setErrorMsg("Couldn't reach the server. Please try again.");

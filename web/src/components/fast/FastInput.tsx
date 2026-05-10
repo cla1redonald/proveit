@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { captureEvent } from "@/lib/posthog";
 
 const MAX_CHARS = 2000;
 
@@ -38,6 +39,7 @@ export default function FastInput({ onSubmit }: FastInputProps) {
       return;
     }
     setError(null);
+    captureEvent("fast_check_started", { idea_length: idea.trim().length });
     onSubmit(idea.trim());
   };
 
