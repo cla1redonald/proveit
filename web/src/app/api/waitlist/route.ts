@@ -2,6 +2,7 @@ import "server-only";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { addToWaitlist } from "@/lib/waitlist";
+import { notifyWaitlistSignup } from "@/lib/notifications";
 import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -58,6 +59,18 @@ export async function POST(req: NextRequest) {
     ideaExcerpt: parsed.data.ideaExcerpt,
     reason: parsed.data.reason,
     ip,
+  });
+
+  // Fire-and-forget notification email to the maintainer. Awaited so the
+  // serverless function doesn't return before Resend has had a chance to
+  // queue the send (Vercel functions can freeze on response). Errors are
+  // swallowed inside notifyWaitlistSignup — the form has already succeeded.
+  await notifyWaitlistSignup({
+    email: parsed.data.email,
+    ideaExcerpt: parsed.data.ideaExcerpt ?? "",
+    reason: parsed.data.reason,
+    ip,
+    ts: new Date().toISOString(),
   });
 
   return new Response(JSON.stringify({ ok: true }), {
