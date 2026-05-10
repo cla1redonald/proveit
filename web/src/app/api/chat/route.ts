@@ -84,12 +84,17 @@ export async function POST(req: NextRequest) {
   // 3. Build system prompt with current phase and scores
   const systemPrompt = buildChatSystemPrompt(phase, scores);
 
-  // 4. Conditionally add web search tool for research phase
+  // 4. Web search tool: enabled for research phase (heavy — up to 12 uses) AND
+  // for brain_dump phase with a small budget (up to 3 uses) so the model can
+  // fetch any URLs the user pastes during Phase 0 Intake. Other phases get no
+  // tools — discovery and findings are conversation-only.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tools: any[] | undefined =
     phase === "research"
       ? [{ type: "web_search_20250305", name: "web_search", max_uses: 12 }]
-      : undefined;
+      : phase === "brain_dump"
+        ? [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }]
+        : undefined;
 
   const encoder = new TextEncoder();
 

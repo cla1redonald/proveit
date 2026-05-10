@@ -100,7 +100,7 @@ describe("POST /api/chat", () => {
     expect(res.headers.get("Content-Type")).toContain("text/event-stream");
   });
 
-  it("does not include web search tool outside research phase", async () => {
+  it("includes web search tool during brain_dump phase with limited budget (Phase 0 intake)", async () => {
     const mockStream = makeAsyncIterator([]);
     vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
 
@@ -108,10 +108,25 @@ describe("POST /api/chat", () => {
     await POST(req);
 
     const callArgs = vi.mocked(anthropic.messages.create).mock.calls[0][0];
+    expect(callArgs.tools).toBeDefined();
+    expect(callArgs.tools).toHaveLength(1);
+    const tool = (callArgs.tools as { type: string; max_uses: number }[])[0];
+    expect(tool.type).toBe("web_search_20250305");
+    expect(tool.max_uses).toBe(3);
+  });
+
+  it("does not include web search tool during discovery or findings phases", async () => {
+    const mockStream = makeAsyncIterator([]);
+    vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
+
+    const req = makeRequest({ ...validPayload, phase: "discovery" });
+    await POST(req);
+
+    const callArgs = vi.mocked(anthropic.messages.create).mock.calls[0][0];
     expect(callArgs.tools).toBeUndefined();
   });
 
-  it("includes web search tool during research phase", async () => {
+  it("includes web search tool during research phase with full budget", async () => {
     const mockStream = makeAsyncIterator([]);
     vi.mocked(anthropic.messages.create).mockResolvedValue(mockStream as never);
 
@@ -121,7 +136,9 @@ describe("POST /api/chat", () => {
     const callArgs = vi.mocked(anthropic.messages.create).mock.calls[0][0];
     expect(callArgs.tools).toBeDefined();
     expect(callArgs.tools).toHaveLength(1);
-    expect((callArgs.tools as { type: string }[])[0].type).toBe("web_search_20250305");
+    const tool = (callArgs.tools as { type: string; max_uses: number }[])[0];
+    expect(tool.type).toBe("web_search_20250305");
+    expect(tool.max_uses).toBe(12);
   });
 
   it("truncates messages when more than 48 (sends exactly 50, gets 48 in Anthropic call)", async () => {

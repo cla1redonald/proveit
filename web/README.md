@@ -195,12 +195,26 @@ A few non-obvious decisions worth knowing before touching the code:
 
 ## Relationship to the plugin
 
-The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this web app share methodology but diverge significantly on capability. As of v3.2 (2026-05-10), the plugin is ahead:
+The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this web app share methodology. As of v3.2 (2026-05-10), the methodology is **largely in sync** at the prompt layer; the plugin still leads on infrastructure-heavy phases.
 
-- **Plugin** — full pipeline: Phase 0 Intake (context type + prior-context URL/file fetch), structured discovery, automated research with [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp), opt-out swarm of up to 10 agents (6 defaults incl. Defensibility + 4 conditional: GTM, Pricing, AI Commoditization, Regulatory), cross-model review (OpenAI o3), Phase 6.5 Pre-Mortem, Phase 6.7 Wave 3 scenario planning + real experiment artefacts, optional in-session BrandIt (gated on context type — skipped automatically for iterations on existing brands), Gamma deck, engineering spec.md, claude.ai/design canvas handoff with explicit boundary table
-- **Web** — discovery + research + scoring + downloadable `discovery.md` summary. No Phase 0 Intake yet (cold start). No swarm, no BrandIt, no Gamma deck, no Lenny, no Wave 3. The lighter version, deliberately.
+**In sync (web app matches plugin v3.2 methodology):**
+- **Phase 0 Intake** — Full Validation now opens with the context-type (new vs iteration) + prior-context (URLs / docs) intake. The model has limited web search access (3 uses) during `brain_dump` to fetch any URLs the user pastes.
+- **Adaptive Fast Check** — Fast Check picks 3 from a 7-category catalog (Desirability, Viability, Competition, Distribution, Defensibility, AI Commoditization, Regulatory) per idea profile, instead of a hardcoded D/V/C default.
+- **Framework anchoring** — discovery and findings prompts cite named expert anchors (Bob Moesta, Teresa Torres, Madhavan Ramanujam, Annie Duke, Sean Ellis, Marty Cagan, Shreyas Doshi, Dalton Caldwell).
+- **Live Bets / kill criteria** — findings phase produces 3 critical bets the PM is making, each with a falsification test and pass criteria. Annie Duke / Shreyas Doshi pre-mortem framing applied.
+- **Handoff guidance** — complete phase points at claude.ai/design canvas, downstream engineering, and the plugin for full-depth validation.
 
-Web app parity with Phase 0 Intake, the Deep Dive swarm, Wave 3, and the Brand/Design/Gamma boundary handoff is gated on the strategic product decision (plugin-only vs paid web product). Until that call is made, the plugin is the canonical surface for a serious validation. The web app exists for evaluators and PMs without Claude Code installed.
+**Plugin-only (still gated on the strategic product decision in #20):**
+- Multi-agent Deep Dive swarm (10 parallel adversarial agents)
+- Cross-Model Review via OpenAI o3
+- Wave 3 — Scenario & Experiment phase with paste-ready experiment artefacts
+- In-session BrandIt (full brand identity generation)
+- Gamma deck output (Phase 9 Output 1)
+- Engineering `spec.md` PRD output (Phase 9 Output 3)
+- Lenny's Podcast MCP integration (runtime PM expert priors)
+- Calendar kill dates on bets (the web is single-session; no persistent date tracking yet)
+
+The web app exists for evaluators and PMs without Claude Code installed. For full-depth validation including swarm + Gamma + spec, run the plugin.
 
 ---
 
