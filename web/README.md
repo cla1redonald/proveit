@@ -6,9 +6,7 @@ ProveIt Web is the public-facing surface of [ProveIt](../README.md), a structure
 
 There are two modes: a 90-second **Fast Check** for an early-warning assumption scan, and a multi-turn **Full Validation** chat that walks through structured discovery, live web research, scored findings, and a downloadable summary.
 
-![ProveIt screenshot](public/screenshot.png)
-
-> The screenshot above predates the May 2026 Roami Design System refresh — the live app uses the Deep Tay palette (warm copper accent, Highland-night blues) and a Playfair Display / system-ui / Fira Code typography stack. New screenshot pending.
+![ProveIt home page — Roami Deep Tay palette, Playfair Display hero, Kinfolk-magazine section labels](public/screenshot.png)
 
 ---
 
