@@ -1,6 +1,8 @@
 # Session Handoff — 2026-05-10 (evening)
 
-**Recommended next focus:** Step back and **properly explore ProveIt's monetisation strategy** before committing to any test. Run `/proveit` in `~/code/proveit-strategy/` against the question. The £19–£29 paid-bundle idea drafted in [issue #20 comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134) was a stumbled-into shape, not a strategic decision — it's *one input* into the exploration, not the answer.
+**Recommended next focus:** Step back and **properly explore ProveIt's GTM strategy** — monetisation, distribution, audience, and feedback channels together — before committing to any single test or build. Run `/proveit` in `~/code/proveit-strategy/`. The £19–£29 paid-bundle idea drafted in [issue #20 comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134) was a stumbled-into monetisation *shape*, not a GTM decision — it's *one input* into a wider exploration, not the answer.
+
+The GTM exploration should cover all of: pricing model, distribution channel, audience segment, content/marketing strategy (a Substack about the build-experience is on the table), and community-as-test-channel (LinkedIn + PM communities Claire is in, used both for distribution and as a feedback loop on the product).
 
 ---
 
@@ -78,15 +80,47 @@ Three patterns landed via @retro into persistent memory:
 
 ### Strategic — primary
 
-**#20 — Monetisation strategy unresolved.** A concrete £19–£29 paid-bundle test was scoped this session ([comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134)) but treating that as the answer would skip the strategic question. Worth properly exploring before building. Dimensions to surface in the exploration:
+**#20 — GTM strategy unresolved (broader than monetisation alone).** A concrete £19–£29 paid-bundle monetisation test was scoped this session ([comment](https://github.com/cla1redonald/proveit/issues/20#issuecomment-4415247134)) but treating that as the answer skips the strategic question of *how ProveIt reaches PMs in the first place* — monetisation is downstream of distribution and audience. Worth properly exploring before building. Dimensions:
 
-- **Pricing models** — one-off bundle / subscription / freemium / token-credits / licensing (per validation, per company, per seat)
-- **Audience segments** — PMs at small co vs big tech vs solo founders vs agencies vs internal-tools teams; willingness-to-pay differs by 5–10× across these
-- **Distribution channels** — web direct (current) vs Claude Code plugin marketplace vs B2B sales-led vs partnership / embedded in PM tooling (Linear, Productboard, etc.)
-- **Test methodologies** — price-point A/B vs Wizard of Oz vs van Westendorp pricing interviews vs landing-page funnel test vs paid-pilot programme. Different methods give different fidelity at different costs.
-- **Multi-experiment vs single-experiment** — should we test 2–3 monetisation surfaces in parallel rather than committing to one?
+**Pricing & monetisation model**
+- One-off bundle (the captured £19–£29 idea)
+- Subscription / token-credits / freemium / licensing (per validation, per company, per seat)
+- Free with no monetisation (portfolio piece) — still a legitimate option
 
-The captured comment is one input, not the answer.
+**Audience segment**
+- PMs at small co vs big tech vs solo founders vs agencies vs internal-tools teams
+- Willingness-to-pay differs by 5–10× across these segments
+- Different segments need different language, different distribution, different proof
+
+**Distribution channel**
+- Web direct (current — `proveit.tools`)
+- Claude Code plugin marketplace (already shipped via `marketplace.json`)
+- B2B sales-led
+- Partnership / embedded in PM tooling (Linear, Productboard, Notion)
+- **Build-in-public content channel** — see content strategy below
+
+**Content & marketing strategy** *(Claire wants to think about this — newly added 2026-05-10)*
+- **Substack about the build experience** — writing about *how ProveIt was built* (validation methodology, the shipped artefacts, the agent design choices, the v3.5 Claude Design integration learnings, the shift from portfolio piece toward product) as a content series. PMs interested in how PM tools get built ≈ exactly the audience for ProveIt. Meta-validation: the writing itself is the funnel.
+- **LinkedIn posts** — Claire's existing network. Lower commitment than Substack, faster signal, narrower audience.
+- **PM communities** — Mind the Product, Lenny's Newsletter community, Reforge, Product Hunt, etc. (Claire knows which ones she's actually in.) Sharing into these is both distribution AND test methodology — the reaction *is* signal.
+
+**Test methodology** *(applies to whichever monetisation shape gets tested)*
+- Price-point A/B
+- Wizard of Oz
+- Van Westendorp pricing interviews
+- Landing-page funnel test
+- Paid-pilot programme
+- **Community-share-and-watch** — share into a PM community, watch what conversations the post triggers, what people ask about, what offends them, what they ignore. Soft methodology but very rich for early-stage product/audience fit.
+
+**Multi-experiment vs single-experiment**
+- Should we test 2–3 monetisation surfaces in parallel rather than committing to one?
+- Should the Substack run independently of the monetisation test (always-on content channel) or be timed around it (test launch as content moment)?
+
+**Output of the strategic exploration** (what `/proveit` should produce)
+- A clear recommendation that *either* closes #20 with a decision *or* concludes #20 needs further validation work first
+- A small, sequenced set of experiments — what to test, in what order, what success looks like, what kill-criteria look like
+- A clear position on whether to start writing the Substack now (independent of test outcome) or to time it with a launch
+- An honest read of whether ProveIt is a product (paid, growing) or a portfolio piece (free, demonstration of skill) — that question is still genuinely open
 
 ### Build / housekeeping (not blocking)
 
@@ -127,21 +161,46 @@ Paste this — edit the focus line for whichever thread you want, delete the oth
 
 Then: read HANDOFF.md in this directory. The focus this session is [PICK ONE]:
 
-  Option A — (RECOMMENDED) Properly explore ProveIt's monetisation strategy.
-             Run /proveit on "ProveIt monetisation strategy — explore the
-             options before committing to a test." Treat the captured
-             £19-£29 paid-bundle idea (issue #20 comment) as ONE INPUT, not
-             the answer. Make sure the exploration covers: pricing models
-             (one-off vs subscription vs freemium vs credits vs licensing),
-             audience segments (small-co PMs vs big-tech PMs vs solo
-             founders vs agencies — wtp varies 5-10×), distribution
-             channels (web direct vs Claude Code marketplace vs B2B),
-             test methodologies (A/B vs Wizard of Oz vs van Westendorp
-             vs landing page funnel vs paid pilot), and whether to run
-             multiple parallel experiments. Output a recommendation that
-             closes issue #20 with a decision, OR concludes #20 needs
-             further validation work first. Run from ~/code/proveit-strategy/
-             not the main proveit/ directory.
+  Option A — (RECOMMENDED) Properly explore ProveIt's GTM strategy
+             (broader than monetisation alone). Run /proveit on
+             "ProveIt GTM — pricing, distribution, audience, content,
+             community testing — explore the options before committing
+             to a build." Treat the captured £19-£29 paid-bundle idea
+             (issue #20 comment) as ONE INPUT on the monetisation slice,
+             not the answer.
+
+             Make sure the exploration covers ALL of:
+             - Pricing model (one-off vs subscription vs freemium vs
+               credits vs licensing vs free / portfolio)
+             - Audience segment (small-co PMs vs big-tech PMs vs solo
+               founders vs agencies — wtp varies 5-10×)
+             - Distribution channel (web direct vs Claude Code marketplace
+               vs B2B vs partnership-embedded vs build-in-public content)
+             - Content / marketing — specifically: should Claire write a
+               Substack about the build experience (the v3.5 Claude Design
+               work, the agent design, the validation methodology)? PMs
+               interested in how PM tools get built ≈ ProveIt's audience.
+               Meta-validation channel.
+             - Community sharing — LinkedIn + PM communities Claire is in
+               (Lenny's, Mind the Product, etc.) as both distribution and
+               feedback-loop / test methodology
+             - Test methodology (A/B vs Wizard of Oz vs van Westendorp vs
+               landing page funnel vs paid pilot vs community-share-and-watch)
+             - Multi-experiment vs single (should we test 2-3 monetisation
+               surfaces in parallel? Should the Substack run independently
+               of any monetisation test or time around it?)
+
+             Output a recommendation that:
+             - Closes issue #20 with a decision OR concludes it needs
+               further validation work first
+             - Sequences a small set of experiments (what to test, in
+               what order, success/kill criteria for each)
+             - Takes a position on whether the Substack starts now
+               (always-on) or times with a launch
+             - Honest read on product vs portfolio piece (still open)
+
+             Run from ~/code/proveit-strategy/ not the main proveit/
+             directory.
 
   Option B — (downstream of A) Build the monetisation test once the
              strategic exploration in Option A converges. The captured
