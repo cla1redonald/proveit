@@ -1,18 +1,19 @@
 # Session Handoff — 2026-05-10
 
-**Next session focus:** Explore how to use Claude Design better / more for ProveIt. The abuse-prevention branch this morning was an unplanned interlude; Claude Design exploration is back to being the primary unfinished thread.
+**Next session focus:** Explore how to use Claude Design better / more for ProveIt. Today's session ran long with two abuse-prevention layers (v3.3 spend ceiling, v3.4 waitlist) on top of the methodology evolution; Claude Design exploration is the primary unfinished thread.
 
 ---
 
 ## Session Summary
 
-Five releases shipped today across the plugin and the web app:
+Six releases shipped today across the plugin and the web app:
 
 - **v3.0 (`81ae8c9`, `a1728b4`, `70cf74e`)** — Agent maturation pass. Embedded named expert frameworks (17 anchors, ~34 total), integrated [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) as a runtime tool, added Phase 6.5 Pre-Mortem & Kill Criteria (Annie Duke / Shreyas Doshi anchored), Output 3 (`spec.md` engineering PRD with success metrics tied to pre-mortem kill criteria), and the manual claude.ai/design canvas handoff in Phase 10.
 - **v3.1.0 (`40c7938`)** — Three new swarm agents: Defensibility / Moat (default, Hamilton Helmer's *7 Powers*), AI Commoditization (default-on-conditional), Regulatory / Compliance (default-on-conditional). Swarm refactored to opt-out (up to 10 agents). Adaptive Fast Check 7-category catalog. Phase 6.7 Wave 3 — Scenario & Experiment with paste-ready experiment artefacts. Customer Impact + Tech Feasibility fold-ins (retention/habit + ops/unit-economics).
 - **v3.2.0 (`7066486`)** — Phase 0 Intake before Brain Dump capturing context type (new vs iteration on existing) and prior context. BrandIt becomes truly conditional — skipped automatically for `contextType: existing`. Explicit Brand / Claude Design / Gamma boundary table documented in Phase 7, Phase 10, and design.md.
 - **v3.2.1 (`589faa4`, `43af17a`)** — Web app methodology brought in sync with plugin v3.2 at the prompt layer. Adaptive Fast Check + Phase 0 Intake + Live Bets + framework anchoring all live on proveit-web-zeta.vercel.app. Caught and fixed a category-metadata regression.
-- **v3.3.0 (`f83c70a`)** — **Tier 1 abuse prevention.** Server-side daily spend ledger + circuit breaker (`web/src/lib/spend-ledger.ts`). Two ceilings — global daily (`DAILY_SPEND_CEILING_USD`, default $5) and per-IP daily (`PER_IP_DAILY_CEILING_USD`, default $1). 503 with friendly "portfolio piece — capped" message when breached. Tier 2 (email gate) and Tier 3 (auth + paid) deferred to issue #22.
+- **v3.3.0 (`f83c70a`)** — **Tier 1 abuse prevention.** Server-side daily spend ledger + circuit breaker (`web/src/lib/spend-ledger.ts`). Two ceilings — global daily (`DAILY_SPEND_CEILING_USD`, **now $1** in production after lowering from $5 mid-session) and per-IP daily (`PER_IP_DAILY_CEILING_USD`, default $1). 503 with friendly "portfolio piece — capped" message when breached. Tier 2 (full email gate) and Tier 3 (auth + paid) deferred to issue #22.
+- **v3.4.0 (`170ec3f`)** — **Email-capture waitlist** for users hitting the spend ceiling. Lighter-touch than full Tier 2 — no auth, no quota-per-email, just an inline form ("Want more access? Drop your email") rendered when /api/fast or /api/chat returns 503. Submissions land in a Supabase waitlist table (project `bbpdicijaqoujnpidiho`, free tier, eu-west-2; migration check-in at `web/supabase/migrations/20260510_create_waitlist.sql`). RLS-enabled, anon publishable key has INSERT-only access. End-to-end smoke test verified: form posts → /api/waitlist → Supabase row appears. Privacy posture is light-touch (no marketing automation, emails go to Claire directly).
 
 **Browser-verified via Playwright:**
 - Fast Check on a regulated AI idea correctly picked **Regulatory + Desirability + Viability** (not D/V/C) with cited UK GDPR / ICO / NSPCC / NHS Digital sources.
@@ -27,14 +28,15 @@ Five releases shipped today across the plugin and the web app:
 ## Current State
 
 - **Branch:** `main`. All commits pushed. Working tree clean apart from `HANDOFF.md` itself (this file, being updated).
-- **Last commit:** `f83c70a` — `feat(web): v3.3 spend ledger + circuit breaker (Tier 1 abuse prevention)`
-- **Latest GitHub release:** [v3.3.0](https://github.com/cla1redonald/proveit/releases/tag/v3.3.0)
-- **Production deploy:** [proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app) — Ready, smoke-tested, no console errors. Anthropic SDK 0.95.1, Upstash rate limiting + spend ledger active, Roami Deep Tay palette, Phase 0 Intake live.
-- **Tests:** 205/205 passing in `web/`. Plugin agent prompts have no automated tests (markdown specs only).
+- **Last commit:** `170ec3f` — `feat(web): v3.4 email-capture waitlist (Supabase) for users hitting spend ceiling`
+- **Latest GitHub release:** [v3.4.0](https://github.com/cla1redonald/proveit/releases/tag/v3.4.0)
+- **Production deploy:** [proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app) — Ready, smoke-tested end-to-end (Fast Check returns 200; /api/waitlist accepts and writes to Supabase). Anthropic SDK 0.95.1, Upstash rate limiting + spend ledger + Supabase waitlist all active, Roami Deep Tay palette, Phase 0 Intake live.
+- **Tests:** 219/219 passing in `web/`. Plugin agent prompts have no automated tests (markdown specs only).
 - **Lint / typecheck / build:** all clean.
 - **Open PRs:** 0
-- **Open GitHub issues:** 3 — #20 (GTM/monetisation strategy, blocking), #21 (web product roadmap, blocked on #20), #22 (Tier 2 + Tier 3 abuse prevention, deferred). All three have current status comments.
-- **Vercel env vars in production:** `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=5`, `PER_IP_DAILY_CEILING_USD=1`.
+- **Open GitHub issues:** 3 — #20 (GTM/monetisation strategy, blocking), #21 (web product roadmap, blocked on #20), #22 (Tier 2 + Tier 3 abuse prevention, deferred — note v3.4 is *lighter* than Tier 2, doesn't fully resolve #22).
+- **Vercel env vars in production:** `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=1` (lowered from $5 mid-session), `PER_IP_DAILY_CEILING_USD=1`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`.
+- **Supabase project:** `proveit-web` (`bbpdicijaqoujnpidiho`), eu-west-2, free tier, in the existing Roami org. Read the waitlist via the Supabase dashboard.
 - **Lenny MCP:** installed at user scope. Active in any new Claude Code session.
 
 ---
