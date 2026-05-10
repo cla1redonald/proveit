@@ -2,7 +2,7 @@
 
 > *"Products don't fail at launch. They fail at the idea — when nobody checked if the problem was real, the market was big enough, or someone already tried and failed. You're about to make that bet. ProveIt checks the odds first."*
 
-ProveIt is an evidence-based product validation tool for product managers. It takes a raw idea through structured discovery, automated competitor and market research, a configurable adversarial swarm, a falsifiable pre-mortem, and a triple-output handoff bundle (stakeholder deck + engineering spec + validation playbook).
+ProveIt is an evidence-based product validation tool for product managers. It takes a raw idea through structured discovery, automated competitor and market research, a configurable adversarial swarm, a falsifiable pre-mortem, an optional Wave 3 scenario and experiment phase, and a triple-output handoff bundle (stakeholder deck + engineering spec + validation playbook).
 
 It exists as **two surfaces** that share the same methodology:
 
@@ -20,7 +20,7 @@ The available answers were all wrong-shaped:
 - **A discovery sprint with 5 customer interviews** — useful but slow, and biased toward the people who agree to a 30-minute call
 - **A formal stage-gate process** — too heavy, too late, kills the spark of the idea
 
-ProveIt is what I wanted: a fast, structured, evidence-based preflight check that's honest enough to flag kill signals and rigorous enough to produce a real engineering handoff if the idea survives. It's grounded in named PM expert frameworks (Bob Moesta, Annie Duke, Teresa Torres, April Dunford, Madhavan Ramanujam, and others — see [Methodology](#methodology)), not in vibes.
+ProveIt is what I wanted: a fast, structured, evidence-based preflight check that's honest enough to flag kill signals and rigorous enough to produce a real engineering handoff if the idea survives. It's grounded in named PM expert frameworks (Bob Moesta, Annie Duke, Teresa Torres, April Dunford, Madhavan Ramanujam, Hamilton Helmer, and others — see [Methodology](#methodology)), not in vibes.
 
 ---
 
@@ -46,8 +46,8 @@ ProveIt is what I wanted: a fast, structured, evidence-based preflight check tha
 
 Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or put something on the roadmap. It's a preflight check, not a post-analysis.
 
-- **Fast check (10–15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill the idea
-- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm, pre-mortem, brand identity, handoff bundle
+- **Fast check (10–15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill this specific idea, picked from a 7-category adaptive catalog (not a fixed Desirability / Viability / Competition default)
+- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm (up to 10 agents, opt-out), pre-mortem, optional Wave 3 scenario + experiment artefacts, brand identity, handoff bundle
 
 ---
 
@@ -61,9 +61,10 @@ The full validation runs as a series of named phases. Each one writes its own fi
 | 2. Discovery | Targeted questions across Desirability, Viability, Feasibility (14 questions, anchored by Bob Moesta, Teresa Torres, Marty Cagan, Madhavan Ramanujam, Sean Ellis) | Identifies gaps before research; turns vague intent into testable claims |
 | 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
 | 4. Findings Review | Confidence scores updated, kill signals flagged honestly | Stops the easy yes; surfaces the hard no |
-| 5. Deep Dive *(optional)* | Menu-driven swarm of 5–7 parallel agents arguing opposing angles, then synthesised | Uses the swarm to pressure-test the sharpest open question, not the whole idea |
+| 5. Deep Dive *(optional)* | Opt-out swarm of up to 10 parallel agents arguing opposing angles, then synthesised — 6 defaults (incl. Defensibility) + 4 conditional (GTM, Pricing, AI Commoditization, Regulatory). ProveIt shows the proposed lineup before spawning; PM can trim. | Uses the full roster to pressure-test the sharpest open question; no lens left unchecked by default |
 | 6. Cross-Model Review | OpenAI o3 reads everything and flags gaps, bias, logical leaps | Single-model bias is real; an independent reviewer catches it |
 | **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
+| **6.7. Wave 3 — Scenario & Experiment** *(optional)* | 3 future scenarios with probability weights + real experiment artefacts (landing page copy, interview scripts, pricing-test page, technical spike spec) | Turns "things to validate" into paste-and-run assets. Anchored by Annie Duke, Lane Shackleton, Teresa Torres. |
 | 7. Brand Identity *(optional)* | In-session BrandIt run — name, logo, colours, fonts, tokens | Real brand on the deck instead of placeholders |
 | 8. Final Review | Cross-model review #2 before outputs | Belt-and-braces |
 | 9. Outputs | **Three** artefacts: Gamma deck (stakeholders) + `spec.md` PRD (engineering) + Validation Playbook (PM) | Different audiences, different artefacts |
@@ -83,23 +84,41 @@ ProveIt's discovery questions and swarm agents apply named frameworks from produ
 | Framework | Creator | Used in |
 |-----------|---------|---------|
 | Jobs-to-Be-Done · Switching forces · "Bitchin' ain't switchin'" | Bob Moesta | Discovery + Customer Impact swarm |
-| Continuous Discovery + Opportunity Solution Tree | Teresa Torres | Discovery + Customer Impact |
+| Continuous Discovery + Opportunity Solution Tree | Teresa Torres | Discovery + Customer Impact + Wave 3 |
 | Customer Discovery vs Delivery · Death by Features | Marty Cagan | Tech Feasibility + Devil's Advocate |
 | ICP Scorecard | Ravi Mehta | Customer Impact |
 | Pre-mortem · Levels of Strategy · Anti-patterns | Shreyas Doshi | Phase 6.5 + Devil's Advocate |
-| Thinking in Bets / Quit | Annie Duke | Phase 6.5 — falsification, kill criteria |
+| Thinking in Bets / Quit | Annie Duke | Phase 6.5 — falsification, kill criteria; Phase 6.7 — probabilistic scenario framing |
 | Tarpit Detection ("just don't die") | Dalton Caldwell (YC) | Market Bear + Pre-Mortem |
 | Founder Mode | Brian Chesky | Devil's Advocate |
-| PMF Test ("very disappointed") | Sean Ellis | Discovery, Findings, Pre-Mortem |
-| Network Effects + Blitzscaling | Reid Hoffman | Market Bull |
+| PMF Test ("very disappointed") | Sean Ellis | Discovery, Findings, Pre-Mortem, Wave 3 |
+| Network Effects + Blitzscaling | Reid Hoffman | Market Bull + Defensibility swarm |
 | Obviously Awesome Positioning | April Dunford | GTM swarm |
-| Growth Loops vs Funnels | Brian Balfour / Elena Verna | GTM swarm |
+| Growth Loops vs Funnels | Brian Balfour / Elena Verna | GTM swarm + Defensibility |
 | North Star + Adjacent Users | Bangaly Kaba | GTM swarm |
 | PLG Benchmarks | Kyle Poyar | GTM + Pricing |
 | Monetizing Innovation (incl. AI anchoring) | Madhavan Ramanujam | Pricing swarm |
 | Pricing data + cohort analysis | Patrick Campbell | Pricing swarm |
 | Value Proposition Canvas | Strategyzer | Discovery |
 | "Market is the most important thing" | Marc Andreessen | Market Bear |
+| *7 Powers* (Scale Economies, Network Economies, Counter-Positioning, Switching Costs, Branding, Cornered Resource, Process Power) | Hamilton Helmer | Defensibility swarm |
+| 4-Step Defensibility Cycle | Brian Balfour | Defensibility swarm |
+| Proprietary data flywheels | Peter Deng | Defensibility swarm |
+| Marketplace defensibility · AI economics | Dan Hockenmaier | Defensibility swarm + AI Commoditization swarm |
+| "AI lowers the floor, doesn't raise the ceiling" | Ben Horowitz | AI Commoditization swarm |
+| *Designing Machine Learning Systems* · production ML reality | Chip Huyen | AI Commoditization swarm |
+| AI products in practice · wrapper-vs-product distinction | Claire Vo | AI Commoditization swarm |
+| AI-native vs AI-feature · scenario thinking | Mike Krieger | AI Commoditization swarm + Wave 3 |
+| *Crossing the Chasm* · regulated-market chasms | Geoffrey Moore | Regulatory swarm |
+| Building in regulated industries | Hilary Gridley | Regulatory swarm |
+| Regulated platform thinking | David Singleton | Regulatory swarm |
+| Retention loops | Adriel Frederick | Customer Impact swarm |
+| Habit formation | Albert Cheng | Customer Impact swarm |
+| *Hooked* (trigger → action → variable reward → investment) | Nir Eyal | Customer Impact swarm |
+| Operations-heavy product economics | Brian Tolkin | Tech Feasibility swarm |
+| Service-heavy unit economics · software vs labour gross margins | Ray Cao | Tech Feasibility swarm |
+| Scenario planning in engineering orgs | Camille Fournier | Wave 3 |
+| Experiment design | Lane Shackleton | Wave 3 |
 
 ---
 
@@ -186,7 +205,7 @@ Then in Claude Code:
 /proveit I want to build a habit tracker for remote teams
 ```
 
-ProveIt will get the idea out conversationally, run structured discovery, research competitors and market evidence, score confidence, and flag any kill signals honestly. After research, it offers a Deep Dive on the sharpest open question, runs a pre-mortem with falsifiable kill criteria, then produces the handoff bundle.
+ProveIt will get the idea out conversationally, run structured discovery, research competitors and market evidence, score confidence, and flag any kill signals honestly. After research, it offers a Deep Dive on the sharpest open question — defaulting to the full 10-agent swarm (with opt-out). After the swarm, it runs a pre-mortem with falsifiable kill criteria and offers Wave 3 scenario planning with real experiment artefacts.
 
 For the rapid version (10–15 min, 3 critical assumptions only):
 
@@ -230,11 +249,15 @@ Each contains: competitor landscape (active + dead + funded), market evidence (r
 
 ### `swarm-N-*.md` — Deep Dive output (if Phase 5 runs)
 
-5 to 7 parallel agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate, plus optional GTM and Pricing) each writing their angle. A synthesis agent reads all of them and produces `swarm-N-synthesis.md` with executive summary, direct contradictions, bias check, score impact, and next steps.
+Up to 10 parallel agents — 6 defaults (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate, Defensibility) plus 4 default-on-conditional (GTM, Pricing, AI Commoditization, Regulatory) — each writing their angle. ProveIt shows the proposed agent lineup with per-agent reasoning before spawning; the PM can remove any. A synthesis agent reads all of them and produces `swarm-N-synthesis.md` with executive summary, direct contradictions, bias check, score impact, and next steps.
 
-### `pre-mortem-N.md` — falsifiable kill criteria (Phase 6.5, added v3.0)
+### `pre-mortem-N.md` — falsifiable kill criteria (Phase 6.5)
 
 The decision-support artefact. Contains: a past-tense story of how the idea failed, the 3 critical bets being made by proceeding (each with a falsification test, pass criteria, and calendar kill date), failure modes ranked by likelihood × severity, operational kill criteria, and a "we keep going if" inverse list.
+
+### `scenarios-N.md` — Wave 3 scenario planning + experiments (Phase 6.7, optional)
+
+Three future scenarios (best / expected / kill case) with explicit probability weights, decision quality assessment, and real experiment artefacts for each of the 3 critical bets from the pre-mortem — landing page copy, interview scripts, pricing-test pages, and technical spike specs written as production-ready strings, not descriptions. Anchored by Annie Duke (probabilistic framing), Lane Shackleton (experiment design), Teresa Torres (assumption testing), Camille Fournier (scenario planning).
 
 ### `review-N.md` — cross-model review (if `OPENAI_API_KEY` is set)
 
@@ -244,7 +267,7 @@ OpenAI o3 reads everything and flags gaps, bias, logical leaps, contradictions. 
 
 Complete brand guidelines: name, tagline, colours (full neutral scale + semantic), typography (Google Fonts), tone of voice, spacing, border radius, shadows. Plus `brand-tokens.css` and `brand-tokens.json` for direct import into your build, and logo PNGs (DALL-E generated).
 
-### `spec.md` — engineering PRD (Phase 9 Output 3, added v3.0)
+### `spec.md` — engineering PRD (Phase 9 Output 3)
 
 A structured PRD that drops cleanly into Linear, Jira, or Notion. Critically, the success metrics in `spec.md` are pulled directly from the kill criteria in `pre-mortem-N.md` — so the team's leading indicators are the same conditions the PM committed to monitor. No metric divergence between strategy and delivery.
 
@@ -273,7 +296,7 @@ proveit/
 │   ├── proveit-dashboard.md    # /proveit:dashboard — portfolio comparison
 │   └── proveit-retro.md        # /proveit:retro — calibration retrospective
 ├── docs/
-│   ├── design.md               # Long-form design doc (v3.0)
+│   ├── design.md               # Long-form design doc (v3.1)
 │   ├── plans/                  # Dated plans for major changes
 │   └── specs/                  # Dated implementation specs
 ├── scripts/openai-review.mjs   # Cross-model review (o3) script
@@ -289,9 +312,15 @@ proveit/
 
 A few decisions worth knowing if you're evaluating the engineering:
 
-**Frameworks are embedded as durable structure, MCP search is for runtime context.** The agents carry named expert frameworks (Annie Duke, Bob Moesta, Madhavan Ramanujam, etc.) directly in their prompts — that's load-bearing, not decorative. The Lenny MCP gives them a callable tool to verify and extend during research, not the source of truth. Pure runtime-search would be fragile (agents reinvent queries every session); pure prompt-bake would age (embedded framings go stale). Hybrid wins.
+**Frameworks are embedded as durable structure, MCP search is for runtime context.** The agents carry named expert frameworks (Annie Duke, Bob Moesta, Hamilton Helmer, Madhavan Ramanujam, etc.) directly in their prompts — that's load-bearing, not decorative. The Lenny MCP gives them a callable tool to verify and extend during research, not the source of truth. Pure runtime-search would be fragile (agents reinvent queries every session); pure prompt-bake would age (embedded framings go stale). Hybrid wins.
 
-**The swarm is menu-driven, not fixed.** Defaulting to 5 agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate) covers most ideas. Two more — GTM/Distribution and Pricing/Monetisation — fire conditionally, when the idea profile warrants. Forcing 7 on every run is expensive and noisy; missing them on consumer-facing or pricing-uncertain ideas is malpractice.
+**The swarm is opt-out, not opt-in.** The default is to run all agents that apply — 6 always-on plus up to 4 conditional agents that fire based on the idea profile (AI surface, regulated category, distribution uncertainty, pricing uncertainty). ProveIt states the proposed full set with per-agent reasoning before spawning; the PM gets one chance to remove any. The cost of running an extra agent is small; the cost of missing a relevant lens is structural.
+
+**Defensibility is now a default swarm agent.** Every idea must answer "why won't this be copied?" — that's a different question from "is the market real?". The Defensibility agent anchors on Hamilton Helmer's *7 Powers* and produces a mandatory 7 Powers Mapping table. It fires by default, not conditionally.
+
+**The Fast Check picks 3 assumptions from a 7-category catalog, not a fixed default.** The catalog — Desirability, Viability, Competition, Distribution, Defensibility, AI Commoditization, Regulatory — covers the full kill-signal surface. ProveIt picks the 3 most likely to kill *this specific idea* and states the reasoning before researching. A B2B HR tool gets Viability + Regulatory + Defensibility; a consumer AI app gets Desirability + AI Commoditization + Distribution.
+
+**Wave 3 produces real artefacts, not descriptions.** The experiment artefacts in `scenarios-N.md` are production-ready strings — landing page copy to paste into Webflow, interview scripts to paste into Calendly/Notion, pricing-test page copy, technical spike specs. The pm-facing Validation Playbook says "run a landing page test"; Wave 3 writes the test.
 
 **Pre-mortem produces calendar kill dates, not "things to validate".** The falsification tests in `pre-mortem-N.md` each have an explicit "kill date" and "pass criteria". The PM is committing in writing to a stop condition. This is Annie Duke's central point applied to product validation: people quit too late, not too early.
 

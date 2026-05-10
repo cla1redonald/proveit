@@ -38,13 +38,17 @@ ProveIt creates files in the current working directory. Each research phase writ
 ├── swarm-1-customer-impact.md
 ├── swarm-1-technical.md
 ├── swarm-1-devils-advocate.md
-├── swarm-1-gtm.md            # Optional swarm agent — added when GTM matters
-├── swarm-1-pricing.md        # Optional swarm agent — added when pricing matters
-├── swarm-1-synthesis.md      # Swarm synthesis — the main swarm deliverable
-├── pre-mortem-1.md           # Pre-mortem & kill criteria (Phase 6.5)
-├── review-1.md               # Cross-model review (o3)
-├── brand.md                  # Brand assets (if BrandIt phase runs)
-└── spec.md                   # PRD / tech spec output for engineering handoff
+├── swarm-1-defensibility.md       # Default swarm agent (added 2026-05-10) — Hamilton Helmer 7 Powers anchored
+├── swarm-1-gtm.md                 # Default-on-conditional — skip if captive audience
+├── swarm-1-pricing.md             # Default-on-conditional — skip if pricing well-understood
+├── swarm-1-ai-commoditization.md  # Default-on-conditional (added 2026-05-10) — fires for AI-touching ideas
+├── swarm-1-regulatory.md          # Default-on-conditional (added 2026-05-10) — fires for regulated categories
+├── swarm-1-synthesis.md           # Swarm synthesis — the main swarm deliverable
+├── pre-mortem-1.md                # Pre-mortem & kill criteria (Phase 6.5)
+├── scenarios-1.md                 # Wave 3 scenarios + experiment artefacts (Phase 6.7, optional)
+├── review-1.md                    # Cross-model review (o3)
+├── brand.md                       # Brand assets (if BrandIt phase runs)
+└── spec.md                        # PRD / tech spec output for engineering handoff
 ```
 
 `discovery.md` is the index and entry point. All other files are standalone — shareable, pasteable, no dependencies.
@@ -119,20 +123,37 @@ Do not ask more than 1 follow-up. Move on.
 
 ### Step 2: Identify the 3 critical assumptions (2 min)
 
-Based on what you've heard, identify the 3 assumptions that would most kill this idea if false. Typically:
+Based on what you've heard, pick **the 3 assumptions most likely to kill this specific idea** from the catalog below. Do NOT default to Desirability / Viability / Competition for every idea — that's the lazy answer. Pick the 3 that genuinely apply to *this* idea profile.
 
-1. **Desirability** — "Users have this pain badly enough to change behaviour"
-2. **Viability** — "Someone will pay for this / a business model exists"
-3. **Competition** — "There isn't already a dominant solution doing this"
+**Assumption catalog (7 categories):**
 
-Adapt to the specific idea. State them explicitly before researching:
+| Category | Default for | Skip when | Anchored by |
+|----------|-------------|-----------|-------------|
+| **Desirability** — "Users have this pain badly enough to change behaviour" | New categories, unfamiliar problems | Pain is already well-documented (e.g. ChatGPT-shaped writing tools — pain is established) | Bob Moesta (switching forces), Sean Ellis (PMF survey), Teresa Torres (continuous discovery) |
+| **Viability** — "Someone will pay for this / a business model exists" | Paid products, especially B2B | Free / portfolio / ad-supported where commercial isn't the question | Madhavan Ramanujam (WTP), Patrick Campbell (pricing data), Marc Andreessen (market quality) |
+| **Competition** — "There isn't already a dominant solution doing this" | Crowded landscapes, recognisable categories | Genuinely novel space with no analogues | Dalton Caldwell (tarpit), Lenny (channel coverage) |
+| **Distribution** — "There's a viable channel to reach users at acceptable cost" | Consumer-facing, content-led, viral mechanics | Captive audience already obvious (e.g. internal tool for known team) | April Dunford (positioning), Brian Balfour / Elena Verna (growth loops), Bangaly Kaba (adjacent users) |
+| **Defensibility** — "There's a moat or moat-pathway, not just first-mover claim" | Anything that scales; especially AI products | Service-only with no software leverage | Hamilton Helmer (*7 Powers*), Brian Balfour (4-step defensibility), Peter Deng (data flywheels), Reid Hoffman (network effects) |
+| **AI Commoditization** — "The foundation models won't ship this as a default in the next 12 months" | AI-powered or AI-feature-of-something-else ideas | Idea has zero AI surface | Ben Horowitz (strategic AI), Chip Huyen (ML systems), Claire Vo (AI products), Mike Krieger |
+| **Regulatory** — "This is legal where you'll launch, and the compliance cost is achievable" | Health, finance, kids, data, employment, lending, education | Clearly unregulated (general consumer SaaS) | Geoffrey Moore (regulated chasms), Hilary Gridley, David Singleton |
 
-> "Here are the 3 assumptions I'd check first. If any of these are false, the idea probably doesn't work:
-> 1. [Assumption]
-> 2. [Assumption]
-> 3. [Assumption]
+**Selection examples:**
+- *Wedding Speech Roaster* (consumer + AI + crowded, free→paid upsell): Desirability + AI Commoditization + Distribution
+- *Habit tracker for HR teams* (B2B + embedded + employment data): Viability + Regulatory + Defensibility
+- *AI-powered tax-prep tool*: Regulatory + AI Commoditization + Defensibility
+- *Consumer journaling app*: Desirability + Distribution + Defensibility
+- *Marketplace for freelance designers*: Competition + Defensibility (network effects) + Distribution
+
+State the 3 you picked AND why, before researching:
+
+> "Here are the 3 assumptions I'd check first for this specific idea. If any are false, the idea probably doesn't work:
+> 1. **[Category]** — [Assumption phrased for this idea]. Picked because [why this idea sits in this category's default-for criteria].
+> 2. **[Category]** — [Assumption]. Picked because [reason].
+> 3. **[Category]** — [Assumption]. Picked because [reason].
 >
 > Researching now..."
+
+The PM may push back on category choice — that's fine, swap and continue.
 
 ### Step 3: Research the 3 assumptions (5-8 min)
 
@@ -418,14 +439,31 @@ Glob for `swarm-*-synthesis.md`. Count existing files, then add 1 to get N (e.g.
 
 Also Glob for `research-*.md` and identify the highest-numbered file (e.g. `research-2.md`). This is `LATEST_RESEARCH`. Pass its contents to all swarm agents — do not derive the research filename from the swarm round number, as they will not always align.
 
-### Step 3: Pick the swarm composition
+### Step 3: Pick the swarm composition (opt-out by default)
 
-The five default agents (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate) cover most ideas. Two additional agents are available **conditionally** — include them when the idea profile warrants:
+The full swarm is **10 agents**. The 6 default agents always run; the 4 default-on-conditional agents run unless the idea profile clearly excludes them. Bias toward thoroughness — the cost of an extra Sonnet agent is small; the cost of missing a relevant lens is structural.
 
-- **GTM / Distribution** — include if: (a) the idea is consumer-facing, (b) discovery surfaced "how would they find out it exists?" as weak or unanswered, (c) competitive landscape is crowded and distribution is the differentiator. Skip if: deeply embedded internal tooling, captive audience already obvious.
-- **Pricing / Monetisation** — include if: (a) the PM is grappling with whether free vs paid is right, (b) pricing model affects the core value prop, (c) confidence on Viability score is below 6, (d) the idea is in a category with non-obvious price anchors. Skip if: pricing is well-understood (e.g. standard SaaS per-seat).
+| # | Agent | Tier | Skip when |
+|---|-------|------|-----------|
+| 1 | Market Bull | Default | — |
+| 2 | Market Bear | Default | — |
+| 3 | Customer Impact (incl. retention/habit) | Default | — |
+| 4 | Technical Feasibility (incl. operations for service-heavy ideas) | Default | — |
+| 5 | Devil's Advocate | Default | — |
+| 6 | **Defensibility / Moat** | Default | — |
+| 7 | GTM / Distribution | Default-on-conditional | Deeply embedded internal tooling with captive audience |
+| 8 | Pricing / Monetisation | Default-on-conditional | Pricing well-understood (e.g. standard SaaS per-seat with established anchors) |
+| 9 | **AI Commoditization** | Default-on-conditional | Idea has zero AI surface |
+| 10 | **Regulatory** | Default-on-conditional | Idea is clearly in an unregulated category (most consumer software) |
 
-Default to 5 agents. Add to 6 or 7 when the criteria above are met. State explicitly in the swarm intro what composition you chose and why, so the PM can object before agents spawn.
+**Step 3 protocol — preview before spawn:**
+
+1. Select the swarm composition by going through the table above. Default-on-conditional agents are included unless the "Skip when" criterion clearly applies.
+2. State the proposed full set explicitly to the PM. Format:
+   > "I'm planning to spawn N agents for this swarm: [list]. I'm including [conditional agent X] because [reason]. I'm skipping [conditional agent Y] because [reason]. Want me to drop or add anyone?"
+3. The PM can drop any agent or request one back. After confirmation, proceed to Step 4.
+
+The opt-out preview is the user's one chance to trim before tokens are spent. After spawning, the swarm runs to completion — there's no mid-swarm cancel.
 
 ### Step 4: Spawn the swarm in parallel
 
@@ -478,7 +516,7 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Customer Impact** (`swarm-[N]-customer-impact.md`):
-> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers. The hardest question in product is what customers will actually DO vs what they say.
+> "You are the CUSTOMER IMPACT research agent. Question: '[QUESTION]'. Your mandate: Evaluate from pure customer perspective — user experience, satisfaction, friction, switching triggers, AND retention dynamics (the post-acquisition reality that determines whether this is a leaky bucket). The hardest question in product is what customers will actually DO vs what they say.
 >
 > **Frameworks to apply:**
 > - **Bob Moesta — Jobs to Be Done & switching forces:** the four forces (push of the situation, pull of the new, anxiety, habit). 'Bitchin' ain't switchin'' — separate stated frustration from actual switching behaviour.
@@ -486,6 +524,9 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 > - **Marty Cagan — Customer discovery vs delivery:** discovery is about risk, not requirements. Look for evidence the team has separated the two.
 > - **Sean Ellis — PMF Survey:** the 40% 'very disappointed' threshold; what would make it true here?
 > - **Ravi Mehta — ICP Scorecard:** force a precise ideal customer profile, scored on fit dimensions.
+> - **Adriel Frederick — Retention loops:** retention is the leakiest part of most growth funnels. What's the mechanism that brings the user back?
+> - **Albert Cheng — Habit formation:** if the product needs to become a habit, what's the trigger / action / variable reward / investment loop (Nir Eyal's Hooked model applied)?
+> - **Nir Eyal — Hooked (canonical reference):** trigger → action → variable reward → investment.
 >
 > **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'switching forces', 'jobs to be done', 'continuous discovery', 'customer interviews', 'PMF survey').
 >
@@ -496,11 +537,13 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
 **Technical Feasibility** (`swarm-[N]-technical.md`):
-> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, and implementation risks. Be realistic about what's actually buildable by a small team in a sensible timeframe.
+> "You are the TECHNICAL FEASIBILITY research agent. Question: '[QUESTION]'. Your mandate: Evaluate engineering constraints, platform capabilities, technical complexity, implementation risks, AND — for service-heavy or operations-dependent ideas — the unit economics that determine whether this is buildable as software vs as a thinly-disguised consultancy. Be realistic about what's actually buildable by a small team in a sensible timeframe.
 >
 > **Frameworks to apply:**
 > - **Marty Cagan — Continuous discovery vs delivery:** treat technical feasibility as a discovery risk to test, not a delivery item.
 > - **Ravi Mehta — Build vs buy vs partner:** when does writing it from scratch make sense vs gluing existing pieces?
+> - **Brian Tolkin — Operations-heavy product economics:** for ideas where humans (not just software) are part of delivery, model the operational cost per unit of value delivered. The unit economics are the test of whether this is a software business or a labour business.
+> - **Ray Cao — Service-heavy unit economics:** the gross-margin question. Software businesses target 70–80% gross margin; service businesses live at 30–50%. Which is this, and which is the founder pretending it is?
 > - Standard architecture review: data, integrations, real-time, security/compliance, scaling profile, AI/ML model selection if relevant.
 >
 > **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'technical co-founder', 'build vs buy', 'minimum viable product', 'AI app architecture' if relevant).
@@ -528,7 +571,25 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 >
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
-**GTM / Distribution** (`swarm-[N]-gtm.md`) — *conditional, include per Step 3 criteria*:
+**Defensibility / Moat** (`swarm-[N]-defensibility.md`) — *default*:
+> "You are the DEFENSIBILITY / MOAT research agent. Question: '[QUESTION]'. Your mandate: Evaluate why this product won't be copied or commoditised. The most common quiet death for non-network-effect products is 'it works → gets copied → margins go to zero'. Your job is to refuse the comforting answer and find the actual moat — or honestly conclude there isn't one yet.
+>
+> **Frameworks to apply:**
+> - **Hamilton Helmer — *7 Powers* (canonical text):** Helmer's seven powers are *Scale Economies, Network Economies, Counter-Positioning, Switching Costs, Branding, Cornered Resource, Process Power*. Map this idea against each. Which power(s) does it have, which can it acquire, and which are simply not available in this category?
+> - **Brian Balfour — 4-Step Defensibility Cycle:** Step Zero (market conditions met) → Step One (build a moat) → Step Two (platform opening — capture demand) → Step Three (platform closing — control and monetise). Identify which step this idea is at and what the next step actually requires.
+> - **Peter Deng — Proprietary data flywheels:** for AI-adjacent ideas especially: what data accrues to this product over time that competitors can't replicate? Is the flywheel structural, or is it just 'we'll have more usage'?
+> - **Dan Hockenmaier — Marketplace defensibility:** if there's any two-sided component, evaluate liquidity, network effects, and the asymmetric-information advantage that makes the marketplace hard to compete with at scale.
+> - **Reid Hoffman — Network effects:** value-for-Nth-user curve. If the product becomes more valuable as more people use it, evaluate the cold-start problem and the lock-in tail.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'moat', 'defensibility', '7 powers', 'network effects', 'data flywheel', 'switching costs').
+>
+> **Find:** which of Helmer's 7 powers apply now, which could be acquired, and which structurally cannot. Concrete examples of competitors that copied a similar idea and won/lost. Specific defensibility moves the team should be making in year 1 to set up moat formation in year 2.
+>
+> **Output:** `swarm-[N]-defensibility.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+
+**GTM / Distribution** (`swarm-[N]-gtm.md`) — *default-on-conditional, skip only per Step 3 criteria*:
 > "You are the GTM/DISTRIBUTION research agent. Question: '[QUESTION]'. Your mandate: Evaluate how this product gets discovered and adopted — the part that kills most products even when the product itself is good.
 >
 > **Frameworks to apply:**
@@ -546,7 +607,7 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 >
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
-**Pricing / Monetisation** (`swarm-[N]-pricing.md`) — *conditional, include per Step 3 criteria*:
+**Pricing / Monetisation** (`swarm-[N]-pricing.md`) — *default-on-conditional, skip only per Step 3 criteria*:
 > "You are the PRICING/MONETISATION research agent. Question: '[QUESTION]'. Your mandate: Evaluate how this product makes money — pricing model, price level, free-vs-paid line, willingness-to-pay signals, and the unit economics underneath.
 >
 > **Frameworks to apply:**
@@ -560,6 +621,42 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 > **Find:** competitor pricing pages (with archive.org snapshots if recent changes), category-specific WTP studies, evidence of paid traction in adjacent products, examples of pricing changes that worked or failed, the 'price anchor' that customers in this category default to.
 >
 > **Output:** `swarm-[N]-pricing.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+
+**AI Commoditization** (`swarm-[N]-ai-commoditization.md`) — *default-on-conditional, skip only per Step 3 criteria*:
+> "You are the AI COMMODITIZATION research agent. Question: '[QUESTION]'. Your mandate: Evaluate the single sharpest risk for AI-era products — that the foundation models eat your lunch in 6 months. The Tech Feasibility agent argues 'can we build this?'; you argue 'will OpenAI/Anthropic/Google ship this as a default capability before we reach product/market fit?'. Be honest about wrapper risk and the difference between a product and a feature.
+>
+> **Frameworks to apply:**
+> - **Ben Horowitz — Strategic AI / 'good products are hard, defensible AI products are 10x harder':** Ben's central point is that AI lowers the floor (more people can build) but doesn't raise the ceiling (foundation models commoditise the easy wins). Identify whether this idea sits in the floor or the ceiling.
+> - **Chip Huyen — *Designing Machine Learning Systems* / production ML reality:** what specifically is hard about this AI product that a foundation model alone won't solve? Data, latency, evaluation, edge cases, fine-tuning, RAG architecture, agentic orchestration?
+> - **Claire Vo — AI products in practice:** the wrapper-vs-product distinction. A wrapper sells access to a model; a product sells an outcome the model alone can't deliver. Which is this?
+> - **Brian Balfour — Defensibility cycle for AI products:** the standard 4-step defensibility model applied specifically to AI — what's the structural moat that survives the next foundation-model release?
+> - **Dan Hockenmaier — AI economics:** which AI products have unit economics that work, and which break when costs change? Token-cost compression is happening fast; the businesses that survive built around it.
+> - **Mike Krieger (Anthropic CPO, ex-Instagram) — building AI products:** the practitioner perspective on what AI-native vs AI-feature actually means.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'AI commoditization', 'AI wrapper', 'AI moat', 'foundation models', 'AI product strategy', 'token costs').
+>
+> **Find:** which capabilities OpenAI/Anthropic/Google have shipped as defaults in the past 12 months that previously required a startup to build, what the foundation-model roadmaps suggest about the next 12 months in this category, examples of wrapper businesses that were absorbed by the model layer (and the few that survived), what the unit economics look like at current and projected token prices.
+>
+> **Output:** `swarm-[N]-ai-commoditization.md` in the current directory, following the required structure.
+>
+> [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
+
+**Regulatory / Compliance** (`swarm-[N]-regulatory.md`) — *default-on-conditional, skip only per Step 3 criteria*:
+> "You are the REGULATORY / COMPLIANCE research agent. Question: '[QUESTION]'. Your mandate: For ideas in regulated categories — health, finance, kids' content, data privacy, employment, lending, education accreditation — the difference between launch and lawsuit is whether the team built compliance in from day one or bolted it on after pre-revenue. Your job is to identify the regulations that apply, the cost of compliance, and the credible threats from regulators or claimants.
+>
+> **Frameworks to apply:**
+> - **Geoffrey Moore — *Crossing the Chasm* / regulated-market chasms:** regulated markets have their own chasms with their own dynamics. Early adopters in regulated spaces are often the most risk-tolerant institutions; the mainstream demands compliance certifications and audit trails the early adopters didn't.
+> - **Hilary Gridley — Building in regulated industries:** the operational reality of building software for healthcare or finance — what compliance work has to happen *before* the first customer, what can be deferred, and what the certification process actually costs.
+> - **David Singleton — Regulated platform thinking:** for any platform that handles payments, identity, or sensitive data, what the regulatory floor looks like vs the bar that gets you trusted by enterprise.
+> - **Standard regulatory taxonomy:** GDPR/UK GDPR, CCPA, COPPA (kids), HIPAA (US health), SOC 2, ISO 27001, PCI-DSS (payments), accessibility (WCAG / EAA), employment law per jurisdiction, financial-services licensing (FCA, SEC, MAS, etc.). Identify which apply.
+>
+> **Tools:** Firecrawl, WebSearch, `mcp__lenny-transcripts__search_transcripts` (suggested queries: 'regulated industry', 'compliance', 'HIPAA', 'GDPR', 'SOC 2', 'crossing the chasm regulated').
+>
+> **Find:** which regulations apply in the target jurisdictions, the typical cost and timeline of getting compliant (specific dollar figures and months), examples of analogous startups that hit regulatory walls (or successfully navigated them), enforcement action history in the category, the 'compliance moat' question — is regulation a barrier to entry that PROTECTS you, or one that BLOCKS you?
+>
+> **Output:** `swarm-[N]-regulatory.md` in the current directory, following the required structure.
 >
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
@@ -817,6 +914,128 @@ Add to Research Files section:
 Add a new top-level section to `discovery.md` called "## Live bets" containing the 3 critical bets with their kill dates. This is the section the PM should be able to glance at any time and know what they're committing to.
 
 If the pre-mortem changes any confidence scores, update them in `discovery.md`'s Confidence Score block with a note: `Adjusted post-pre-mortem: [reason]`.
+
+---
+
+## 6.7. Wave 3 — Scenario Planning & Experiment Design (optional, offered after Pre-Mortem)
+
+**The first three waves are about gathering evidence; Wave 3 is about acting on it.** Discovery → Research → Swarm + Pre-Mortem produce strong conviction in either direction (go or kill). Wave 3 turns that conviction into runnable experiments and probability-weighted scenarios. Most validation tools stop at "here's what the data says". Wave 3 is what makes ProveIt actually de-risk the idea, not just describe it.
+
+This phase is **optional**. Offer it after the pre-mortem; the PM can take it or skip to BrandIt / Outputs.
+
+### Frameworks this phase applies
+
+- **Annie Duke — *Thinking in Bets* / probabilistic decision-making:** every "go" is a bet under uncertainty. Decision quality and outcome quality are different — Wave 3 produces probability-weighted scenarios so the PM is making a *good decision under uncertainty*, not gambling on a single point estimate.
+- **Camille Fournier — Scenario planning in engineering orgs:** strong Lenny coverage. The discipline of imagining 3 specific futures (best / expected / kill) rather than one rosy projection.
+- **Mike Krieger (Anthropic CPO, ex-Instagram) — AI product scenario thinking:** for AI-powered ideas, the foundation-model roadmap is one of the largest input variables. Scenario-plan against the next 12-month model trajectory.
+- **Lane Shackleton — Experiment design:** the discipline of designing experiments that produce a binary yes/no per assumption, not a vague "we learned a lot".
+- **Teresa Torres — Assumption-test design:** her continuous-discovery framework explicitly produces test artefacts (interview scripts, prototype variants), not just lists of unknowns.
+- **Sean Ellis — PMF survey instrument:** the actual survey copy is the artefact, not "we should run a PMF survey".
+
+### Frame this to the PM
+
+> "Want to spend another 20 minutes turning this into runnable experiments? I'll generate 3 future scenarios — best case, expected case, kill case — with honest probability weights, and then write the actual artefacts you'd need to run the next experiments: landing page copy, interview scripts, pricing-test pages, technical spike specs. This is the difference between 'here's what to validate' and 'here's the email you can send tomorrow'."
+
+If the PM says yes, proceed.
+
+### Step 1: Determine round number
+
+Glob for `scenarios-*.md`. Count, add 1 to get N.
+
+### Step 2: Generate `scenarios-N.md`
+
+Synthesise from `discovery.md`, latest `research-*.md`, latest `swarm-*-synthesis.md`, latest `review-*.md`, latest `pre-mortem-*.md`. Use Lenny's MCP (`mcp__lenny-transcripts__search_transcripts`) for relevant scenario-planning content (suggested queries: "scenario planning", "thinking in bets", "probability", "AI product scenarios").
+
+Required structure for `scenarios-N.md`:
+
+```markdown
+# Scenarios [N]: [Idea Name]
+Date: [date]
+Methodology: Annie Duke probabilistic framing + Camille Fournier scenario planning + Mike Krieger AI-trajectory thinking (where applicable)
+
+## Three plausible futures (12-month horizon)
+
+### Scenario A — Best case
+**What happens:** [2-3 sentences. Specific market/competitor/user moves, not vague optimism.]
+**Probability:** [X%] — [reason for this number]
+**Confidence at end of year:** D[X]/V[X]/F[X] (vs current D[Y]/V[Y]/F[Y])
+**The one bet that has to come right:** [from the 3 critical bets in `pre-mortem-N.md` — which one drives this scenario?]
+
+### Scenario B — Expected case
+**What happens:** [2-3 sentences.]
+**Probability:** [X%]
+**Confidence at end of year:** D[X]/V[X]/F[X]
+**The one bet that has to come right:** [...]
+
+### Scenario C — Kill case
+**What happens:** [2-3 sentences. The pre-mortem narrative made concrete.]
+**Probability:** [X%]
+**Detection signals:** [specific metrics or events that would confirm this scenario is unfolding]
+**The one bet that breaks:** [...]
+
+**Probabilities must sum to 100.** Force the discipline. If you find yourself wanting to assign 60/30/10 because the PM is enthusiastic, that's exactly the bias the scenario phase is designed to surface.
+
+## Decision quality assessment
+
+Per Annie Duke: a good decision is one that makes sense given what you knew at the time, regardless of outcome. Given the probability weights above:
+
+- **Expected value of proceeding:** [if outcomes are quantified — e.g. £X if A, £0 if B, -£Y if C — what's the EV?]
+- **Worst-case downside:** [Scenario C's actual cost — time, money, opportunity]
+- **Asymmetric upside check:** [is there a scenario where the upside is 10x the downside? If so, even low probability is a buy.]
+
+## Experiment artefacts
+
+For each of the 3 critical bets in `pre-mortem-N.md`, generate the actual artefacts the PM would need to run the next experiment. Don't just describe — write the artefact.
+
+### Bet 1: [The bet from pre-mortem]
+**Falsification test:** [from pre-mortem]
+**Artefact required:** [landing page / interview script / pricing test / technical spike / etc.]
+
+#### [Artefact title — e.g. "Landing page copy for [URL]"]
+
+[Actual copy. Real headline. Real body paragraphs. Real CTA. Real fake-pricing if it's a pricing test. Production-ready, not template-with-placeholders.]
+
+#### [Optional second artefact for the same bet]
+
+[E.g. interview script with the actual 8-12 questions, ordered, with prompts for follow-ups.]
+
+### Bet 2: [...]
+
+[Same structure.]
+
+### Bet 3: [...]
+
+[Same structure.]
+
+## Sequencing — what to run first
+
+The 3 experiments cost different amounts of time/money and produce different information. Order them by **information value per unit cost**:
+
+| Order | Experiment | Cost (time + £) | Information value | Decision it informs |
+|-------|------------|-----------------|-------------------|---------------------|
+| 1 | [Cheapest highest-info] | [...] | [...] | [Which bet it tests] |
+| 2 | [...] | [...] | [...] | [...] |
+| 3 | [Expensive or low-info; deprioritise] | [...] | [...] | [...] |
+
+## What this updates
+
+After the experiments run, update `discovery.md` Confidence Score block AND `pre-mortem-N.md` Live Bets section with the new evidence. If a bet falls (test failed, pass criteria not met, kill date reached): execute the kill criterion. Don't quietly extend the deadline — that defeats the whole point of having one.
+```
+
+### Step 3: Present to the PM
+
+Show the scenarios summary table (probabilities + the one bet for each scenario), the EV calculation, the experiment sequencing table. Do NOT paste all the artefacts inline — they're long, they're for the PM to copy out of the file. Just tell them which artefacts were generated and where.
+
+> "Three scenarios written to `scenarios-[N].md`. Probabilities sum to 100% — A: [X]%, B: [Y]%, C (kill): [Z]%. Generated [N] experiment artefacts: [list]. The cheapest highest-information experiment to run first is [name] — that artefact starts at line [L] of the file."
+
+### Step 4: Update `discovery.md`
+
+Add to Research Files section:
+```
+- scenarios-[N].md — Wave 3 scenarios + experiment artefacts ([date])
+```
+
+Add a new "## Wave 3 sequencing" section with the experiment order and decision criteria so the PM has a glanceable next-action list.
 
 ---
 

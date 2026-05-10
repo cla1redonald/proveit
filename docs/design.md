@@ -1,11 +1,12 @@
 # ProveIt — Design Document
 
-**Version:** 3.0
-**Date:** 2026-05-09
+**Version:** 3.1.0
+**Date:** 2026-05-10
 **Author:** Claire Donald
 
 ## Changelog
 
+- **3.1.0 (2026-05-10)** — Swarm expansion and Wave 3. Three new swarm agents: Defensibility/Moat (promoted to **default**, anchored by Hamilton Helmer's *7 Powers*), AI Commoditization (conditional, fires for AI-touching ideas), Regulatory (conditional, fires for regulated categories). Swarm composition changed from opt-in (5 defaults + ask to add) to **opt-out** (6 defaults + 4 default-on-conditional = up to 10; PM sees the proposed lineup and can remove any before spawn). Adaptive Fast Check: replaced hardcoded Desirability/Viability/Competition with a 7-category catalog; ProveIt picks the 3 most-likely-to-kill for the specific idea profile and states the reasoning before researching. New **Phase 6.7 Wave 3 — Scenario & Experiment** (optional, offered after Phase 6.5): 3 future scenarios with explicit probability weights + production-ready experiment artefacts (landing page copy, interview scripts, pricing tests, technical spike specs). Customer Impact fold-in: retention/habit anchors added (Adriel Frederick, Albert Cheng, Nir Eyal — *Hooked*). Tech Feasibility fold-in: operations/unit-economics anchors added (Brian Tolkin, Ray Cao). 17 new named expert anchors added (total ~34 across the methodology).
 - **3.0 (2026-05-09)** — Agent maturation pass. Added Phase 6.5 Pre-Mortem & Kill Criteria, Output 3 (`spec.md` PRD), claude.ai/design canvas handoff in Phase 10, and a menu-driven Deep Dive swarm (5 defaults + 2 conditional agents: GTM/Distribution and Pricing/Monetisation). Integrated [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) so the agents and swarm subagents can pull current PM expert context from Lenny's Podcast at runtime. Embedded named frameworks (Annie Duke, Bob Moesta, Teresa Torres, Madhavan Ramanujam, April Dunford, Dalton Caldwell, etc.) directly into agent prompts as durable structure.
 - **2.0 (2026-03-15)** — Phase restructure (named phases, seamless pipeline), in-session BrandIt, Cross-Model Review (o3) checkpoints, Portfolio Dashboard, Calibration Retro, Research Steering.
 
@@ -33,7 +34,9 @@ Brain Dump → Discovery → Research → Findings Review
                                                       ↓
                                               ★ Cross-Model Review (post-deep-dive)
                                                       ↓
-                                              ★ Pre-Mortem & Kill Criteria  ← NEW (Phase 6.5)
+                                              ★ Pre-Mortem & Kill Criteria  ← Phase 6.5
+                                                      ↓
+                                              ★ Wave 3 — Scenario & Experiment (optional)  ← NEW Phase 6.7
                                                       ↓
                                               Confidence high enough?
                                                No → back to Discovery
@@ -44,11 +47,11 @@ Brain Dump → Discovery → Research → Findings Review
                                               Outputs:
                                               - Branded Gamma deck (stakeholder conversation)
                                               - Validation Playbook (in discovery.md)
-                                              - spec.md PRD (engineering handoff)  ← NEW (Output 3)
+                                              - spec.md PRD (engineering handoff)
                                                       ↓
                                               Next Steps:
                                               - /orchestrate to build
-                                              - claude.ai/design for UX flows  ← NEW
+                                              - claude.ai/design for UX flows
                                               - share deck / hand spec to engineering
 ```
 
@@ -189,25 +192,32 @@ After every findings review, ProveIt offers to go deeper. It reads the actual fi
 - "Given Swagup dominates enterprise, is there a real SMB gap?"
 - "Is the stated pain strong enough to drive switching, or is this a tarpit?"
 
-**Menu-driven swarm composition (v3.0)** — between 5 and 7 parallel Sonnet agents, picked per idea profile. ProveIt states the chosen composition to the PM before spawning, so they can object.
+**Opt-out swarm composition (v3.1)** — up to 10 parallel Sonnet agents. ProveIt states the proposed full set with per-agent reasoning before spawning; the PM can remove any before agents fire. Default is thorough — trimming is opt-out, not opt-in.
 
-| Agent | File | Mandate | Default? | Anchored by |
-|-------|------|---------|----------|-------------|
-| Market Bull | `swarm-N-market-bull.md` | Strongest case for opportunity | ✅ Always | Sean Ellis (PMF survey), Reid Hoffman (network effects), Brian Chesky (founder mode), Lenny (PMF benchmarks) |
-| Market Bear | `swarm-N-market-bear.md` | Strongest case for failure | ✅ Always | Dalton Caldwell (tarpit, "just don't die"), Shreyas Doshi (anti-patterns), Marc Andreessen (market quality) |
-| Customer Impact | `swarm-N-customer-impact.md` | Pure user perspective | ✅ Always | Bob Moesta (JTBD, switching forces), Teresa Torres (continuous discovery), Marty Cagan (discovery vs delivery), Ravi Mehta (ICP) |
-| Technical Feasibility | `swarm-N-technical.md` | What's actually buildable | ✅ Always | Marty Cagan (feasibility as risk), Ravi Mehta (build vs buy) |
-| Devil's Advocate | `swarm-N-devils-advocate.md` | Challenges conventional wisdom | ✅ Always | Annie Duke (thinking in bets), Shreyas Doshi (levels of strategy), Brian Chesky (push past experts), Marty Cagan (death by features) |
-| GTM / Distribution | `swarm-N-gtm.md` | How does this get found and adopted? | 🔵 Conditional — consumer-facing, distribution-as-differentiator, weak "how would they find it?" | April Dunford (positioning), Brian Balfour / Elena Verna (growth loops), Bangaly Kaba (adjacent users), Kyle Poyar (PLG benchmarks) |
-| Pricing / Monetisation | `swarm-N-pricing.md` | Pricing model, WTP, free-vs-paid line, unit economics | 🔵 Conditional — pricing uncertainty, Viability < 6, non-obvious price anchors | Madhavan Ramanujam (Monetizing Innovation, AI anchoring), Patrick Campbell (pricing data), Kyle Poyar (PLG monetisation) |
+| Agent | File | Mandate | Tier | Anchored by |
+|-------|------|---------|------|-------------|
+| Market Bull | `swarm-N-market-bull.md` | Strongest case for opportunity | Default | Sean Ellis (PMF survey), Reid Hoffman (network effects), Brian Chesky (founder mode) |
+| Market Bear | `swarm-N-market-bear.md` | Strongest case for failure | Default | Dalton Caldwell (tarpit), Shreyas Doshi (anti-patterns), Marc Andreessen (market quality) |
+| Customer Impact | `swarm-N-customer-impact.md` | Pure user perspective, incl. retention/habit | Default | Bob Moesta (JTBD), Teresa Torres (continuous discovery), Marty Cagan, Ravi Mehta (ICP), Adriel Frederick (retention), Albert Cheng (habit), Nir Eyal (*Hooked*) |
+| Technical Feasibility | `swarm-N-technical.md` | What's actually buildable, incl. ops/unit economics | Default | Marty Cagan (feasibility as risk), Ravi Mehta, Brian Tolkin (ops-heavy economics), Ray Cao (service-heavy unit economics) |
+| Devil's Advocate | `swarm-N-devils-advocate.md` | Challenges conventional wisdom | Default | Annie Duke (thinking in bets), Shreyas Doshi (levels of strategy), Marty Cagan (death by features) |
+| **Defensibility / Moat** | `swarm-N-defensibility.md` | Why won't this be copied? — 7 Powers mapping | **Default (NEW v3.1)** | Hamilton Helmer (*7 Powers*), Brian Balfour (4-step defensibility cycle), Peter Deng (data flywheels), Dan Hockenmaier (marketplace defensibility), Reid Hoffman (network effects) |
+| GTM / Distribution | `swarm-N-gtm.md` | How does this get found and adopted? | Default-on-conditional — skip if captive audience | April Dunford (positioning), Brian Balfour / Elena Verna (growth loops), Bangaly Kaba (adjacent users), Kyle Poyar (PLG) |
+| Pricing / Monetisation | `swarm-N-pricing.md` | Pricing model, WTP, free-vs-paid line, unit economics | Default-on-conditional — skip if pricing well-understood | Madhavan Ramanujam (*Monetizing Innovation*), Patrick Campbell, Kyle Poyar |
+| **AI Commoditization** | `swarm-N-ai-commoditization.md` | Will foundation models ship this as a default in 12 months? | **Default-on-conditional — skip if zero AI surface (NEW v3.1)** | Ben Horowitz (strategic AI), Chip Huyen (*Designing Machine Learning Systems*), Claire Vo (AI products), Mike Krieger, Dan Hockenmaier (AI economics) |
+| **Regulatory** | `swarm-N-regulatory.md` | Compliance cost, timeline, and enforcement risk | **Default-on-conditional — skip if clearly unregulated (NEW v3.1)** | Geoffrey Moore (*Crossing the Chasm*), Hilary Gridley (regulated industries), David Singleton (regulated platforms) |
 
-**When to add the conditional agents:**
-- **GTM:** include if (a) consumer-facing, (b) discovery surfaced "how would they find it?" as weak, (c) competitive landscape is crowded and distribution is the differentiator. Skip for embedded internal tooling or captive audiences.
-- **Pricing:** include if (a) PM is grappling with free vs paid, (b) pricing model affects core value prop, (c) Viability score below 6, (d) category has non-obvious price anchors. Skip for standard SaaS per-seat where pricing is well-understood.
+**When to include conditional agents:**
+- **GTM:** consumer-facing, or discovery surfaced "how would they find it?" as weak, or distribution is the differentiator in a crowded landscape
+- **Pricing:** PM is grappling with free vs paid, or Viability < 6, or category has non-obvious price anchors
+- **AI Commoditization:** idea has any AI surface — AI-powered product, AI feature, AI-enabled workflow
+- **Regulatory:** idea touches health, finance, kids' content, data privacy, employment, lending, or education accreditation
+
+Defensibility runs by default for every idea — "why won't this be copied?" is a universal question. The mandatory output includes a "## 7 Powers Mapping" table.
 
 Each agent receives the full `discovery.md` + latest `research-N.md` as context — arguing against real findings, not a blank slate. Each agent prompt embeds named frameworks plus suggested `mcp__lenny-transcripts__search_transcripts` queries so they pull current expert priors during research.
 
-**Synthesis agent** then reads all 5 + prior research → writes `swarm-N-synthesis.md` with:
+**Synthesis agent** then reads all up to 10 + prior research → writes `swarm-N-synthesis.md` with:
 - Executive summary with confidence-weighted recommendation
 - Direct contradictions between agents, with resolution
 - Bias check (absolute claims, echo chambers, missing angles)
@@ -218,12 +228,12 @@ ProveIt (Opus) reads the synthesis and updates confidence scores in `discovery.m
 
 **Round numbering:** N = existing swarm synthesis file count + 1. Never overwrites prior swarms.
 
-### 6.5. Pre-Mortem & Kill Criteria (added v3.0, automatic after Cross-Model Review)
+### 6.5. Pre-Mortem & Kill Criteria
 
 The cross-model review catches single-model bias. The pre-mortem catches **the founder's own bias** — the things they're not asking because they want the answer to be yes. This phase produces falsifiable kill criteria so the PM has a real stop condition, not just a wish-list of "things to validate".
 
 **Anchored by:**
-- **Annie Duke (Thinking in Bets / Quit)** — every "go" decision is a bet under uncertainty. Most people quit too late, not too early. Lenny's archive top-rates Annie for pre-mortem framing.
+- **Annie Duke (Thinking in Bets / Quit)** — every "go" decision is a bet under uncertainty. Most people quit too late, not too early.
 - **Shreyas Doshi** — pre-mortem framework, distinguishing inevitable failures (idea is wrong) from avoidable ones (execution would be).
 - **Sean Ellis** — at least one kill criterion is the 40% "very disappointed" PMF threshold.
 - **Marty Cagan** — death by features as the most common quiet failure mode.
@@ -236,6 +246,32 @@ The cross-model review catches single-model bias. The pre-mortem catches **the f
 - Confidence score impact
 
 `pre-mortem-N.md` adds a new "Live bets" section to `discovery.md` that the PM can glance at any time to see what they're committing to monitor.
+
+### 6.7. Wave 3 — Scenario Planning & Experiment Design (added v3.1, optional)
+
+Offered after Phase 6.5 Pre-Mortem. The first three waves of ProveIt are about *gathering evidence* (Discovery → Research → Swarm). Wave 3 is about *acting on it*.
+
+Wave 3 produces two things that the Validation Playbook in `discovery.md` does not: explicit probability-weighted scenarios (so the PM is reasoning about futures, not just risks), and actual experiment artefacts the PM can paste and run — not descriptions of experiments.
+
+**Anchored by:**
+- **Annie Duke — *Thinking in Bets*** — probabilistic decision-making. Probabilities must sum to 100. "What's your honest probability on each?" forces the discipline.
+- **Camille Fournier** — scenario planning in engineering orgs.
+- **Mike Krieger** — AI product scenario thinking.
+- **Lane Shackleton** — experiment design.
+- **Teresa Torres** — assumption-test design (continuous discovery).
+- **Sean Ellis** — PMF survey instrument; the actual survey copy is a Wave 3 artefact.
+
+**Output:** `scenarios-N.md` containing:
+
+1. **Three plausible futures (12-month horizon):** Best case / Expected case / Kill case — each with a 2-3 sentence specific scenario (named market/competitor/user moves), an explicit probability weight (must sum to 100), projected confidence scores at year end, and the one bet from `pre-mortem-N.md` that has to come right.
+
+2. **Decision quality assessment:** Expected value of proceeding, worst-case downside in Scenario C, asymmetric upside check (is upside ≥ 10x downside?).
+
+3. **Experiment artefacts:** For each of the 3 critical bets from the pre-mortem, a production-ready artefact — landing page copy to paste into Webflow, interview script with 8-12 ordered questions, pricing-test page copy, or technical spike spec. Not a template. Not "draft a landing page based on this brief." The actual copy.
+
+4. **Sequencing table:** Order experiments by information-value-per-cost. Cheap-and-high-info first.
+
+**Critical property:** Wave 3 artefacts are *real strings*, not instructions. The PM should be able to copy a landing-page block out of `scenarios-N.md` and ship it. If Wave 3 produces "draft a landing page based on this brief" — the prompt failed.
 
 ### 6 & 8. Cross-Model Review (OpenAI o3)
 
@@ -286,7 +322,9 @@ Practical experiments tied to remaining unknowns:
 - "Desirability is 8/10 but forum-based — do 5 user interviews to confirm"
 - "Feasibility is 6/10 — get a technical spike on the real-time sync before committing"
 
-**3. PRD / Tech Spec (`spec.md`) — added v3.0**
+For ideas that ran Wave 3: the playbook references `scenarios-N.md` for the ready-to-run artefacts.
+
+**3. PRD / Tech Spec (`spec.md`)**
 
 Engineers don't read decks. The spec is the format that drops cleanly into Linear, Jira, or Notion. Generated alongside the Gamma deck, structured for ticketing:
 
@@ -306,7 +344,7 @@ ProveIt presents a clean closing with multiple parallel handoff paths:
 
 - **Build it** — run `/orchestrate` to kick off a full ShipIt build. It reads `discovery.md`, `brand.md`, and `spec.md` for context.
 - **Hand to engineering directly** — `spec.md` drops into Linear/Jira/Notion. Deck is for leadership.
-- **Hand to design (claude.ai/design canvas)** — added v3.0 — manual handoff: drop `discovery.md` + `brand.md` into a fresh Claude design-canvas chat to get UX flows and wireframes that respect the validation work.
+- **Hand to design (claude.ai/design canvas)** — manual handoff: drop `discovery.md` + `brand.md` into a fresh Claude design-canvas chat to get UX flows and wireframes that respect the validation work.
 - **Share the deck** — Gamma presentation ready for stakeholders.
 - **Keep validating** — loop back if confidence isn't high enough yet.
 
@@ -320,21 +358,25 @@ ProveIt writes separate files per research phase. `discovery.md` is the index �
 
 ```
 [project-dir]/
-├── discovery.md              # Index: scores, brain dump, Q&A, Live Bets, file references
-├── research-1.md             # Standard research round 1
-├── research-2.md             # Standard research round 2 (if looped)
-├── swarm-1-market-bull.md    # Default swarm agents
+├── discovery.md                       # Index: scores, brain dump, Q&A, Live Bets, file references
+├── research-1.md                      # Standard research round 1
+├── research-2.md                      # Standard research round 2 (if looped)
+├── swarm-1-market-bull.md             # Default swarm agents (6)
 ├── swarm-1-market-bear.md
 ├── swarm-1-customer-impact.md
 ├── swarm-1-technical.md
 ├── swarm-1-devils-advocate.md
-├── swarm-1-gtm.md            # Conditional — added when GTM matters (v3.0)
-├── swarm-1-pricing.md        # Conditional — added when pricing matters (v3.0)
-├── swarm-1-synthesis.md      # Main swarm deliverable
-├── pre-mortem-1.md           # Pre-mortem & kill criteria (v3.0, Phase 6.5)
-├── review-1.md               # Cross-model review (o3)
-├── brand.md                  # Brand assets (if BrandIt phase ran)
-└── spec.md                   # PRD / tech spec for engineering handoff (v3.0)
+├── swarm-1-defensibility.md           # NEW default (v3.1) — Hamilton Helmer 7 Powers
+├── swarm-1-gtm.md                     # Default-on-conditional agents (4)
+├── swarm-1-pricing.md
+├── swarm-1-ai-commoditization.md      # NEW conditional (v3.1) — AI surface ideas
+├── swarm-1-regulatory.md              # NEW conditional (v3.1) — regulated categories
+├── swarm-1-synthesis.md               # Main swarm deliverable
+├── pre-mortem-1.md                    # Phase 6.5 — falsifiable kill criteria
+├── scenarios-1.md                     # NEW Phase 6.7 — Wave 3 scenarios + experiment artefacts
+├── review-1.md                        # Cross-model review (o3)
+├── brand.md                           # Brand assets (if BrandIt phase ran)
+└── spec.md                            # PRD / tech spec for engineering handoff
 ```
 
 All files are standalone markdown — shareable, pasteable, no dependencies. None are committed to git (covered by `.gitignore`).
@@ -403,9 +445,10 @@ Status: [Researching / Needs more discovery / Ready for handoff / Kill signal]
 | Research | Sonnet (subagent) | Heavy tool use, structured output, speed |
 | Findings Review | Opus | Synthesising messy research into clear signal |
 | Deep Dive question crafting | Opus | Identifying the sharpest gap from real findings |
-| 5–7 Deep Dive agents (menu-driven) | Sonnet (parallel subagents) | Parallel, cost-efficient, tool-heavy. GTM and Pricing agents added conditionally. |
+| Up to 10 Deep Dive agents (opt-out) | Sonnet (parallel subagents) | Parallel, cost-efficient, tool-heavy |
 | Deep Dive Synthesis | Sonnet (subagent) | Reads and resolves the swarm output |
 | Pre-Mortem & Kill Criteria | Opus | Judgement-heavy — surfacing founder bias, falsification design, calendar kill dates |
+| Wave 3 — Scenario & Experiment | Opus | Probabilistic framing + writing production-ready artefacts requires judgement |
 | Gamma Deck | Sonnet (subagent) | Structured output from synthesised content |
 | Validation Playbook | Opus | Creative + strategic, connecting gaps to experiments |
 | spec.md PRD generation | Opus | Translating synthesis into engineering-ready structure |
@@ -429,11 +472,13 @@ proveit/
 │   └── proveit.md           # Main ProveIt agent (Opus)
 ├── commands/
 │   ├── proveit.md           # /proveit skill — entry point
-│   ├── proveit-fast.md      # /proveit-fast — quick assumption check
+│   ├── proveit-fast.md      # /proveit-fast — quick assumption check (adaptive 7-category catalog)
 │   ├── proveit-dashboard.md # /proveit:dashboard — portfolio comparison
 │   └── proveit-retro.md     # /proveit:retro — calibration retrospective
 ├── docs/
-│   └── design.md            # This file
+│   ├── design.md            # This file
+│   ├── plans/               # Dated plans for major changes
+│   └── specs/               # Dated implementation specs
 ├── .claude/
 │   └── settings.json        # Permissions config (Bash disabled by default)
 ├── scripts/
@@ -492,19 +537,19 @@ To uninstall: `./setup.sh --uninstall`
 - Not a replacement for talking to real users
 - Not a decision-maker — it presents evidence, the PM decides
 
-(Note v3.0: ProveIt *now* produces a structured PRD as Output 3 — `spec.md` — so the prior "not a PRD generator" exclusion has been retired. The spec is intentionally lightweight for ticketing, not a substitute for product discipline.)
-
 ---
 
 ## Scope
 
 **In:**
 - Single-user (one PM, one idea per session)
-- Core discovery loop (now 11 named phases including Phase 6.5 Pre-Mortem)
-- Optional Deep Dive (Phase 5) with menu-driven swarm composition (5–7 agents)
+- Core discovery loop (12 named phases including Phase 6.5 Pre-Mortem and Phase 6.7 Wave 3)
+- Optional Deep Dive (Phase 5) with opt-out swarm composition (6 defaults + 4 default-on-conditional = up to 10 agents)
+- Adaptive Fast Check — 7-category assumption catalog, picks 3 most-likely-to-kill per idea profile
 - Separate file per research phase
 - `discovery.md` as persistent index, with Live Bets section from pre-mortem
 - Triple-output handoff: Gamma deck (stakeholder) + spec.md (engineering) + validation playbook (PM)
+- Optional Wave 3 scenario planning with real experiment artefacts (Phase 6.7)
 - Optional brand identity (Phase 7) and design canvas handoff (Phase 10)
 - Confidence scoring and kill signal detection
 - Falsifiable kill criteria with calendar dates (Phase 6.5)
