@@ -13,6 +13,7 @@ import PhaseIndicator from "./PhaseIndicator";
 import SearchingIndicator from "./SearchingIndicator";
 import ScorePanel from "./ScorePanel";
 import DownloadButton from "./DownloadButton";
+import FullBundlePointer from "./FullBundlePointer";
 import type {
   Message,
   ValidationSession,
@@ -615,8 +616,11 @@ export default function ChatInterface() {
 
           {/* Download button — available from findings phase onward */}
           {canDownload && (
-            <div className="mt-[var(--space-6)] flex flex-col sm:flex-row gap-[var(--space-4)]">
-              <DownloadButton session={activeSession} />
+            <div className="mt-[var(--space-6)] flex flex-col gap-[var(--space-4)]">
+              <div className="flex flex-col sm:flex-row gap-[var(--space-4)]">
+                <DownloadButton session={activeSession} />
+              </div>
+              <FullBundlePointer />
             </div>
           )}
         </div>

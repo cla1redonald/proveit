@@ -1,11 +1,12 @@
 # ProveIt — Design Document
 
-**Version:** 3.2.0
+**Version:** 3.5.0
 **Date:** 2026-05-10
 **Author:** Claire Donald
 
 ## Changelog
 
+- **3.5.0 (2026-05-10)** — Claude Design integration. Phase 9 gains two new outputs: `design-brief.md` (a synthesis document any designer can read without prior context — user flows, interaction patterns, design rationale drawn from the full validation) and `claude-design-prompts.md` (four paste-ready prompt blocks pre-populated with the PM's evidence, covering deck generation, wireframes, logo exploration, and social cards). Phase 10 closing message rewritten to surface the "Design systems" top-level tab on claude.ai/design and the "Handoff to Claude Code" Share-menu button. Bundle table updated to list seven artefacts. Phase 7 and Phase 10 boundary tables gain a logo-overlap paragraph: BrandIt produces one finished logo; Claude Design produces three exploratory directions; they compose rather than duplicate. ProveIt Web v3.5: `FullBundlePointer` component added to the `/validate` completion view, pointing users to the `/proveit` CLI for the full bundle. 230 tests passing.
 - **3.2.0 (2026-05-10)** — Phase 0 Intake + context-type branching + Brand/Design/Gamma boundary. New first phase before Brain Dump that captures *context type* (new idea vs iteration on existing) and *prior context* (URLs, files, prior research the PM wants read first). Discovery, swarm framing, BrandIt offer, and Gamma deck branding all branch on context type. BrandIt is now genuinely conditional: skipped automatically when `contextType: existing`, with optional lightweight "extend" mode for sub-brands. Explicit boundary table documented in Phase 7 and Phase 10 separating BrandIt (brand system), Claude Design (UX/wireframes), and Gamma (stakeholder deck) — three complementary tools with non-overlapping outputs to prevent drift. All swarm agents, the synthesis agent, the cross-model review, the pre-mortem, and Wave 3 now receive the prior-context payload from Phase 0 alongside `discovery.md`.
 - **3.1.0 (2026-05-10)** — Swarm expansion and Wave 3. Three new swarm agents: Defensibility/Moat (promoted to **default**, anchored by Hamilton Helmer's *7 Powers*), AI Commoditization (conditional, fires for AI-touching ideas), Regulatory (conditional, fires for regulated categories). Swarm composition changed from opt-in (5 defaults + ask to add) to **opt-out** (6 defaults + 4 default-on-conditional = up to 10; PM sees the proposed lineup and can remove any before spawn). Adaptive Fast Check: replaced hardcoded Desirability/Viability/Competition with a 7-category catalog; ProveIt picks the 3 most-likely-to-kill for the specific idea profile and states the reasoning before researching. New **Phase 6.7 Wave 3 — Scenario & Experiment** (optional, offered after Phase 6.5): 3 future scenarios with explicit probability weights + production-ready experiment artefacts (landing page copy, interview scripts, pricing tests, technical spike specs). Customer Impact fold-in: retention/habit anchors added (Adriel Frederick, Albert Cheng, Nir Eyal — *Hooked*). Tech Feasibility fold-in: operations/unit-economics anchors added (Brian Tolkin, Ray Cao). 17 new named expert anchors added (total ~34 across the methodology).
 - **3.0 (2026-05-09)** — Agent maturation pass. Added Phase 6.5 Pre-Mortem & Kill Criteria, Output 3 (`spec.md` PRD), claude.ai/design canvas handoff in Phase 10, and a menu-driven Deep Dive swarm (5 defaults + 2 conditional agents: GTM/Distribution and Pricing/Monetisation). Integrated [`lenny-mcp`](https://github.com/akshayvkt/lenny-mcp) so the agents and swarm subagents can pull current PM expert context from Lenny's Podcast at runtime. Embedded named frameworks (Annie Duke, Bob Moesta, Teresa Torres, Madhavan Ramanujam, April Dunford, Dalton Caldwell, etc.) directly into agent prompts as durable structure.
@@ -53,6 +54,8 @@ Brain Dump → Discovery → Research → Findings Review
                                               - Branded Gamma deck (stakeholder conversation)
                                               - Validation Playbook (in discovery.md)
                                               - spec.md PRD (engineering handoff)
+                                              - design-brief.md (designer handoff)
+                                              - claude-design-prompts.md (4 paste-ready Claude Design prompts)
                                                       ↓
                                               Next Steps (non-overlapping):
                                               - /orchestrate to build
@@ -334,7 +337,7 @@ Requires `~/brandit/scripts/generate-logo.mjs` for logo compositing. Gracefully 
 
 ### 9. Outputs (runs once, when ready)
 
-The handoff is a bundle, not a single artefact. Different audiences need different things — the deck is for the leadership conversation, the spec is for the ticket queue, the playbook is for the PM's own next moves.
+The handoff is a bundle, not a single artefact. Different audiences need different things — the deck is for the leadership conversation, the spec is for the ticket queue, the design brief is for the designer, and the playbook is for the PM's own next moves.
 
 **1. Gamma Presentation (stakeholder / leadership deck)**
 
@@ -376,15 +379,31 @@ Engineers don't read decks. The spec is the format that drops cleanly into Linea
 - T-shirt size and technical risks (from Technical Feasibility swarm agent)
 - References back to all source docs
 
+**4. Design Brief (`design-brief.md`)**
+
+A synthesis document any designer can read without prior context. Written from the full validation — user flows, interaction patterns, key screens, and design rationale drawn from discovery and swarm findings. Input for the Claude Design canvas session.
+
+**5. Claude Design Prompts (`claude-design-prompts.md`)**
+
+Four paste-ready prompt blocks pre-populated with the PM's evidence from the session:
+- **Deck prompt** — for the Gamma presentation canvas
+- **Wireframes prompt** — for the main user flows, with interaction states
+- **Logo exploration prompt** — three directions (not the finished BrandIt logo; exploratory alternatives)
+- **Social cards prompt** — for launch or stakeholder sharing
+
+Each block is a complete Claude prompt. The PM pastes it into a Design canvas on claude.ai/design and starts from evidence, not a blank brief.
+
 ### 10. Next Steps
 
 ProveIt presents a clean closing with multiple parallel handoff paths:
 
 - **Build it** — run `/orchestrate` to kick off a full ShipIt build. It reads `discovery.md`, `brand.md`, and `spec.md` for context.
 - **Hand to engineering directly** — `spec.md` drops into Linear/Jira/Notion. Deck is for leadership.
-- **Hand to design (claude.ai/design canvas)** — manual handoff: drop `discovery.md` + `brand.md` into a fresh Claude design-canvas chat to get UX flows and wireframes that respect the validation work.
+- **Hand to design (claude.ai/design canvas)** — paste one of the four prompt blocks from `claude-design-prompts.md` into the "Design systems" tab on claude.ai/design, or use the "Handoff to Claude Code" Share-menu button to hand off from a design session to the Claude Code runtime. The `design-brief.md` provides the full context layer for any human designer receiving the work.
 - **Share the deck** — Gamma presentation ready for stakeholders.
 - **Keep validating** — loop back if confidence isn't high enough yet.
+
+**Logo boundary (BrandIt vs Claude Design):** BrandIt (Phase 7) produces one finished logo: final palette, final lockup, exported PNG. Claude Design produces three *exploratory* directions using the same brand brief — useful if the PM wants to pressure-test the BrandIt direction before committing, or wants social-card variants. They compose; they don't duplicate.
 
 This is a handoff, not an invocation — downstream tools run in their own sessions.
 
@@ -414,7 +433,9 @@ ProveIt writes separate files per research phase. `discovery.md` is the index �
 ├── scenarios-1.md                     # NEW Phase 6.7 — Wave 3 scenarios + experiment artefacts
 ├── review-1.md                        # Cross-model review (o3)
 ├── brand.md                           # Brand assets (if BrandIt phase ran)
-└── spec.md                            # PRD / tech spec for engineering handoff
+├── spec.md                            # PRD / tech spec for engineering handoff
+├── design-brief.md                    # Designer handoff — user flows, interaction patterns, rationale (NEW v3.5)
+└── claude-design-prompts.md           # 4 paste-ready Claude Design prompt blocks (NEW v3.5)
 ```
 
 All files are standalone markdown — shareable, pasteable, no dependencies. None are committed to git (covered by `.gitignore`).
@@ -586,7 +607,7 @@ To uninstall: `./setup.sh --uninstall`
 - Adaptive Fast Check — 7-category assumption catalog, picks 3 most-likely-to-kill per idea profile
 - Separate file per research phase
 - `discovery.md` as persistent index, with Live Bets section from pre-mortem
-- Triple-output handoff: Gamma deck (stakeholder) + spec.md (engineering) + validation playbook (PM)
+- Five-output handoff: Gamma deck (stakeholder) + spec.md (engineering) + validation playbook (PM) + design-brief.md (designer) + claude-design-prompts.md (Claude Design integration)
 - Optional Wave 3 scenario planning with real experiment artefacts (Phase 6.7)
 - Optional brand identity (Phase 7) and design canvas handoff (Phase 10)
 - Confidence scoring and kill signal detection

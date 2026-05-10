@@ -8,7 +8,7 @@ Products don't fail at launch — they fail at the idea, when nobody checked if 
 
 ## What It Does
 
-Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Optionally creates brand identity in-session via BrandIt. Outputs a confidence score, a `discovery.md` research document, brand assets, and a branded Gamma presentation for technical handoff.
+Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Optionally creates brand identity in-session via BrandIt. Outputs a confidence score and a seven-artefact handoff bundle: `discovery.md`, `brand.md`, `spec.md`, a branded Gamma deck, `design-brief.md` (synthesis any designer can read), and `claude-design-prompts.md` (four paste-ready prompt blocks pre-populated with the PM's evidence for use in Claude Design on claude.ai).
 
 ## How to Use
 

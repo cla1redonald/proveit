@@ -21,7 +21,7 @@ ProveIt Web is a public Next.js 15 App Router application. It exposes the ProveI
 
 ## 2. Component Diagram
 
-Reflects actual `src/` tree as of 2026-05-10. Updated after the security/typography pass and the FastPageContent refactor.
+Reflects actual `src/` tree as of 2026-05-10. Updated after the security/typography pass, the FastPageContent refactor, and the v3.5 Claude Design integration (FullBundlePointer added).
 
 ```
 Browser
@@ -47,7 +47,8 @@ Browser
         ├── PhaseIndicator (Client)         — Brain Dump / Discovery / Research / Findings / Complete
         ├── SearchingIndicator (Client)     — search-query log + dots during research phase
         ├── ScorePanel (Client)             — live Desirability/Viability/Feasibility + kill signals
-        └── DownloadButton (Client)         — generates + downloads discovery.md (with inline error)
+        ├── DownloadButton (Client)         — generates + downloads discovery.md (with inline error)
+        └── FullBundlePointer (Client)      — shown on complete; points to /proveit CLI for full 7-artefact bundle
 
 Hooks (src/hooks/)
 ├── useStream                              — wraps fetch + ReadableStream for /api/* calls

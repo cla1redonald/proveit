@@ -20,3 +20,7 @@ research-*.md
 swarm-*.md
 review-*.md
 .vercel
+
+# Session-only artefacts (not for source control)
+.session-state/
+.playwright-mcp/
