@@ -1,6 +1,6 @@
-# Session Handoff — 2026-05-10 (late afternoon)
+# Session Handoff — 2026-05-10 (evening)
 
-**Recommended next focus:** Issue #20 monetisation test — ship the paid "ProveIt Bundle" surface designed in this session's gh comment. The integration design and test architecture are already drafted; only the build is left.
+**Recommended next focus:** Issue #20 monetisation test — ship the paid "ProveIt Bundle" surface designed in this session's gh comment. The integration design, test architecture, AND the underlying email-delivery infrastructure are now all in place; only the Stripe + bundle-assembly build is left.
 
 ---
 
@@ -43,18 +43,20 @@ The test design (next session focus):
 
 ## Current State
 
-- **Branch:** `feat/claude-design-integration` (this branch). PR pending after `/shipit` review and merge cycle completes.
-- **Last commits on branch:** four logical chunks — Phase 9 outputs / Phase 10 + boundary nuance / web pointer + test / docs.
-- **Production deploy:** [proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app) — Ready, last verified end-to-end this morning before this session.
+- **Branch:** `main`. v3.5.0 merged via PR #23. GitHub release at [v3.5.0](https://github.com/cla1redonald/proveit/releases/tag/v3.5.0).
+- **Last shipped:** Claude Design integration (PR #23, six commits) + post-ship infrastructure work (domain, DNS, Resend) — all complete and end-to-end-tested.
+- **Production deploy:** **[proveit.tools](https://proveit.tools)** (primary). `www.proveit.tools` 308s to apex. Old `proveit-web-zeta.vercel.app` URL still works as an alias. Ready, smoke-tested, served HTTP 200 with valid SSL.
 - **Tests:** **230/230** passing in `web/` (227 + 3 new for `FullBundlePointer`). Plugin agent prompts have no automated tests (markdown specs only).
 - **Lint / typecheck / build:** all clean.
-- **Open PRs:** 1 (this work, pending merge).
+- **Open PRs:** 0.
 - **Open GitHub issues:** 3 — #20 (GTM/monetisation strategy — scoped this session, build deferred), #21 (web product roadmap, blocked on #20), #22 (Tier 2 + Tier 3 abuse prevention, deferred).
-- **Vercel env vars in production:** unchanged from morning — `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=1`, `PER_IP_DAILY_CEILING_USD=1`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `WAITLIST_NOTIFY_EMAIL=cla1re@me.com`. Issue #20 build will need `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
-- **Supabase project:** `proveit-web` (`bbpdicijaqoujnpidiho`). Issue #20 build will add an `orders` table.
-- **Resend account:** unchanged (sandbox sender; domain verification still pending — see Housekeeping).
+- **Domain:** `proveit.tools` purchased on GoDaddy (£11 first year, £41/yr renewal) — registrar GoDaddy, DNS at GoDaddy. UK-based registration. Two A records (`@` and `www`) point at Vercel `76.76.21.21`. `_domainconnect` CNAME present (GoDaddy automation, harmless).
+- **Vercel env vars in production:** `ANTHROPIC_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DAILY_SPEND_CEILING_USD=1`, `PER_IP_DAILY_CEILING_USD=1`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `RESEND_API_KEY`, `WAITLIST_NOTIFY_EMAIL=cla1re@me.com`, **`WAITLIST_FROM_EMAIL=hello@proveit.tools`** (new). Issue #20 build will need `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+- **Supabase project:** `proveit-web` (`bbpdicijaqoujnpidiho`). One smoke-test row in `waitlist` table to clean up at leisure: email `claude-smoke-test+2026-05-10@proveit.tools`. Issue #20 build will add an `orders` table.
+- **Resend account:** **`proveit.tools` domain verified** (DKIM at apex, SPF/MX at `send.proveit.tools` subdomain — Domain Connect via OAuth). Sender address `hello@proveit.tools` confirmed working end-to-end via smoke test (email landed in `cla1re@me.com` with correct From, Reply-To, formatting). Sandbox sender no longer used.
 - **Lenny MCP:** installed at user scope. Active in any new Claude Code session.
 - **Playwright MCP:** installed during this session; useful for any future hands-on UI verification work.
+- **Vercel MCP plugin:** active — gives runtime log access, deployment listing, etc. without leaving the session.
 
 ---
 
@@ -73,6 +75,7 @@ The test design (next session focus):
 | Email capture form on 503 | Lost portfolio-interest signal at the friction moment |
 | Real-time Resend notification | You finding out about signups days later |
 | **CLI bundle pointer on Full Validation completion** | Lost intent at the moment of high-value signal — funnels engaged users to the CLI today; will fund the paid bundle test tomorrow |
+| **`hello@proveit.tools` sender (Resend domain verified)** | Spam-filter false positives on transactional emails — DKIM-signed, SPF-aligned, no `onboarding@resend.dev` smell |
 
 ---
 
@@ -99,9 +102,9 @@ The matured plugin (now with `design-brief.md` + `claude-design-prompts.md`) has
 
 Issue #22 captures the full design. Useful only if Tier 1 ceilings start tripping in real usage. No signal yet.
 
-### E — Verify a domain in Resend (small housekeeping; will be needed for #20 anyway)
+### E — ~~Verify a domain in Resend~~ ✅ Done 2026-05-10 evening
 
-Currently sending notifications from `onboarding@resend.dev` (sandbox). For the paid-bundle test (#20), order receipts and bundle-delivery emails will both come from Resend — domain verification stops them landing in spam. ~10 min if you have DNS access.
+`proveit.tools` purchased and verified end-to-end. Sender address `hello@proveit.tools`. Smoke test passed (email arrived correctly formatted, From / Reply-To / Supabase link all working). One Supabase test row to clean up at leisure (`claude-smoke-test+2026-05-10@proveit.tools`). Issue #20's paid bundle delivery surface can now use this verified sender directly.
 
 ### F — Plugin file split
 
