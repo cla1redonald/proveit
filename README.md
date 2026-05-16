@@ -7,7 +7,7 @@ ProveIt is an evidence-based product validation tool for product managers. It ta
 It exists as **two surfaces** that share the same methodology:
 
 - **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via OpenAI o3, and a Gamma deck output. This README covers the plugin.
-- **A web app** at **[proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app)** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
+- **A web app** at **[https://proveit.tools/]** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
 
 ---
 
