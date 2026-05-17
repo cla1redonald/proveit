@@ -5,6 +5,7 @@ import { anthropic } from "@/lib/anthropic";
 import { buildFastCheckPrompt } from "@/lib/prompts";
 import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
+import { captureServerException } from "@/lib/posthog-server";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -159,6 +160,14 @@ export async function POST(req: NextRequest) {
           );
         } else {
           console.error("[/api/fast] Anthropic error:", err);
+          // Unexpected — forward to PostHog. Route metadata + Anthropic
+          // status only; the user's idea content is NOT included.
+          await captureServerException(err, {
+            route: "/api/fast",
+            anthropic_status: anthropicErr.status,
+            anthropic_error_type: anthropicErr.error?.type,
+            anthropic_error_name: anthropicErr.name,
+          });
           controller.enqueue(
             encoder.encode(
               '\ndata: {"type":"error","message":"Something went wrong. Please try again."}\n'
