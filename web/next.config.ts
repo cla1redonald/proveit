@@ -29,22 +29,26 @@ const securityHeaders = [
   },
   // Content Security Policy
   // - default-src 'self': only load resources from same origin
-  // - script-src 'self' 'unsafe-inline' 'unsafe-eval': Next.js App Router requires
-  //   unsafe-inline for inline hydration scripts and unsafe-eval for dynamic code
-  //   evaluation used by the React runtime in production builds on Vercel.
-  //   Removing unsafe-eval causes hydration failures; track Next.js roadmap for
-  //   a nonce-based CSP approach before removing it.
+  // - script-src 'self' 'unsafe-inline' 'unsafe-eval' eu-assets.i.posthog.com:
+  //   Next.js App Router requires unsafe-inline for inline hydration scripts and
+  //   unsafe-eval for dynamic code evaluation used by the React runtime in
+  //   production builds on Vercel. Removing unsafe-eval causes hydration
+  //   failures; track Next.js roadmap for a nonce-based CSP approach before
+  //   removing it. eu-assets is PostHog's array config script (analytics +
+  //   error tracking, #29 + #42).
   // - style-src 'self' 'unsafe-inline': Tailwind CSS requires unsafe-inline
-  // - connect-src 'self': API calls only go to same origin (Anthropic is called server-side)
+  // - connect-src 'self' eu.i.posthog.com eu-assets.i.posthog.com: API calls
+  //   go to same origin (Anthropic is called server-side); PostHog ingests
+  //   client-side events + exception captures over the EU endpoints.
   // - img-src 'self' data:: allow data URIs for any inline images
   // - frame-ancestors 'none': belt-and-suspenders with X-Frame-Options
   {
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://eu-assets.i.posthog.com",
       "style-src 'self' 'unsafe-inline'",
-      "connect-src 'self'",
+      "connect-src 'self' https://eu.i.posthog.com https://eu-assets.i.posthog.com",
       "img-src 'self' data: blob:",
       "font-src 'self'",
       "frame-ancestors 'none'",
