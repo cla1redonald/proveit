@@ -63,6 +63,15 @@ const nextConfig: NextConfig = {
   // The Anthropic SDK requires Node.js built-ins
   // This is the default but explicit is better than implicit
 
+  // Emit production source maps so the postbuild script can upload them to
+  // PostHog (#42 error tracking). Without this, browser stack traces in
+  // PostHog point at minified chunk names like `9da6db1e-...js:0` which are
+  // useless. The maps are uploaded to PostHog after build via posthog-cli,
+  // not served publicly — but Next emits them alongside the chunks. The
+  // postbuild script deletes them before the deploy artefact is sealed so
+  // they don't leak via the public CDN.
+  productionBrowserSourceMaps: true,
+
   async headers() {
     return [
       {
