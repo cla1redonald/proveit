@@ -1395,6 +1395,14 @@ Before generating, read:
 8. **Remaining Unknowns** — What still needs validation
 9. **Recommended Next Steps** — Validation experiments + technical exploration needed
 
+**Footer convention — required on every slide:**
+
+Add to the Gamma generation prompt: `Add a small footer to every slide reading "Generated with ProveIt · proveit.tools" — make "proveit.tools" a clickable link. Use the brand's secondary text colour, ~10pt, bottom centre.`
+
+If Gamma ignores the footer instruction, fall back to a post-generation pass using `mcp__claude_ai_Gamma__perform-editing-operations` to inject the footer on each page.
+
+**Verification:** before declaring the deck complete, fetch the first slide via `mcp__claude_ai_Gamma__get-design-pages` and confirm the footer string appears. If absent, run the post-generation fallback.
+
 ### Output 2: Validation Playbook
 
 Write to `discovery.md` (Validation Playbook section). Practical experiments tied to remaining unknowns:
