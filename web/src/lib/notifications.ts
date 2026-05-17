@@ -75,6 +75,51 @@ export async function notifyWaitlistSignup(entry: WaitlistEntry): Promise<void> 
 }
 
 /**
+ * Send a notification email about a Wizard-of-Oz pricing-intent click.
+ * Fire-and-forget — never throws, never blocks the calling code.
+ */
+export async function notifyWozIntent(entry: {
+  email: string;
+  chosenOption: "one_off" | "subscription";
+  intendedUse: string;
+  ideaSummary: string;
+  ip: string;
+  ts: string;
+}): Promise<void> {
+  const resend = getResend();
+  const to = process.env.WAITLIST_NOTIFY_EMAIL;
+  const from = process.env.WAITLIST_FROM_EMAIL || "onboarding@resend.dev";
+
+  if (!resend || !to) {
+    if (!resend) console.warn("[notifications] RESEND_API_KEY unset — WoZ notifications disabled");
+    if (!to) console.warn("[notifications] WAITLIST_NOTIFY_EMAIL unset — WoZ notifications disabled");
+    return;
+  }
+
+  const optionLabel =
+    entry.chosenOption === "one_off"
+      ? "£4.99 one-off"
+      : "£9.99/mo subscription";
+  const subject = `[ProveIt WoZ] ${optionLabel} — ${entry.email}`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from,
+      to: [to],
+      replyTo: entry.email,
+      subject,
+      html: renderWozHtml(entry, optionLabel),
+      text: renderWozText(entry, optionLabel),
+    });
+    if (error) {
+      console.error("[notifications] Resend WoZ send error (swallowed):", error);
+    }
+  } catch (err) {
+    console.error("[notifications] notifyWozIntent threw (swallowed):", err);
+  }
+}
+
+/**
  * Test-only — reset the cached Resend client.
  */
 export function resetNotificationClient(): void {
@@ -116,6 +161,72 @@ function renderHtml(entry: WaitlistEntry): string {
   </div>
 </body>
 </html>`;
+}
+
+function renderWozHtml(
+  entry: {
+    email: string;
+    intendedUse: string;
+    ideaSummary: string;
+    ip: string;
+    ts: string;
+  },
+  optionLabel: string
+): string {
+  const intendedBlock = entry.intendedUse
+    ? `<p style="margin: 16px 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em;">Intended use</p>
+       <p style="margin: 0 0 16px; padding: 12px 16px; background: #f0eee8; border-left: 3px solid #c4956a; border-radius: 4px; font-size: 14px; color: #2d2a26;">${escapeHtml(entry.intendedUse)}</p>`
+    : "";
+  const ideaBlock = entry.ideaSummary
+    ? `<p style="margin: 16px 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em;">Idea they validated</p>
+       <p style="margin: 0 0 16px; padding: 12px 16px; background: #f0eee8; border-left: 3px solid #6a8a8a; border-radius: 4px; font-size: 14px; color: #2d2a26;">${escapeHtml(entry.ideaSummary)}</p>`
+    : "";
+
+  return `<!doctype html>
+<html>
+<body style="margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf6f1; color: #2d2a26;">
+  <div style="max-width: 540px; margin: 0 auto; background: #ffffff; padding: 28px; border-radius: 12px; border: 1px solid #e0d9cf;">
+    <p style="margin: 0 0 4px; font-size: 12px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.12em;">ProveIt — WoZ pricing intent</p>
+    <h1 style="margin: 0 0 16px; font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 500; color: #111a24;">Someone wants the bundle.</h1>
+    <p style="margin: 0 0 16px; font-size: 14px;"><strong>Chose:</strong> ${escapeHtml(optionLabel)}</p>
+    <p style="margin: 0 0 16px; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${escapeHtml(entry.email)}" style="color: #c4956a; text-decoration: none;">${escapeHtml(entry.email)}</a></p>
+    <p style="margin: 0 0 16px; font-size: 14px;"><strong>From IP:</strong> ${escapeHtml(entry.ip)}</p>
+    <p style="margin: 0 0 16px; font-size: 14px;"><strong>When:</strong> ${escapeHtml(entry.ts)}</p>
+    ${intendedBlock}
+    ${ideaBlock}
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0d9cf;" />
+    <p style="margin: 0; font-size: 13px; color: #6b5d4f;">Manually email the bundle within 4 hours. Hitting <strong>Reply</strong> goes to the submitter. Full list: <a href="https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor" style="color: #c4956a;">Supabase dashboard</a>.</p>
+  </div>
+</body>
+</html>`;
+}
+
+function renderWozText(
+  entry: {
+    email: string;
+    intendedUse: string;
+    ideaSummary: string;
+    ip: string;
+    ts: string;
+  },
+  optionLabel: string
+): string {
+  return [
+    `Someone clicked the ${optionLabel} button on ProveIt.`,
+    "",
+    `Chose:   ${optionLabel}`,
+    `Email:   ${entry.email}`,
+    `From IP: ${entry.ip}`,
+    `When:    ${entry.ts}`,
+    entry.intendedUse ? `\nIntended use:\n  ${entry.intendedUse}` : "",
+    entry.ideaSummary ? `\nIdea they validated:\n  ${entry.ideaSummary}` : "",
+    "",
+    "Manually email the bundle within 4 hours.",
+    "Hitting Reply emails the submitter directly.",
+    "Read the WoZ list: https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor",
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function renderText(entry: WaitlistEntry): string {

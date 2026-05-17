@@ -1,28 +1,65 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FullBundlePointer from "@/components/validate/FullBundlePointer";
 
 describe("FullBundlePointer", () => {
-  it("links to Claude Code with the right href and target attributes", () => {
-    render(<FullBundlePointer />);
-    const link = screen.getByRole("link", { name: /claude code/i });
-    expect(link).toHaveAttribute("href", "https://claude.com/claude-code");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  beforeEach(() => {
+    vi.spyOn(global, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), { status: 200 })
+    );
   });
 
-  it("mentions the new artefacts the bundle contains", () => {
-    const { container } = render(<FullBundlePointer />);
-    const text = container.textContent ?? "";
-    expect(text).toContain("discovery.md");
-    expect(text).toContain("brand.md");
-    expect(text).toContain("spec.md");
-    expect(text).toContain("design-brief.md");
-    expect(text).toContain("Claude Design prompts");
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  it("describes the CLI alternative as free", () => {
+  it("renders both pricing buttons and the free Claude Code fallback", () => {
     render(<FullBundlePointer />);
-    expect(screen.getByText(/free, full pipeline/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /£4\.99.*one-off/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /£9\.99\/mo/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /claude code/i })
+    ).toHaveAttribute("href", "https://claude.com/claude-code");
+  });
+
+  it("opens the modal with the one-off label when £4.99 is clicked", () => {
+    render(<FullBundlePointer />);
+    fireEvent.click(screen.getByRole("button", { name: /£4\.99.*one-off/i }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(dialog.textContent).toMatch(/£4\.99 \(one-off\)/);
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/what will you use this for/i)).toBeInTheDocument();
+  });
+
+  it("POSTs to /api/woz-intent with the chosen option and shows the confirmation", async () => {
+    render(<FullBundlePointer />);
+    fireEvent.click(screen.getByRole("button", { name: /£9\.99\/mo/i }));
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/what will you use this for/i), {
+      target: { value: "demo use case" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /send me the bundle/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/woz-intent",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    const fetchMock = global.fetch as ReturnType<typeof vi.fn>;
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.chosenOption).toBe("subscription");
+    expect(body.email).toBe("test@example.com");
+    expect(body.intendedUse).toBe("demo use case");
+
+    await screen.findByText(/Claire will personally email you the bundle within 4 hours/i);
   });
 });

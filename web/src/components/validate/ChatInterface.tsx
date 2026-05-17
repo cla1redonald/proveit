@@ -629,7 +629,7 @@ export default function ChatInterface() {
               <div className="flex flex-col sm:flex-row gap-[var(--space-4)]">
                 <DownloadButton session={activeSession} />
               </div>
-              <FullBundlePointer />
+              <FullBundlePointer session={activeSession} />
             </div>
           )}
         </div>
