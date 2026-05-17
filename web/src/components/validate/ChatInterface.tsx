@@ -548,6 +548,11 @@ export default function ChatInterface() {
 
   const isComplete = activeSession.phase === "complete";
   const canDownload = activeSession.phase === "findings" || activeSession.phase === "complete";
+  const hasScorePanelContent =
+    activeSession.scores.desirability !== null ||
+    activeSession.scores.viability !== null ||
+    activeSession.scores.feasibility !== null ||
+    activeSession.killSignals.length > 0;
 
   return (
     <div className="flex flex-col lg:flex-row flex-1" style={{ maxHeight: "calc(100vh - 56px)" }}>
@@ -634,6 +639,23 @@ export default function ChatInterface() {
           )}
         </div>
 
+        {/* Score panel — mobile inline placement, between messages and chat input.
+            Suppressed during Brain Dump / Discovery when no scores have arrived yet
+            (the empty-state filler wastes vertical real estate on small screens).
+            Hidden on lg:+ where the sidebar at right takes over. */}
+        {hasScorePanelContent && (
+          <div
+            className="lg:hidden border-t shrink-0 max-h-[40vh] overflow-y-auto p-[var(--space-4)]"
+            style={{ borderColor: "var(--border-subtle)" }}
+          >
+            <ScorePanel
+              scores={activeSession.scores}
+              killSignals={activeSession.killSignals}
+              phase={activeSession.phase}
+            />
+          </div>
+        )}
+
         {/* Chat input bar — sticky bottom */}
         <div className="shrink-0">
           <ChatInput
@@ -646,9 +668,9 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      {/* Score panel — sidebar on desktop */}
+      {/* Score panel — sidebar on desktop only */}
       <div
-        className="lg:w-72 xl:w-80 border-t lg:border-t-0 lg:border-l p-[var(--space-4)] overflow-y-auto"
+        className="hidden lg:block lg:w-72 xl:w-80 lg:border-l p-[var(--space-4)] overflow-y-auto"
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <ScorePanel
