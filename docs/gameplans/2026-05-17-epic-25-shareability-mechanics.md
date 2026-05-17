@@ -65,7 +65,7 @@ Three stories, ship in order **#31 → #32 → #33** across three `/shipit` runs
 
 ### Done when
 
-- [ ] `agents/proveit.md` updated with Footer Convention subsection
+- [x] `agents/proveit.md` updated with Footer Convention subsection — shipped 2026-05-17, PR #52
 - [ ] One real `/proveit` run produces a deck with the footer on every slide
 - [ ] Footer survives PDF + PPTX export
 - [ ] Issue #31 closed via PR
