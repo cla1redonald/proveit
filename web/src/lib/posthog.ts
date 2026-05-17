@@ -21,6 +21,10 @@ export function initPostHog(): void {
     capture_pageview: "history_change",
     capture_pageleave: true,
     autocapture: true,
+    // Capture unhandled exceptions and Promise rejections on the client.
+    // Stack traces only — no application state, no message content.
+    // Story #42 / Epic #24 pre-launch error tracking.
+    capture_exceptions: true,
     persistence: "localStorage+cookie",
     person_profiles: "identified_only",
     loaded: (ph) => {

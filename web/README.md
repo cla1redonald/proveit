@@ -94,6 +94,8 @@ For local dev, Upstash isn't required — the in-memory rate limiter is sufficie
 | `RESEND_API_KEY` | Recommended in production | Resend API key for waitlist notification emails. Without it, submissions still land in Supabase but no email alert fires. | [resend.com](https://resend.com) — free tier 100 emails/day |
 | `WAITLIST_NOTIFY_EMAIL` | Recommended in production | Address that receives the "new waitlist signup" notification email | Your own email |
 | `WAITLIST_FROM_EMAIL` | Optional | From-address for notification emails. Defaults to `onboarding@resend.dev` (only delivers to your registered Resend email). Set to a verified-domain address once Resend domain verification is set up. | Resend dashboard |
+| `NEXT_PUBLIC_POSTHOG_KEY` | Recommended in production | PostHog project key for analytics + error tracking. Without it, both feature analytics (#29) and error capture (#42) are no-ops; the app still functions. | [posthog.com](https://posthog.com) project settings |
+| `NEXT_PUBLIC_POSTHOG_HOST` | Optional | PostHog ingestion host. Defaults to `https://eu.i.posthog.com`. | — |
 | `ALLOWED_ORIGIN` | Optional | Override the CORS allowed origin (defaults to the request `Host`) | — |
 
 **Web search must be enabled.** Full Validation runs a live web research phase using Anthropic's native web search tool. An admin on your Anthropic Console account must enable it at **Settings → Privacy → Web Search**, otherwise the research phase fails. Fast Check doesn't need it.
@@ -202,6 +204,8 @@ A few non-obvious decisions worth knowing before touching the code:
 **Client IP detection trusts `x-real-ip` first, then the LAST entry of `x-forwarded-for`.** Never the first entry of `x-forwarded-for` — that's user-controlled and trivially spoofed. The last entry is the address Vercel's edge actually saw.
 
 **Roami Design System.** The palette and typography are vendored from `@roami/design-system` v1.1.0 into `src/app/roami-tokens.css`. The existing ProveIt CSS variable names (`--bg-base`, `--text-primary`, `--color-accent`) are preserved and now resolve to Roami values, so component code is unchanged. Playfair Display is used for the wordmark and the home hero; system-ui for body and UI; Fira Code is reserved for genuinely technical content (search-query echoes, code blocks).
+
+**Error tracking via PostHog (#42).** Client-side exceptions are autocaptured (`capture_exceptions: true` in `src/lib/posthog.ts`) and route-level error boundaries (`src/app/error.tsx`, `src/app/global-error.tsx`) forward errors via `posthog.captureException`. Server-side errors are forwarded from `instrumentation.ts` via the Next.js `onRequestError` hook, plus manual `captureServerException` calls inside the `/api/chat` and `/api/fast` Anthropic streaming catch blocks. The server client lives in `src/lib/posthog-server.ts` and reuses the same `NEXT_PUBLIC_POSTHOG_KEY` env var as the client SDK. **PII discipline:** the user's idea text and chat content are NEVER passed to PostHog. Properties on captures are restricted to route metadata (path, method, Anthropic status code, error type). View errors in the [PostHog activity feed](https://eu.posthog.com/activity/explore) (filter by event `$exception`); to be alerted in real time, configure a notification rule in PostHog → Error Tracking → Alerts → route to `cla1re@me.com`. Source-map upload is a follow-up — see PostHog docs for the build-time plugin.
 
 ---
 
