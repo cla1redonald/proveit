@@ -53,7 +53,7 @@ else
   echo "[upload-sourcemaps] Uploading source maps to PostHog from $STATIC_DIR..."
   # `sourcemap process` runs inject + upload in one go and auto-derives the
   # release name + version from git when not provided.
-  if npx --no-install posthog-cli sourcemap process -d "$STATIC_DIR"; then
+  if npx --no-install posthog-cli --host "${POSTHOG_CLI_HOST:-https://eu.posthog.com}" sourcemap process -d "$STATIC_DIR"; then
     echo "[upload-sourcemaps] Upload succeeded."
   else
     echo "[upload-sourcemaps] Upload failed (continuing build anyway — best-effort)."
