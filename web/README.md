@@ -1,6 +1,6 @@
 # ProveIt Web
 
-> **Try it: [proveit-web-zeta.vercel.app](https://proveit-web-zeta.vercel.app)** — paste a product idea and get evidence-backed assumption checks in under 90 seconds.
+> **Try it: [proveit.tools](https://proveit.tools)** — paste a product idea and get evidence-backed assumption checks in under 90 seconds.
 
 ProveIt Web is the public-facing surface of [ProveIt](../README.md), a structured product validation tool for product managers. It puts the same methodology behind the Claude Code plugin in a browser, with no install or terminal required.
 

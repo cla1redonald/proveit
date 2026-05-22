@@ -301,7 +301,7 @@ proveit/
 │   ├── plans/                  # Dated plans for major changes
 │   └── specs/                  # Dated implementation specs
 ├── scripts/openai-review.mjs   # Cross-model review (o3) script
-├── web/                        # The standalone web app (proveit-web-zeta.vercel.app)
+├── web/                        # The standalone web app (proveit.tools)
 ├── .claude/settings.json       # No bash allows by default
 ├── setup.sh                    # Install / uninstall script
 └── CLAUDE.md                   # Agent-side instructions
