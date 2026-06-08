@@ -68,6 +68,10 @@ jobs:
           Do not run git commit or git push — leave all changes in the working tree for the next step." \
           --allowedTools "Workflow Read Write WebSearch WebFetch Glob Grep" \
           --max-turns 60
+          # Safeguard: the workflow can't read the date itself (Date.now is blocked in
+          # workflow scripts), so if the date arg didn't thread through, stamp it here.
+          sed -i "s/^generated: unknown-date/generated: $TODAY/" docs/frontier-snapshot.md 2>/dev/null || true
+          sed -i "s/unknown-date (snapshot/$TODAY (snapshot/g" docs/frontier-snapshot.md 2>/dev/null || true
 
       - name: Open PR with refreshed snapshot
         uses: peter-evans/create-pull-request@v6
