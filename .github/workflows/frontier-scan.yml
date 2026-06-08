@@ -1,14 +1,20 @@
 name: Frontier Scan (AI-currency engine)
 
-# Keeps ProveIt's AI-frontier knowledge current WITHOUT anyone driving.
-# Biweekly, in the cloud: runs the frontier-scan dynamic workflow headlessly via
-# Claude Code, refreshes docs/frontier-snapshot.md, and opens a PR. It never commits
-# to main and never edits the ProveIt agent unattended — structural changes are
-# surfaced as PROPOSED-AGENT-EDITS.md inside the PR for Claire to review and apply.
+# OPTIONAL fully-hands-free refresh of the AI-currency snapshot.
 #
-# One-time setup: add the repo secret ANTHROPIC_API_KEY (Settings → Secrets and
-# variables → Actions), or run:  gh secret set ANTHROPIC_API_KEY --repo cla1redonald/proveit
-# Optional: FIRECRAWL_API_KEY for richer scraping (the workflow degrades gracefully without it).
+# DORMANT BY DEFAULT: with no ANTHROPIC_API_KEY secret set, the scheduled run skips
+# cleanly (green, does nothing). The default workflow is to run the scan yourself
+# inside a Claude Code session — that uses your Max subscription and needs NO keys
+# (see "Run it yourself on Max" in CLAUDE.md / README).
+#
+# To switch automation ON later, just add the secret — no edits to this file needed:
+#   gh secret set ANTHROPIC_API_KEY --repo cla1redonald/proveit
+# (Automation needs a key because CI is an unattended robot; subscriptions are
+# interactive-only.) Optional: FIRECRAWL_API_KEY for richer scraping.
+#
+# When active: runs the frontier-scan dynamic workflow headlessly, refreshes
+# docs/frontier-snapshot.md, and opens a PR. Never commits to main, never edits the
+# agent unattended — structural shifts surface as PROPOSED-AGENT-EDITS.md for review.
 
 on:
   schedule:
@@ -46,8 +52,8 @@ jobs:
           FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
         run: |
           if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "::error::ANTHROPIC_API_KEY secret is not set — add it and re-run. See the header of this workflow file."
-            exit 1
+            echo "::notice::No ANTHROPIC_API_KEY secret — skipping automated scan (this is the zero-keys default). Run the frontier-scan workflow yourself in a Claude Code session on your Max plan, or add the secret to switch automation on."
+            exit 0
           fi
           TODAY=$(date -u +%Y-%m-%d)
           claude -p "Run the dynamic workflow at scripts/frontier-scan.workflow.mjs using the Workflow tool. \
