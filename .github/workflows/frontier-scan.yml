@@ -68,7 +68,7 @@ jobs:
           fi
           TODAY=$(date -u +%Y-%m-%d)
           claude -p "Run the dynamic workflow at scripts/frontier-scan.workflow.mjs using the Workflow tool. \
-          Pass args as JSON: { \"priorSnapshot\": <full current text of docs/frontier-snapshot.md>, \"today\": \"$TODAY\" }. \
+          Pass args as JSON: { \"priorSnapshot\": <full current text of docs/frontier-snapshot.md>, \"today\": \"$TODAY\", \"mode\": \"lite\" }. \
           When it returns: (1) write the returned snapshot_markdown to docs/frontier-snapshot.md, keeping the change log and \
           prepending a dated entry summarising diff.summary; (2) if needs_agent_pr is true, write the suggested agents/proveit.md \
           edits to PROPOSED-AGENT-EDITS.md as a reviewable checklist — do NOT edit agents/proveit.md directly; \

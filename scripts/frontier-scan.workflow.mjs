@@ -109,6 +109,38 @@ const workflowArgs = (typeof args === 'object' && args) ? args : {}
 const priorSnapshot = workflowArgs.priorSnapshot || '(no prior snapshot — this is the first scan)'
 const today = workflowArgs.today || 'unknown-date'
 
+// Cost control. 'lite' (the CI default) keeps the adversarial check but collapses the
+// expensive per-finding verify fan-out into ONE skeptic per domain, caps findings, and
+// runs synthesis/diff on Sonnet — roughly 6x cheaper / far fewer agents. 'full' (run it
+// yourself on Max) keeps the skeptic-per-finding pass and Opus synthesis for the deepest
+// refresh. Caller passes args.mode = 'lite' from CI.
+const MODE = workflowArgs.mode === 'lite' ? 'lite' : 'full'
+const heavyModel = MODE === 'lite' ? 'sonnet' : 'opus'
+const LITE_FINDINGS_CAP = 6
+log(`Running ${MODE} scan across ${DOMAINS.length} domains.`)
+
+// Schema for the batched (lite) skeptic — it returns only the findings that survive.
+const KEPT_SCHEMA = {
+  type: 'object',
+  required: ['kept'],
+  properties: {
+    kept: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['claim', 'date', 'source', 'category'],
+        properties: {
+          claim: { type: 'string' },
+          date: { type: 'string', description: 'Verified ISO date (corrected if the source supports a different one).' },
+          source: { type: 'string' },
+          category: { type: 'string', enum: ['flagship', 'capability-default', 'commoditization', 'token-economics', 'tooling'] },
+          proveit_relevance: { type: 'string' },
+        },
+      },
+    },
+  },
+}
+
 // --- Phase 1+2: scan each domain, then verify each finding. Pipelined: a domain's
 //     findings start getting verified the moment that domain returns — no barrier. ---
 const scanned = await pipeline(
@@ -118,39 +150,55 @@ const scanned = await pipeline(
     `Find what is TRUE AS OF ${today}, focusing on the last ~90 days and anything credibly signposted next. ` +
     `Use WebSearch/WebFetch (and Firecrawl if available). Every finding MUST carry an ISO date and a source URL — ` +
     `a finding with no date is worthless here and will be discarded. Prefer primary sources (lab blogs, release notes) ` +
-    `over roundups. Be specific: model IDs, benchmark numbers, prices, named products, named startups absorbed.`,
+    `over roundups. Be specific: model IDs, benchmark numbers, prices, named products, named startups absorbed.` +
+    (MODE === 'lite' ? ` Return only the ${LITE_FINDINGS_CAP} highest-impact findings.` : ''),
     { label: `scan:${d.key}`, phase: 'Scan', schema: FINDINGS_SCHEMA, model: 'sonnet' }
   ),
-  // Verify stage: skeptic per finding. Separate context = no self-preferential bias.
-  (scan, domain) => parallel(
-    (scan?.findings || []).map((f) => () =>
-      agent(
-        `You are a skeptic verifying ONE claim for ProveIt's frontier snapshot. Default to "kill" if uncertain.\n\n` +
-        `Claim: "${f.claim}"\nClaimed date: ${f.date || '(none)'}\nSource: ${f.source}\n\n` +
-        `Open the source. Does it actually support the claim? Is the date real and recent? ` +
-        `Kill speculation-as-fact, undated claims, and anything the source does not back. Keep only verifiable, dated facts.`,
-        { label: `verify:${domain.key}`, phase: 'Verify', schema: VERDICT_SCHEMA, model: 'sonnet' }
-      ).then((v) => ({ ...f, domain: domain.key, verdict: v }))
+  // Verify stage: a skeptic with separate context from the scanner = no self-preferential bias.
+  (scan, domain) => {
+    const findings = scan?.findings || []
+    if (findings.length === 0) return []
+    if (MODE === 'lite') {
+      // ONE skeptic per domain verifies all its findings in a single call — still
+      // adversarial and separate-context, just not a whole agent per claim.
+      return agent(
+        `You are a skeptic verifying claims for ProveIt's frontier snapshot. Drop anything uncertain.\n\n` +
+        `For EACH claim below, open its source. Keep ONLY claims the source actually supports, with a real recent ISO ` +
+        `date; drop speculation-as-fact, undated claims, and anything unsupported. Correct dates where the source warrants. ` +
+        `Return the surviving claims.\n\nCLAIMS:\n${JSON.stringify(findings, null, 2)}`,
+        { label: `verify:${domain.key}`, phase: 'Verify', schema: KEPT_SCHEMA, model: 'sonnet' }
+      ).then((r) => (r?.kept || []).map((f) => ({ ...f, domain: domain.key })))
+    }
+    // full: skeptic per finding — maximum independence, one agent per claim.
+    return parallel(
+      findings.map((f) => () =>
+        agent(
+          `You are a skeptic verifying ONE claim for ProveIt's frontier snapshot. Default to "kill" if uncertain.\n\n` +
+          `Claim: "${f.claim}"\nClaimed date: ${f.date || '(none)'}\nSource: ${f.source}\n\n` +
+          `Open the source. Does it actually support the claim? Is the date real and recent? ` +
+          `Kill speculation-as-fact, undated claims, and anything the source does not back. Keep only verifiable, dated facts.`,
+          { label: `verify:${domain.key}`, phase: 'Verify', schema: VERDICT_SCHEMA, model: 'sonnet' }
+        ).then((v) => ({ ...f, domain: domain.key, verdict: v }))
+      )
     )
-  )
+  }
 )
 
 // Code does the coordination: flatten, keep survivors, apply date corrections. Zero tokens.
-const verified = scanned
-  .filter(Boolean)
-  .flat()
-  .filter(Boolean)
-  .filter((f) => f.verdict?.verdict === 'keep')
-  .map((f) => ({
-    claim: f.claim,
-    date: f.verdict?.corrected_date || f.date,
-    source: f.source,
-    category: f.category,
-    proveit_relevance: f.proveit_relevance,
-    domain: f.domain,
-  }))
+// Lite returns already-kept findings; full returns per-finding verdicts to filter.
+const verified = (MODE === 'lite'
+  ? scanned.filter(Boolean).flat().filter(Boolean)
+  : scanned.filter(Boolean).flat().filter(Boolean).filter((f) => f.verdict?.verdict === 'keep')
+).map((f) => ({
+  claim: f.claim,
+  date: (f.verdict?.corrected_date) || f.date,
+  source: f.source,
+  category: f.category,
+  proveit_relevance: f.proveit_relevance,
+  domain: f.domain,
+}))
 
-log(`Verified ${verified.length} dated facts across ${DOMAINS.length} domains (survivors of the skeptic pass).`)
+log(`Verified ${verified.length} dated facts across ${DOMAINS.length} domains (${MODE} mode).`)
 
 // Quality gate: never overwrite a good snapshot with a degraded scan. If web search
 // failed, a provider was down, or the skeptic killed nearly everything, refuse rather
@@ -176,7 +224,7 @@ const snapshotBody = await agent(
   `Do not invent facts beyond the JSON. Return the complete markdown file as text.\n\n` +
   `PRIOR SNAPSHOT (for structure, version number, and change-log continuity):\n${priorSnapshot}\n\n` +
   `VERIFIED FACTS:\n${JSON.stringify(verified, null, 2)}`,
-  { label: 'synthesize', phase: 'Synthesize', model: 'opus' }
+  { label: 'synthesize', phase: 'Synthesize', model: heavyModel }
 )
 
 // --- Phase 4: diff against the prior snapshot; flag agent-impacting shifts. ---
@@ -187,7 +235,7 @@ const diff = await agent(
   `Routine number updates are NOT agent-impact.\n\n` +
   `PRIOR SNAPSHOT:\n${priorSnapshot}\n\n` +
   `NEW SNAPSHOT:\n${snapshotBody}`,
-  { label: 'diff', phase: 'Diff', schema: DIFF_SCHEMA, model: 'opus' }
+  { label: 'diff', phase: 'Diff', schema: DIFF_SCHEMA, model: heavyModel }
 )
 
 log(diff.agent_impact?.length
