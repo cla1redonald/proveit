@@ -32,7 +32,9 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The full scan fans out ~100 web-searching subagents; ~14 min interactively but
+    # slower on shared CI runners. 30 min was too tight (a run timed out mid-scan).
+    timeout-minutes: 60
     # Keys live in the "Production" GitHub Environment, so the job must declare it
     # to read ANTHROPIC_API_KEY / FIRECRAWL_API_KEY. (Production has no protection
     # rules, so this doesn't pause the unattended run.)
@@ -73,7 +75,8 @@ jobs:
           (3) if needs_agent_pr is false, delete PROPOSED-AGENT-EDITS.md if it exists. \
           Do not run git commit or git push — leave all changes in the working tree for the next step." \
           --allowedTools "Workflow Read Write WebSearch WebFetch Glob Grep" \
-          --max-turns 60
+          --max-turns 60 \
+          --verbose   # stream activity to the CI log so a long run is visible/debuggable, not 30 min of silence
           # Safeguard: the workflow can't read the date itself (Date.now is blocked in
           # workflow scripts), so if the date arg didn't thread through, stamp it here.
           sed -i "s/^generated: unknown-date/generated: $TODAY/" docs/frontier-snapshot.md 2>/dev/null || true
