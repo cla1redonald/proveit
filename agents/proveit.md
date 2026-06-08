@@ -46,7 +46,7 @@ ProveIt creates files in the current working directory. Each research phase writ
 ├── swarm-1-synthesis.md           # Swarm synthesis — the main swarm deliverable
 ├── pre-mortem-1.md                # Pre-mortem & kill criteria (Phase 6.5)
 ├── scenarios-1.md                 # Wave 3 scenarios + experiment artefacts (Phase 6.7, optional)
-├── review-1.md                    # Cross-model review (o3)
+├── review-1.md                    # Cross-model review (independent OpenAI model, GPT-5.5 by default)
 ├── brand.md                       # Brand assets (if BrandIt phase runs)
 └── spec.md                        # PRD / tech spec output for engineering handoff
 ```
@@ -870,7 +870,7 @@ Update `discovery.md` to reference the new swarm files:
 
 ## 6. Cross-Model Review — Post-Deep-Dive (automatic after Deep Dive)
 
-After the swarm synthesis scores are updated, run a cross-model review through OpenAI's o3 model. This catches gaps, bias, logical leaps, and contradictions that a single model might miss.
+After the swarm synthesis scores are updated, run a cross-model review through an independent OpenAI frontier model — GPT-5.5 by default, a *different lab* than ProveIt's own Claude, which is the entire point of a cross-model check. This catches gaps, bias, logical leaps, and contradictions that a single model might miss. The reviewer is configurable via `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`; the default tracks the current OpenAI frontier (see `docs/frontier-snapshot.md`).
 
 ### Step 1: Check for API key
 
@@ -904,7 +904,7 @@ Write the output to `review-[N].md` with this header prepended:
 ```markdown
 # Cross-Model Review [N]: Post-Swarm
 Date: [date]
-Model: o3
+Model: [cross-model reviewer — GPT-5.5 by default; whatever ran is echoed to stderr by the review script]
 Reviewing: discovery.md, swarm-[N]-synthesis.md
 
 [script output here]
@@ -914,7 +914,7 @@ Reviewing: discovery.md, swarm-[N]-synthesis.md
 
 Tell the PM:
 
-> "I ran a cross-model review through OpenAI's o3. Here's what it flagged:"
+> "I ran a cross-model review through an independent OpenAI model (GPT-5.5). Here's what it flagged:"
 >
 > [Summarise CRITICAL and NOTABLE findings — skip MINOR unless there are no higher-severity findings]
 >
@@ -1334,7 +1334,7 @@ Concatenate the contents of:
 - `discovery.md`
 - All `research-*.md` files
 - All `swarm-*-synthesis.md` files (if any)
-- All prior `review-*.md` files (so o3 can see if its earlier feedback was addressed)
+- All prior `review-*.md` files (so the reviewer can see if its earlier feedback was addressed)
 
 ### Step 4: Run the review script
 
@@ -1349,7 +1349,7 @@ Write to `review-[N].md` with header:
 ```markdown
 # Cross-Model Review [N]: Pre-Output
 Date: [date]
-Model: o3
+Model: [cross-model reviewer — GPT-5.5 by default; whatever ran is echoed to stderr by the review script]
 Reviewing: discovery.md, all research files, all swarm files, prior reviews
 
 [script output here]
@@ -1357,7 +1357,7 @@ Reviewing: discovery.md, all research files, all swarm files, prior reviews
 
 ### Step 6: Present to PM
 
-> "Final cross-model review before handoff — here's what o3 flagged:"
+> "Final cross-model review before handoff — here's what the reviewer flagged:"
 >
 > [Summarise CRITICAL and NOTABLE findings]
 >

@@ -15,6 +15,17 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
+// The reviewer is deliberately a DIFFERENT lab than ProveIt itself (which runs on
+// Claude). That cross-lab independence — different training data, different failure
+// modes — is the whole point. Defaults track the current OpenAI frontier, but are
+// env-configurable so this never goes stale again as models ship:
+//   PROVEIT_REVIEW_MODEL   — e.g. gpt-5.5, gpt-5.5-pro  (default: gpt-5.5)
+//   PROVEIT_REVIEW_EFFORT  — none|low|medium|high|xhigh (default: high)
+// ProveIt's frontier-scan workflow (docs/frontier-snapshot.md) tracks what the
+// current frontier model is — bump the default here when it moves.
+const MODEL = process.env.PROVEIT_REVIEW_MODEL || "gpt-5.5";
+const EFFORT = process.env.PROVEIT_REVIEW_EFFORT || "high";
+
 const client = new OpenAI();
 
 const systemPrompt = `You are an independent reviewer of a product validation analysis performed by a different AI model. Your job is to find what it missed or got wrong.
@@ -42,13 +53,47 @@ Format your response as markdown with these sections:
 ## Contradictions
 ## Overall Assessment`;
 
-const response = await client.chat.completions.create({
-  model: "o3",
-  reasoning_effort: "high",
-  messages: [
-    { role: "system", content: systemPrompt },
-    { role: "user", content },
-  ],
-});
+const messages = [
+  { role: "system", content: systemPrompt },
+  { role: "user", content },
+];
 
-console.log(response.choices[0].message.content);
+async function runReview() {
+  try {
+    return await client.chat.completions.create({
+      model: MODEL,
+      reasoning_effort: EFFORT,
+      messages,
+    });
+  } catch (err) {
+    // A non-reasoning model (or one that names the effort param differently) will
+    // reject reasoning_effort with a 400. Don't fail the whole review for that —
+    // retry once without it so any configured model still works.
+    const msg = String(err?.message || err);
+    const isEffortParamError =
+      err?.status === 400 && /reasoning_effort|effort|unsupported|unknown.*param/i.test(msg);
+    if (isEffortParamError) {
+      console.error(`[openai-review] '${MODEL}' rejected reasoning_effort — retrying without it.`);
+      return await client.chat.completions.create({ model: MODEL, messages });
+    }
+    throw err;
+  }
+}
+
+// Note (stderr only — keeps stdout pure markdown for the review-N.md file) which
+// reviewer actually ran, so the result is traceable.
+console.error(`[openai-review] reviewer=${MODEL} effort=${EFFORT}`);
+
+try {
+  const response = await runReview();
+  console.log(response.choices[0].message.content);
+} catch (err) {
+  // Clean, actionable message instead of a Node stack trace — the agent surfaces
+  // this to the PM and skips the review gracefully rather than failing the session.
+  const status = err?.status ? ` (HTTP ${err.status})` : "";
+  console.error(`Error: cross-model review with '${MODEL}' failed${status}: ${err?.message || err}`);
+  if (err?.status === 404) {
+    console.error(`Hint: '${MODEL}' may not exist or your key lacks access. Set PROVEIT_REVIEW_MODEL to a model you can call.`);
+  }
+  process.exit(1);
+}

@@ -222,7 +222,7 @@ The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this we
 
 **Plugin-only (still gated on the strategic product decision in #20):**
 - Multi-agent Deep Dive swarm (10 parallel adversarial agents)
-- Cross-Model Review via OpenAI o3
+- Cross-Model Review via an independent OpenAI model (GPT-5.5 by default)
 - Wave 3 — Scenario & Experiment phase with paste-ready experiment artefacts
 - In-session BrandIt (full brand identity generation)
 - Gamma deck output (Phase 9 Output 1)
