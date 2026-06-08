@@ -6,7 +6,7 @@ ProveIt is an evidence-based product validation tool for product managers. It ta
 
 It exists as **two surfaces** that share the same methodology:
 
-- **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via OpenAI o3, and a Gamma deck output. This README covers the plugin.
+- **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via an independent OpenAI model (GPT-5.5 by default), and a Gamma deck output. This README covers the plugin.
 - **A web app** at **[https://proveit.tools/]** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
 
 ---
@@ -63,7 +63,7 @@ The full validation runs as a series of named phases. Each one writes its own fi
 | 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
 | 4. Findings Review | Confidence scores updated, kill signals flagged honestly | Stops the easy yes; surfaces the hard no |
 | 5. Deep Dive *(optional)* | Opt-out swarm of up to 10 parallel agents arguing opposing angles, then synthesised — 6 defaults (incl. Defensibility) + 4 conditional (GTM, Pricing, AI Commoditization, Regulatory). ProveIt shows the proposed lineup before spawning; PM can trim. | Uses the full roster to pressure-test the sharpest open question; no lens left unchecked by default |
-| 6. Cross-Model Review | OpenAI o3 reads everything and flags gaps, bias, logical leaps | Single-model bias is real; an independent reviewer catches it |
+| 6. Cross-Model Review | An independent OpenAI model (GPT-5.5 by default) reads everything and flags gaps, bias, logical leaps | Single-model bias is real; a reviewer from a different lab catches it |
 | **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
 | **6.7. Wave 3 — Scenario & Experiment** *(optional)* | 3 future scenarios with probability weights + real experiment artefacts (landing page copy, interview scripts, pricing-test page, technical spike spec) | Turns "things to validate" into paste-and-run assets. Anchored by Annie Duke, Lane Shackleton, Teresa Torres. |
 | 7. Brand Identity *(gated on context type)* | For new ideas: full BrandIt run — name, logo, colours, fonts, tokens. For iterations on existing brand: skipped automatically; optional lightweight BrandIt-extend produces a campaign / sub-brand on top of the parent. | The deck and downstream design work need real brand assets. Skip it cleanly when the brand already exists; don't ask the PM to invent something they have. |
@@ -148,7 +148,7 @@ Each step is optional. ProveIt offers BrandIt in-session before generating the d
 - **Lenny's Podcast MCP** — runtime PM expert priors. Install with `claude mcp add -t http -s user lenny-transcripts https://lenny-mcp.onrender.com/mcp`. Source: [akshayvkt/lenny-mcp](https://github.com/akshayvkt/lenny-mcp).
 
 **Optional:**
-- `OPENAI_API_KEY` — enables the o3 cross-model review in Phase 6 and Phase 8, plus DALL-E logo generation in BrandIt. Skipped gracefully if missing.
+- `OPENAI_API_KEY` — enables the cross-model review in Phase 6 and Phase 8 (an independent OpenAI model, GPT-5.5 by default; override with `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`), plus DALL-E logo generation in BrandIt. Put it in a `.env` file (in your project dir or `~/proveit/.env`) or export it in your shell — see `.env.example`. Skipped gracefully if missing.
 
 ---
 
@@ -262,7 +262,7 @@ Three future scenarios (best / expected / kill case) with explicit probability w
 
 ### `review-N.md` — cross-model review (if `OPENAI_API_KEY` is set)
 
-OpenAI o3 reads everything and flags gaps, bias, logical leaps, contradictions. CRITICAL findings get incorporated into scores. NOTABLE findings are surfaced for PM judgement.
+An independent OpenAI model (GPT-5.5 by default) reads everything and flags gaps, bias, logical leaps, contradictions. CRITICAL findings get incorporated into scores. NOTABLE findings are surfaced for PM judgement.
 
 ### `brand.md` — brand identity (if BrandIt phase runs)
 
@@ -298,14 +298,30 @@ proveit/
 │   └── proveit-retro.md        # /proveit:retro — calibration retrospective
 ├── docs/
 │   ├── design.md               # Long-form design doc (v3.1)
+│   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
 │   ├── plans/                  # Dated plans for major changes
 │   └── specs/                  # Dated implementation specs
-├── scripts/openai-review.mjs   # Cross-model review (o3) script
+├── scripts/
+│   ├── openai-review.mjs           # Cross-model review (second-opinion model)
+│   └── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
+├── .github/workflows/
+│   └── frontier-scan.yml       # Biweekly scheduled scan → opens a PR (AI-currency engine)
 ├── web/                        # The standalone web app (proveit.tools)
 ├── .claude/settings.json       # No bash allows by default
 ├── setup.sh                    # Install / uninstall script
 └── CLAUDE.md                   # Agent-side instructions
 ```
+
+### Staying current — the AI-currency engine
+
+The world of AI moves fast, so ProveIt keeps its own knowledge of the frontier current **without anyone driving it**. `docs/frontier-snapshot.md` is a dated, source-checked record of what the foundation-model layer can do *today* — what each lab shipped recently, what just became a default (and so is no longer a moat), the token-cost curve, and the build/design tooling landscape. The AI-Commoditization analysis reads it first instead of relying on a training cutoff.
+
+It is regenerated by the `frontier-scan` **dynamic workflow** (`scripts/frontier-scan.workflow.mjs`) — fan-out one researcher per lab → an adversarial skeptic kills any claim without a dated source → synthesize → diff the prior snapshot.
+
+**Two ways to run it:**
+
+- **Yourself, on Max (default — zero keys):** in a Claude Code session, ask Claude to run the `frontier-scan` workflow. It uses your Max subscription, refreshes the snapshot, and flags any agent-impacting shifts. Do it every couple of weeks.
+- **Hands-free in CI (optional — needs a key):** the scheduled GitHub Action runs it biweekly and **opens a PR**. It's *dormant by default* — with no `ANTHROPIC_API_KEY` secret it skips cleanly; add the secret to switch it on (CI is unattended, so it needs an API key — a Max subscription only authenticates interactive sessions). Frontier shifts big enough to touch the agent arrive as `PROPOSED-AGENT-EDITS.md` for human review; the agent's brain is never edited unattended.
 
 ---
 

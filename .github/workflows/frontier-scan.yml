@@ -1,0 +1,116 @@
+name: Frontier Scan (AI-currency engine)
+
+# Fully-hands-free refresh of the AI-currency snapshot.
+#
+# ACTIVE: ANTHROPIC_API_KEY is provided by the "Production" GitHub Environment
+# (declared on the job below). If that secret is ever removed the scheduled run
+# skips cleanly (green, does nothing) rather than failing. You can also run the
+# scan yourself inside a Claude Code session on your Max plan with no keys at all
+# (see "Run it yourself on Max" in CLAUDE.md / README).
+#
+# (Automation needs a key because CI is an unattended robot; subscriptions are
+# interactive-only.) Optional: FIRECRAWL_API_KEY for richer scraping.
+#
+# When active: runs the frontier-scan dynamic workflow headlessly, refreshes
+# docs/frontier-snapshot.md, and opens a PR. Never commits to main, never edits the
+# agent unattended — structural shifts surface as PROPOSED-AGENT-EDITS.md for review.
+
+on:
+  schedule:
+    # 07:17 UTC on the 1st and 15th of each month (off-peak, off the :00 mark).
+    - cron: '17 7 1,15 * *'
+  workflow_dispatch: {}   # manual "run now" button in the Actions tab
+
+concurrency:
+  group: frontier-scan
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Keys live in the "Production" GitHub Environment, so the job must declare it
+    # to read ANTHROPIC_API_KEY / FIRECRAWL_API_KEY. (Production has no protection
+    # rules, so this doesn't pause the unattended run.)
+    environment: Production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # SECURITY: do not persist the write-scoped GITHUB_TOKEN into .git/config.
+          # The next step runs Claude with WebSearch/WebFetch over untrusted web pages;
+          # a prompt-injected source must not be able to read the token from git config
+          # and exfiltrate it. The PR step below uses its own token, not git config.
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run frontier-scan workflow
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::notice::No ANTHROPIC_API_KEY secret — skipping automated scan (this is the zero-keys default). Run the frontier-scan workflow yourself in a Claude Code session on your Max plan, or add the secret to switch automation on."
+            exit 0
+          fi
+          TODAY=$(date -u +%Y-%m-%d)
+          claude -p "Run the dynamic workflow at scripts/frontier-scan.workflow.mjs using the Workflow tool. \
+          Pass args as JSON: { \"priorSnapshot\": <full current text of docs/frontier-snapshot.md>, \"today\": \"$TODAY\" }. \
+          When it returns: (1) write the returned snapshot_markdown to docs/frontier-snapshot.md, keeping the change log and \
+          prepending a dated entry summarising diff.summary; (2) if needs_agent_pr is true, write the suggested agents/proveit.md \
+          edits to PROPOSED-AGENT-EDITS.md as a reviewable checklist — do NOT edit agents/proveit.md directly; \
+          (3) if needs_agent_pr is false, delete PROPOSED-AGENT-EDITS.md if it exists. \
+          Do not run git commit or git push — leave all changes in the working tree for the next step." \
+          --allowedTools "Workflow Read Write WebSearch WebFetch Glob Grep" \
+          --max-turns 60
+          # Safeguard: the workflow can't read the date itself (Date.now is blocked in
+          # workflow scripts), so if the date arg didn't thread through, stamp it here.
+          sed -i "s/^generated: unknown-date/generated: $TODAY/" docs/frontier-snapshot.md 2>/dev/null || true
+          sed -i "s/unknown-date (snapshot/$TODAY (snapshot/g" docs/frontier-snapshot.md 2>/dev/null || true
+
+      - name: Guard — only snapshot files may change
+        run: |
+          # Enforce in code what the prompt only requests: the unattended scan may
+          # touch ONLY these files. A model slip or prompt injection that edits the
+          # agent, workflows, or source fails the job instead of reaching a PR.
+          allowed='^(docs/frontier-snapshot\.md|PROPOSED-AGENT-EDITS\.md)$'
+          bad="$(git status --porcelain | awk '{print $2}' | grep -Ev "$allowed" || true)"
+          if [ -n "$bad" ]; then
+            echo "::error::Frontier scan changed files outside the allowed set:"
+            echo "$bad"
+            exit 1
+          fi
+
+      - name: Open PR with refreshed snapshot
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: frontier-scan/auto-refresh
+          base: main
+          add-paths: |
+            docs/frontier-snapshot.md
+            PROPOSED-AGENT-EDITS.md
+          commit-message: 'chore(frontier): refresh AI-currency snapshot'
+          title: '🛰️ Frontier scan: AI-currency snapshot refresh'
+          body: |
+            Automated refresh of `docs/frontier-snapshot.md` by the frontier-scan dynamic workflow.
+
+            - Every claim is dated and source-linked (skeptic-verified in the workflow's Verify phase).
+            - If `PROPOSED-AGENT-EDITS.md` is present in this PR, the scan detected a frontier shift
+              structural enough to touch `agents/proveit.md`. **Review those edits and apply them by hand** —
+              this job never edits the agent's brain unattended.
+            - If only `docs/frontier-snapshot.md` changed, this is a routine currency refresh; merge when happy.
+
+            _Generated by `.github/workflows/frontier-scan.yml`._
+          labels: frontier-scan, automated
+          delete-branch: true
