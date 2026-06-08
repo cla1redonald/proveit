@@ -103,8 +103,11 @@ const DIFF_SCHEMA = {
 // args.priorSnapshot: the full text of the current docs/frontier-snapshot.md (for the diff).
 //   The caller reads it off disk and passes it in — the workflow stays filesystem-free.
 // args.today: ISO date string (Date.now() is unavailable inside workflows).
-const priorSnapshot = (args && args.priorSnapshot) || '(no prior snapshot — this is the first scan)'
-const today = (args && args.today) || 'unknown-date'
+// `args` is a provided global (undefined if nothing was passed), but guard defensively
+// so a missing/odd binding degrades to sane defaults instead of throwing.
+const workflowArgs = (typeof args === 'object' && args) ? args : {}
+const priorSnapshot = workflowArgs.priorSnapshot || '(no prior snapshot — this is the first scan)'
+const today = workflowArgs.today || 'unknown-date'
 
 // --- Phase 1+2: scan each domain, then verify each finding. Pipelined: a domain's
 //     findings start getting verified the moment that domain returns — no barrier. ---
@@ -149,15 +152,29 @@ const verified = scanned
 
 log(`Verified ${verified.length} dated facts across ${DOMAINS.length} domains (survivors of the skeptic pass).`)
 
+// Quality gate: never overwrite a good snapshot with a degraded scan. If web search
+// failed, a provider was down, or the skeptic killed nearly everything, refuse rather
+// than synthesize a hollow replacement from almost nothing. (The caller catches the
+// throw, writes nothing, and opens no PR.)
+const MIN_VERIFIED_FACTS = 12
+if (verified.length < MIN_VERIFIED_FACTS) {
+  throw new Error(
+    `Frontier scan produced only ${verified.length} verified facts (need >= ${MIN_VERIFIED_FACTS}). ` +
+    `Refusing to overwrite the snapshot with a degraded result — likely a search/provider failure this run.`
+  )
+}
+
 // --- Phase 3: synthesize the verified facts into the snapshot body. ---
 const snapshotBody = await agent(
   `You are assembling docs/frontier-snapshot.md for ProveIt from VERIFIED, DATED facts (JSON below). ` +
-  `Match the existing file's section structure exactly: ` +
+  `Match the PRIOR SNAPSHOT's section structure exactly: ` +
   `1. Frontier flagships (table), 2. Capability frontier (what's now a default), 3. Commoditization watchlist (table + the survival-window framing), ` +
   `4. Token economics, 5. AI build & design tooling, 6. Change log. ` +
-  `Every claim keeps its date and source link. Open with the YAML front-block: snapshot_version (bump from prior), generated: ${today}, ` +
+  `Every claim keeps its date and source link. Open with the YAML front-block: snapshot_version (bump it by 1 from the prior snapshot's value), generated: ${today}, ` +
   `generated_by: frontier-scan, next_scan_due (+14 days), freshness_horizon_days: 21. ` +
+  `Preserve the prior change log and PREPEND a new dated entry summarising what changed this run. ` +
   `Do not invent facts beyond the JSON. Return the complete markdown file as text.\n\n` +
+  `PRIOR SNAPSHOT (for structure, version number, and change-log continuity):\n${priorSnapshot}\n\n` +
   `VERIFIED FACTS:\n${JSON.stringify(verified, null, 2)}`,
   { label: 'synthesize', phase: 'Synthesize', model: 'opus' }
 )

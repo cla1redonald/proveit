@@ -40,6 +40,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # SECURITY: do not persist the write-scoped GITHUB_TOKEN into .git/config.
+          # The next step runs Claude with WebSearch/WebFetch over untrusted web pages;
+          # a prompt-injected source must not be able to read the token from git config
+          # and exfiltrate it. The PR step below uses its own token, not git config.
+          persist-credentials: false
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -73,11 +79,27 @@ jobs:
           sed -i "s/^generated: unknown-date/generated: $TODAY/" docs/frontier-snapshot.md 2>/dev/null || true
           sed -i "s/unknown-date (snapshot/$TODAY (snapshot/g" docs/frontier-snapshot.md 2>/dev/null || true
 
+      - name: Guard — only snapshot files may change
+        run: |
+          # Enforce in code what the prompt only requests: the unattended scan may
+          # touch ONLY these files. A model slip or prompt injection that edits the
+          # agent, workflows, or source fails the job instead of reaching a PR.
+          allowed='^(docs/frontier-snapshot\.md|PROPOSED-AGENT-EDITS\.md)$'
+          bad="$(git status --porcelain | awk '{print $2}' | grep -Ev "$allowed" || true)"
+          if [ -n "$bad" ]; then
+            echo "::error::Frontier scan changed files outside the allowed set:"
+            echo "$bad"
+            exit 1
+          fi
+
       - name: Open PR with refreshed snapshot
         uses: peter-evans/create-pull-request@v6
         with:
           branch: frontier-scan/auto-refresh
           base: main
+          add-paths: |
+            docs/frontier-snapshot.md
+            PROPOSED-AGENT-EDITS.md
           commit-message: 'chore(frontier): refresh AI-currency snapshot'
           title: '🛰️ Frontier scan: AI-currency snapshot refresh'
           body: |

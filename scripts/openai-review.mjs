@@ -5,23 +5,34 @@ import { readFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-// Let the key live in a .env file, like the rest of the project. Uses Node's
-// built-in env loader (Node 20.12+) — no dependency. Precedence:
-//   1. An OPENAI_API_KEY already exported in the shell always wins.
+// Let the key live in a .env file, like the rest of the project. Precedence:
+//   1. A value already exported in the shell always wins.
 //   2. .env in the current directory (the PM's project — where ProveIt runs).
 //   3. .env in the ProveIt install dir (~/proveit/.env) as a central fallback.
 // .env is gitignored, so the key never lands in the repo.
+//
+// SECURITY: parse only the three keys we honor — NOT the whole file. Loading a project
+// .env wholesale (e.g. via process.loadEnvFile) would let a stray/hostile OPENAI_BASE_URL
+// in cwd redirect the OpenAI client to another endpoint and leak the key + review content.
+// Hand-parsing also avoids depending on process.loadEnvFile (Node 20.12+), so it degrades
+// gracefully on older Node instead of throwing.
+const HONORED_KEYS = ["OPENAI_API_KEY", "PROVEIT_REVIEW_MODEL", "PROVEIT_REVIEW_EFFORT"];
 function loadDotenv() {
-  if (process.env.OPENAI_API_KEY) return;
   const installDir = join(dirname(fileURLToPath(import.meta.url)), "..");
   for (const envPath of [join(process.cwd(), ".env"), join(installDir, ".env")]) {
-    if (existsSync(envPath)) {
-      try {
-        process.loadEnvFile(envPath);
-      } catch {
-        /* malformed .env — ignore and fall through to the key check below */
-      }
-      if (process.env.OPENAI_API_KEY) return;
+    if (process.env.OPENAI_API_KEY) return; // shell / earlier file already provided it
+    if (!existsSync(envPath)) continue;
+    let lines = [];
+    try {
+      lines = readFileSync(envPath, "utf-8").split("\n");
+    } catch {
+      continue; // unreadable .env — skip
+    }
+    for (const line of lines) {
+      const m = line.match(/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*)\s*$/);
+      if (!m || !HONORED_KEYS.includes(m[1]) || process.env[m[1]]) continue;
+      // strip surrounding single/double quotes if present
+      process.env[m[1]] = m[2].replace(/^(['"])(.*)\1$/, "$2");
     }
   }
 }
