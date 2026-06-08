@@ -148,7 +148,7 @@ Each step is optional. ProveIt offers BrandIt in-session before generating the d
 - **Lenny's Podcast MCP** — runtime PM expert priors. Install with `claude mcp add -t http -s user lenny-transcripts https://lenny-mcp.onrender.com/mcp`. Source: [akshayvkt/lenny-mcp](https://github.com/akshayvkt/lenny-mcp).
 
 **Optional:**
-- `OPENAI_API_KEY` — enables the cross-model review in Phase 6 and Phase 8 (an independent OpenAI model, GPT-5.5 by default; override with `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`), plus DALL-E logo generation in BrandIt. Skipped gracefully if missing.
+- `OPENAI_API_KEY` — enables the cross-model review in Phase 6 and Phase 8 (an independent OpenAI model, GPT-5.5 by default; override with `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`), plus DALL-E logo generation in BrandIt. Put it in a `.env` file (in your project dir or `~/proveit/.env`) or export it in your shell — see `.env.example`. Skipped gracefully if missing.
 
 ---
 

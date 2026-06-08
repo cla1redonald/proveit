@@ -1,7 +1,31 @@
 #!/usr/bin/env node
 
 import OpenAI from "openai";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// Let the key live in a .env file, like the rest of the project. Uses Node's
+// built-in env loader (Node 20.12+) — no dependency. Precedence:
+//   1. An OPENAI_API_KEY already exported in the shell always wins.
+//   2. .env in the current directory (the PM's project — where ProveIt runs).
+//   3. .env in the ProveIt install dir (~/proveit/.env) as a central fallback.
+// .env is gitignored, so the key never lands in the repo.
+function loadDotenv() {
+  if (process.env.OPENAI_API_KEY) return;
+  const installDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+  for (const envPath of [join(process.cwd(), ".env"), join(installDir, ".env")]) {
+    if (existsSync(envPath)) {
+      try {
+        process.loadEnvFile(envPath);
+      } catch {
+        /* malformed .env — ignore and fall through to the key check below */
+      }
+      if (process.env.OPENAI_API_KEY) return;
+    }
+  }
+}
+loadDotenv();
 
 const content = readFileSync("/dev/stdin", "utf-8");
 
@@ -11,7 +35,7 @@ if (!content.trim()) {
 }
 
 if (!process.env.OPENAI_API_KEY) {
-  console.error("Error: OPENAI_API_KEY environment variable is not set.");
+  console.error("Error: OPENAI_API_KEY is not set — add it to a .env file (in this directory or ~/proveit/.env) or export it in your shell.");
   process.exit(1);
 }
 

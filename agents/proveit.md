@@ -875,7 +875,7 @@ After the swarm synthesis scores are updated, run a cross-model review through a
 ### Step 1: Check for API key
 
 If `OPENAI_API_KEY` is not set in the environment, skip this phase with:
-> "Cross-model review skipped — no OpenAI API key found. Set OPENAI_API_KEY to enable it."
+> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or `~/proveit/.env`) or export it, then it runs automatically."
 
 ### Step 2: Determine review round number
 
@@ -1322,7 +1322,7 @@ This phase fires even if the PM skipped the swarm. It is the minimum review gate
 ### Step 1: Check for API key
 
 If `OPENAI_API_KEY` is not set, skip with:
-> "Cross-model review skipped — no OpenAI API key found. Set OPENAI_API_KEY to enable it."
+> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or `~/proveit/.env`) or export it, then it runs automatically."
 
 ### Step 2: Determine review round number
 

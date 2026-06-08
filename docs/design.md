@@ -309,7 +309,7 @@ Results are shown transparently to the PM. CRITICAL findings are incorporated in
 
 **Script:** `scripts/openai-review.mjs` — reads markdown from stdin, sends to the reviewer with high reasoning effort, returns structured review. The model and effort are env-configurable (`PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`) so the default can track the current frontier (see `docs/frontier-snapshot.md`) without code changes.
 
-**Prerequisite:** `OPENAI_API_KEY` environment variable. Gracefully skipped if not set.
+**Prerequisite:** `OPENAI_API_KEY` — loaded from a `.env` file (project dir or `~/proveit/.env`) or the shell environment. Gracefully skipped if not set.
 
 **Output:** `review-N.md` files in the project directory (covered by `.gitignore`).
 
