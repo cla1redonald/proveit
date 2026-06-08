@@ -1,14 +1,13 @@
 name: Frontier Scan (AI-currency engine)
 
-# OPTIONAL fully-hands-free refresh of the AI-currency snapshot.
+# Fully-hands-free refresh of the AI-currency snapshot.
 #
-# DORMANT BY DEFAULT: with no ANTHROPIC_API_KEY secret set, the scheduled run skips
-# cleanly (green, does nothing). The default workflow is to run the scan yourself
-# inside a Claude Code session — that uses your Max subscription and needs NO keys
+# ACTIVE: ANTHROPIC_API_KEY is provided by the "Production" GitHub Environment
+# (declared on the job below). If that secret is ever removed the scheduled run
+# skips cleanly (green, does nothing) rather than failing. You can also run the
+# scan yourself inside a Claude Code session on your Max plan with no keys at all
 # (see "Run it yourself on Max" in CLAUDE.md / README).
 #
-# To switch automation ON later, just add the secret — no edits to this file needed:
-#   gh secret set ANTHROPIC_API_KEY --repo cla1redonald/proveit
 # (Automation needs a key because CI is an unattended robot; subscriptions are
 # interactive-only.) Optional: FIRECRAWL_API_KEY for richer scraping.
 #
@@ -34,6 +33,10 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Keys live in the "Production" GitHub Environment, so the job must declare it
+    # to read ANTHROPIC_API_KEY / FIRECRAWL_API_KEY. (Production has no protection
+    # rules, so this doesn't pause the unattended run.)
+    environment: Production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
