@@ -875,7 +875,7 @@ After the swarm synthesis scores are updated, run a cross-model review through a
 ### Step 1: Check for API key
 
 If `OPENAI_API_KEY` is not set in the environment, skip this phase with:
-> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or `~/proveit/.env`) or export it, then it runs automatically."
+> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or the ProveIt plugin's own `.env`, i.e. `${CLAUDE_PLUGIN_ROOT}/.env`) or export it, then it runs automatically."
 
 ### Step 2: Determine review round number
 
@@ -892,7 +892,7 @@ Concatenate the contents of:
 Shell out to the review script, piping the concatenated content:
 
 ```bash
-cat discovery.md swarm-*-synthesis.md | node ~/proveit/scripts/openai-review.mjs
+cat discovery.md swarm-*-synthesis.md | node "${CLAUDE_PLUGIN_ROOT}/scripts/openai-review.mjs"
 ```
 
 Capture the output.
@@ -1322,7 +1322,7 @@ This phase fires even if the PM skipped the swarm. It is the minimum review gate
 ### Step 1: Check for API key
 
 If `OPENAI_API_KEY` is not set, skip with:
-> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or `~/proveit/.env`) or export it, then it runs automatically."
+> "Cross-model review skipped — no OpenAI API key found. Add OPENAI_API_KEY to a `.env` file (this directory or the ProveIt plugin's own `.env`, i.e. `${CLAUDE_PLUGIN_ROOT}/.env`) or export it, then it runs automatically."
 
 ### Step 2: Determine review round number
 
@@ -1339,7 +1339,7 @@ Concatenate the contents of:
 ### Step 4: Run the review script
 
 ```bash
-cat discovery.md research-*.md swarm-*-synthesis.md review-*.md 2>/dev/null | node ~/proveit/scripts/openai-review.mjs
+cat discovery.md research-*.md swarm-*-synthesis.md review-*.md 2>/dev/null | node "${CLAUDE_PLUGIN_ROOT}/scripts/openai-review.mjs"
 ```
 
 ### Step 5: Write review file
