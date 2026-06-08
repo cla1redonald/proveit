@@ -67,7 +67,8 @@ proveit/
 │   └── proveit-retro.md   # Calibration retrospective
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
-│   └── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
+│   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
+│   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
 ├── docs/
 │   ├── design.md             # Design decisions and validation framework
 │   └── frontier-snapshot.md  # Living, dated record of the AI frontier (AI-currency engine)
