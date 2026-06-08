@@ -218,7 +218,9 @@ After every findings review, ProveIt offers to go deeper. It reads the actual fi
 - "Given Swagup dominates enterprise, is there a real SMB gap?"
 - "Is the stated pain strong enough to drive switching, or is this a tarpit?"
 
-**Opt-out swarm composition (v3.1)** — up to 10 parallel Sonnet agents. ProveIt states the proposed full set with per-agent reasoning before spawning; the PM can remove any before agents fire. Default is thorough — trimming is opt-out, not opt-in.
+**Opt-out swarm composition (v3.1)** — up to 10 angles. ProveIt states the proposed full set with per-agent reasoning before it runs; the PM can remove any. Default is thorough — trimming is opt-out, not opt-in.
+
+**Run as a dynamic workflow (v3.7)** — the confirmed composition runs through `scripts/swarm.workflow.mjs`: each angle argues (structured), an **independent skeptic verifies that angle's evidence** and sets a `verified_confidence` (so no angle grades its own homework), and synthesis weights by *verified* — not self-rated — confidence. Code enforces completeness (every confirmed angle runs) and determinism. A prose Task-tool spawn is kept as a fallback for sessions without the Workflow tool. See `docs/plans/2026-06-08-swarm-as-dynamic-workflow.md`.
 
 | Agent | File | Mandate | Tier | Anchored by |
 |-------|------|---------|------|-------------|
@@ -605,7 +607,7 @@ To uninstall: `./setup.sh --uninstall`
 **In:**
 - Single-user (one PM, one idea per session)
 - Core discovery loop (12 named phases including Phase 6.5 Pre-Mortem and Phase 6.7 Wave 3)
-- Optional Deep Dive (Phase 5) with opt-out swarm composition (6 defaults + 4 default-on-conditional = up to 10 agents)
+- Optional Deep Dive (Phase 5) — opt-out swarm (6 defaults + 4 default-on-conditional = up to 10 angles), run as a dynamic workflow with **independent per-angle verification** (the self-grading fix); prose Task-tool fallback for sessions without the Workflow tool
 - Adaptive Fast Check — 7-category assumption catalog, picks 3 most-likely-to-kill per idea profile
 - Separate file per research phase
 - `discovery.md` as persistent index, with Live Bets section from pre-mortem

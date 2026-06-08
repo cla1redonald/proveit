@@ -47,7 +47,7 @@ ProveIt is what I wanted: a fast, structured, evidence-based preflight check tha
 Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or put something on the roadmap. It's a preflight check, not a post-analysis.
 
 - **Fast check (10–15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill this specific idea, picked from a 7-category adaptive catalog (not a fixed Desirability / Viability / Competition default)
-- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm (up to 10 agents, opt-out), pre-mortem, optional Wave 3 scenario + experiment artefacts, brand identity, handoff bundle
+- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm (up to 10 angles, opt-out, with independent verification), pre-mortem, optional Wave 3 scenario + experiment artefacts, brand identity, handoff bundle
 
 ---
 
@@ -62,7 +62,7 @@ The full validation runs as a series of named phases. Each one writes its own fi
 | 2. Discovery | Targeted questions across Desirability, Viability, Feasibility (14 questions, anchored by Bob Moesta, Teresa Torres, Marty Cagan, Madhavan Ramanujam, Sean Ellis) | Identifies gaps before research; turns vague intent into testable claims |
 | 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
 | 4. Findings Review | Confidence scores updated, kill signals flagged honestly | Stops the easy yes; surfaces the hard no |
-| 5. Deep Dive *(optional)* | Opt-out swarm of up to 10 parallel agents arguing opposing angles, then synthesised — 6 defaults (incl. Defensibility) + 4 conditional (GTM, Pricing, AI Commoditization, Regulatory). ProveIt shows the proposed lineup before spawning; PM can trim. | Uses the full roster to pressure-test the sharpest open question; no lens left unchecked by default |
+| 5. Deep Dive *(optional)* | Opt-out swarm of up to 10 angles arguing opposing positions, run as a **dynamic workflow**: each angle argues, an **independent skeptic verifies its evidence** (no self-grading), then synthesis weights by *verified* confidence — 6 defaults (incl. Defensibility) + 4 conditional (GTM, Pricing, AI Commoditization, Regulatory). PM trims the lineup before it runs. | Completeness + independent verification — not 10 agents grading their own homework |
 | 6. Cross-Model Review | An independent OpenAI model (GPT-5.5 by default) reads everything and flags gaps, bias, logical leaps | Single-model bias is real; a reviewer from a different lab catches it |
 | **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
 | **6.7. Wave 3 — Scenario & Experiment** *(optional)* | 3 future scenarios with probability weights + real experiment artefacts (landing page copy, interview scripts, pricing-test page, technical spike spec) | Turns "things to validate" into paste-and-run assets. Anchored by Annie Duke, Lane Shackleton, Teresa Torres. |
@@ -250,7 +250,7 @@ Each contains: competitor landscape (active + dead + funded), market evidence (r
 
 ### `swarm-N-*.md` — Deep Dive output (if Phase 5 runs)
 
-Up to 10 parallel agents — 6 defaults (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate, Defensibility) plus 4 default-on-conditional (GTM, Pricing, AI Commoditization, Regulatory) — each writing their angle. ProveIt shows the proposed agent lineup with per-agent reasoning before spawning; the PM can remove any. A synthesis agent reads all of them and produces `swarm-N-synthesis.md` with executive summary, direct contradictions, bias check, score impact, and next steps.
+Up to 10 angles — 6 defaults (Market Bull, Market Bear, Customer Impact, Technical Feasibility, Devil's Advocate, Defensibility) plus 4 default-on-conditional (GTM, Pricing, AI Commoditization, Regulatory). ProveIt shows the proposed lineup with per-agent reasoning, and the PM can remove any before it runs. It runs as a **dynamic workflow** (`scripts/swarm.workflow.mjs`): each angle argues (structured), an **independent skeptic verifies that angle's evidence** and sets a verified confidence (the self-grading fix), then a synthesis agent weights by *verified* — not self-rated — confidence and produces `swarm-N-synthesis.md` (executive summary, direct contradictions, bias check, score impact, next steps). A prose Task-tool fallback runs in sessions without the Workflow tool.
 
 ### `pre-mortem-N.md` — falsifiable kill criteria (Phase 6.5)
 
@@ -303,7 +303,8 @@ proveit/
 │   └── specs/                  # Dated implementation specs
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
-│   └── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot (run on Max)
+│   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot (run on Max)
+│   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
 ├── web/                        # The standalone web app (proveit.tools)
 ├── .claude/settings.json       # No bash allows by default
 ├── setup.sh                    # Install / uninstall script
