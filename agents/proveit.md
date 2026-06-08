@@ -565,9 +565,24 @@ The full swarm is **10 agents**. The 6 default agents always run; the 4 default-
 
 The opt-out preview is the user's one chance to trim before tokens are spent. After spawning, the swarm runs to completion — there's no mid-swarm cancel.
 
-### Step 4: Spawn the swarm in parallel
+### Step 4: Run the swarm
 
-Use the Task tool. Spawn all chosen agents in a **single message** with parallel Task calls. All use `model: "sonnet"` and `subagent_type: "general-purpose"`.
+**Primary path — the swarm dynamic workflow.** Run `scripts/swarm.workflow.mjs` via the **Workflow tool**, passing args:
+- `question` — the swarm question from Step 1
+- `composition` — the confirmed angle keys from Step 3, e.g. `["market-bull","market-bear","customer-impact","technical","devils-advocate","defensibility"]` (add `gtm`/`pricing`/`ai-commoditization`/`regulatory` when included)
+- `discovery` — the full text of `discovery.md`
+- `research` — the full text of the latest `research-[N].md`
+- `mode` — `full` (default; skeptic-per-angle + Opus synthesis) or `lite` (cheaper; batched Sonnet)
+
+> **Cost gate (MANDATORY).** Before running, present an estimate to the PM and get approval — e.g. "this spawns ~[2 × N angles + 1] agents (Sonnet, + Opus synthesis) on your session; estimated ~$Z. Run `full` or `lite`?" The workflow runs to completion with no mid-run cancel, so the Step 3 preview + this estimate are the moment to trim.
+
+The workflow fans out one agent per angle, has an **independent skeptic verify each angle's evidence** (the self-grading fix the prose swarm lacked), synthesises from the verified arguments, and **returns** rendered markdown: `angleFiles` (one per angle) and `synthesisFile`. Write each to the working directory, replacing `[N]` with the round number from Step 2. Synthesis is already produced — skip the separate synthesis spawn below.
+
+**Fallback — no Workflow tool in this session.** If the Workflow tool isn't available, fall back to the original parallel Task-tool spawn described below. The workflow's `ANGLES` prompts are mirrored verbatim from the agent prompts in this file — keep the two in sync.
+
+---
+
+**Fallback detail — parallel Task-tool spawn.** Use the Task tool. Spawn all chosen agents in a **single message** with parallel Task calls. All use `model: "sonnet"` and `subagent_type: "general-purpose"`.
 
 Pass each agent:
 1. The swarm question
@@ -794,9 +809,11 @@ Date: [date]
 **[1-5]** — [one sentence why]
 ```
 
-### Step 4: Wait, then spawn synthesis
+### Step 4 (fallback only): Wait, then spawn synthesis
 
-Once all 5 agents complete, spawn a single synthesis agent. `model: "sonnet"`, `subagent_type: "general-purpose"`.
+**Skip this if you used the workflow** — it already returns `synthesisFile`. This step applies only to the Task-tool fallback path.
+
+Once all agents complete, spawn a single synthesis agent. `model: "sonnet"`, `subagent_type: "general-purpose"`.
 
 Pass it:
 - The swarm question
