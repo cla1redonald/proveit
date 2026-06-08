@@ -103,9 +103,13 @@ const DIFF_SCHEMA = {
 // args.priorSnapshot: the full text of the current docs/frontier-snapshot.md (for the diff).
 //   The caller reads it off disk and passes it in — the workflow stays filesystem-free.
 // args.today: ISO date string (Date.now() is unavailable inside workflows).
-// `args` is a provided global (undefined if nothing was passed), but guard defensively
-// so a missing/odd binding degrades to sane defaults instead of throwing.
-const workflowArgs = (typeof args === 'object' && args) ? args : {}
+// The Workflow runtime delivers `args` as a JSON STRING (not a parsed object), so parse
+// it. Handle both shapes defensively so a missing/odd binding degrades to sane defaults.
+const workflowArgs = (() => {
+  if (args && typeof args === 'object') return args
+  if (typeof args === 'string') { try { return JSON.parse(args) } catch { return {} } }
+  return {}
+})()
 const priorSnapshot = workflowArgs.priorSnapshot || '(no prior snapshot — this is the first scan)'
 const today = workflowArgs.today || 'unknown-date'
 
