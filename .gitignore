@@ -24,3 +24,6 @@ review-*.md
 # Session-only artefacts (not for source control)
 .session-state/
 .playwright-mcp/
+
+# Codex local tool config
+.codex/
