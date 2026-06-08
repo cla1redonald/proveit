@@ -20,7 +20,13 @@ export const meta = {
 // args; the workflow RETURNS the rendered markdown for the agent to write.
 // ---------------------------------------------------------------------------
 
-const a = (typeof args === 'object' && args) ? args : {}
+// The Workflow runtime delivers `args` as a JSON STRING (not a parsed object), so parse it.
+// Handle both shapes defensively.
+const a = (() => {
+  if (args && typeof args === 'object') return args
+  if (typeof args === 'string') { try { return JSON.parse(args) } catch { return {} } }
+  return {}
+})()
 const question = a.question || '(no swarm question provided)'
 const discovery = a.discovery || '(discovery.md not provided)'
 const research = a.research || '(latest research-N.md not provided)'
