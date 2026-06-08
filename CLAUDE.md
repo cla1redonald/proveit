@@ -98,6 +98,16 @@ Research phases are delegated to Sonnet subagents for speed.
 - **Persistence** — `discovery.md` survives across sessions
 - **PM decides** — ProveIt presents evidence, never makes the go/kill call
 
+## Keeping docs in sync with code — enforced
+
+When you change `scripts/`, `agents/`, or `commands/`, update the docs that describe them: `README.md`, `CLAUDE.md`, `AGENTS.md`, and `docs/` (including the directory trees). This is **enforced**, not advisory:
+
+- **CI gate** — `.github/workflows/docs-check.yml` flags any PR where code changed without a doc update (pure bash, no LLM, no token cost).
+- **In-session reminder** — a `PreToolUse` hook in `.claude/settings.json` warns at commit time if code is staged without docs.
+- **Override** — if a change genuinely needs no doc update (e.g. a pure bugfix), put `[no-docs]` in a commit message. The check then passes.
+
+Shared logic lives in `scripts/check-docs-sync.sh`.
+
 ## Security
 
 This project commits NO Bash permission allows in `.claude/settings.json`. All Bash commands require explicit user approval. This is intentional — anyone who clones this repo should review and approve commands individually.

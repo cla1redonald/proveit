@@ -1,0 +1,24 @@
+name: Docs sync check
+
+# Flags any PR where agent code (scripts/ agents/ commands/) changed without a
+# corresponding docs update (README/CLAUDE/AGENTS/docs). Overridable: add [no-docs]
+# to a commit message when a change genuinely needs none. Pure bash — no LLM, no
+# secrets, no token cost. Runs in a few seconds.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  docs-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need history to diff against the base branch
+      - name: Check docs kept in sync with code
+        run: bash scripts/check-docs-sync.sh "origin/${{ github.base_ref }}"
