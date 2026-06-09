@@ -38,22 +38,69 @@ fi
 fail=0
 
 # ── 1. HTTP smoke: every path must answer non-5xx, non-timeout ────────────────
-PATHS="${SHIPIT_SMOKE_PATHS:-/}"
-IFS=',' read -ra ARR <<< "$PATHS"
-for p in "${ARR[@]}"; do
-  [ -n "$p" ] || continue
+# A path may pin an EXACT expected status with "=NNN" (e.g. /api/capture=401,
+# /api/health/deep=200). Without "=", any non-5xx passes. Exact pins catch routing
+# regressions that hide behind "not a 5xx" — e.g. Vercel platform-404ing a path
+# that should reach the router (FocusBoard's multi-segment [...path].ts bug).
+http_check() {  # $1=path-spec  $2=auth-header-or-empty
+  local spec="$1" auth="$2" p want full code
+  p="${spec%%=*}"; want=""
+  [ "$spec" != "$p" ] && want="${spec#*=}"
   full="${URL%/}${p}"
-  code="$(curl -s -o /dev/null --max-time 25 -w '%{http_code}' "$full" 2>/dev/null)"
+  if [ -n "$auth" ]; then
+    code="$(curl -s -o /dev/null --max-time 25 -w '%{http_code}' -H "$auth" "$full" 2>/dev/null)"
+  else
+    code="$(curl -s -o /dev/null --max-time 25 -w '%{http_code}' "$full" 2>/dev/null)"
+  fi
   # curl prints "000" on connect failure/timeout; normalise anything not a 3-digit code.
   printf '%s' "$code" | grep -qE '^[0-9]{3}$' || code="000"
   if [ "$code" = "000" ]; then
     echo "::error::runtime-smoke: $full TIMED OUT / unreachable (the exact FocusBoard failure mode)"; fail=1
+  elif [ -n "$want" ] && [ "$code" != "$want" ]; then
+    echo "::error::runtime-smoke: $full → HTTP $code, expected $want — routing/auth regression on the deployed artifact"; fail=1
   elif [ "$code" -ge 500 ]; then
     echo "::error::runtime-smoke: $full → HTTP $code (5xx) — deployed artifact is broken"; fail=1
   else
     echo "runtime-smoke: $full → HTTP $code ✓"
   fi
+}
+
+PATHS="${SHIPIT_SMOKE_PATHS:-/}"
+IFS=',' read -ra ARR <<< "$PATHS"
+for spec in "${ARR[@]}"; do
+  [ -n "$spec" ] || continue
+  http_check "$spec" ""
 done
+
+# ── 1b. Authenticated tier (optional): data correctness, not just liveness ────
+# Tiers 1+2 prove liveness/routing/auth — they CANNOT see wrong-rows-returned-to-
+# an-authed-caller (FocusBoard's inbox status-filter bug passed every unauth gate).
+# When a low-privilege test credential is present as a CI secret
+# (SHIPIT_SMOKE_AUTH_TOKEN), this tier runs; without it, it skips with a note.
+#   SHIPIT_SMOKE_AUTH_PATHS  same path[=NNN] syntax, curled WITH the Bearer token.
+#   SHIPIT_SMOKE_AUTH_CMD    a project round-trip script (create → list-shows-it →
+#                            delete), run with SHIPIT_DEPLOY_URL + the token in env.
+#                            Reference implementation: FocusBoard's capture →
+#                            inbox → dismiss loop in its .shipit-gates copy.
+if [ -n "${SHIPIT_SMOKE_AUTH_TOKEN:-}" ]; then
+  if [ -n "${SHIPIT_SMOKE_AUTH_PATHS:-}" ]; then
+    IFS=',' read -ra AARR <<< "$SHIPIT_SMOKE_AUTH_PATHS"
+    for spec in "${AARR[@]}"; do
+      [ -n "$spec" ] || continue
+      http_check "$spec" "Authorization: Bearer $SHIPIT_SMOKE_AUTH_TOKEN"
+    done
+  fi
+  if [ -n "${SHIPIT_SMOKE_AUTH_CMD:-}" ]; then
+    echo "runtime-smoke[authed]: running round-trip → $SHIPIT_SMOKE_AUTH_CMD"
+    if SHIPIT_DEPLOY_URL="$URL" bash -c "$SHIPIT_SMOKE_AUTH_CMD"; then
+      echo "runtime-smoke[authed]: round-trip ✓"
+    else
+      echo "::error::runtime-smoke[authed]: round-trip FAILED — wrong data to an authed caller on the deployed artifact"; fail=1
+    fi
+  fi
+else
+  echo "runtime-smoke: no SHIPIT_SMOKE_AUTH_TOKEN — authed tier skipped (liveness only; this tier cannot see data correctness)."
+fi
 
 # ── 2. UI smoke: the real rendered page (Playwright) ──────────────────────────
 if [ "${SHIPIT_SMOKE_UI:-0}" = "1" ]; then
