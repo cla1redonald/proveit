@@ -31,12 +31,24 @@ page.on("pageerror", (e) => pageErrors.push(e.message));
 let ok = true;
 try {
   const resp = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-  if (resp && resp.status() >= 500) {
-    console.error(`::error::ui-smoke: ${url} → HTTP ${resp.status()}`);
-    ok = false;
+  const status = resp ? resp.status() : 0;
+  if (status === 401 || status === 403) {
+    // Auth-gated (e.g. Vercel deployment protection on a preview). The page that loads is the
+    // protection/login screen, NOT the app — asserting a selector here would FALSE-PASS on it.
+    // Skip the render check honestly rather than claim a render; the public PRODUCTION deploy
+    // (deployment_status fires there too) is where the UI is actually verified.
+    console.warn(`::warning::ui-smoke: ${url} → HTTP ${status} (auth-gated — likely deployment protection). The protection screen is not the app, so the render assertion is SKIPPED here, not false-passed. The production deploy verifies the UI.`);
+    await browser.close();
+    process.exit(0);
   }
-  await page.waitForSelector(selector, { state: "attached", timeout: 15000 });
-  console.log(`ui-smoke: ${url} rendered (selector '${selector}' present) ✓`);
+  if (status >= 400) {
+    // 404/4xx/5xx: the page did not load — never claim it "rendered".
+    console.error(`::error::ui-smoke: ${url} → HTTP ${status} — page did not load`);
+    ok = false;
+  } else {
+    await page.waitForSelector(selector, { state: "attached", timeout: 15000 });
+    console.log(`ui-smoke: ${url} rendered (selector '${selector}' present) ✓`);
+  }
 } catch (e) {
   console.error(`::error::ui-smoke: ${url} did not render — ${e.message}`);
   ok = false;
