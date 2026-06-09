@@ -1,0 +1,59 @@
+name: Runtime smoke-test
+
+# The gate the FocusBoard 504 taught us we needed: build + tests + deploy + review can ALL
+# be green while every route 504s at runtime. This fires BY ITSELF after a deploy — GitHub
+# emits `deployment_status` when Vercel (or any deploy integration) finishes, and
+# `environment_url` hands us the live URL with zero config (no token, no manual env). It hits
+# the DEPLOYED artifact: HTTP (curl) + the rendered UI (Playwright) + an optional E2E suite.
+#
+# Per-repo config: .shipit-gates/smoke.conf (SHIPIT_SMOKE_PATHS / _UI / _SELECTOR / _E2E_CMD).
+# No config → nothing to check → skips. The gate honours a [no-smoke] commit override.
+# NOTE: the installer rewrites the gate paths below into the repo's local gate dir.
+
+on: deployment_status
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-smoke:
+    # Only when a deploy actually succeeded, and only if we got a URL to hit.
+    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment_url != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.deployment_status.deployment.sha }}
+
+      - name: Inspect smoke config
+        id: conf
+        run: |
+          if [ ! -f .shipit-gates/smoke.conf ]; then
+            echo "No .shipit-gates/smoke.conf — runtime-smoke has nothing to check. Skipping."
+            echo "skip=1" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "skip=0" >> "$GITHUB_OUTPUT"
+          if grep -qE '^[[:space:]]*SHIPIT_SMOKE_UI=1' .shipit-gates/smoke.conf; then
+            echo "ui=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "ui=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.conf.outputs.skip == '0' && steps.conf.outputs.ui == '1'
+        with:
+          node-version: "20"
+
+      - name: Install Playwright (UI tier only)
+        if: steps.conf.outputs.skip == '0' && steps.conf.outputs.ui == '1'
+        run: npm i playwright && npx playwright install --with-deps chromium
+
+      - name: Smoke-test the live deploy
+        if: steps.conf.outputs.skip == '0'
+        env:
+          SHIPIT_DEPLOY_URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          set -a; . .shipit-gates/smoke.conf; set +a
+          bash .shipit-gates/runtime-smoke-test.sh
