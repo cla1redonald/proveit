@@ -1,0 +1,164 @@
+name: Independent review (cross-model)
+
+# The author does not review its own work. This PR was authored with Claude; an
+# INDEPENDENT, non-Claude model reviews it before merge. Keyless: it calls GitHub
+# Models via the built-in GITHUB_TOKEN + `models: read` — no OpenAI key, no wallet.
+#
+# S6 v2 — PER-FILE review. Earlier the whole diff was sent in one call and truncated
+# at the GitHub Models request cap (~8k tokens), so on large PRs the reviewer SPECULATED
+# about unseen code and raised false MUST-FIX findings. Now each changed file is reviewed
+# in its OWN call, so every file is seen COMPLETE — no whole-diff truncation. (Only a
+# single file larger than the cap is truncated, and the prompt says so for that file.)
+#
+# Trade-off: per-file review can't see cross-file interactions. It is bounded to the
+# first MAX_FILES changed files; the rest are listed as not-reviewed (never silently
+# dropped). Cost: one small GitHub Models call per file (capped) — pennies per PR.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  models: read
+
+concurrency:
+  group: independent-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      REVIEW_MODEL: ${{ vars.SHIPIT_REVIEW_MODEL || 'openai/gpt-4.1' }}
+      # STRICT=true → fail on ANY [MUST-FIX] tag, not just the final VERDICT line.
+      # Default advisory (verdict line only); set repo var SHIPIT_REVIEW_STRICT=true to harden.
+      STRICT: ${{ vars.SHIPIT_REVIEW_STRICT || 'false' }}
+      MAX_FILES: "25"          # cost cap: never review more than this many files per PR
+      PER_FILE_CHARS: "24000"  # ~6k tokens; only a single oversized file is truncated
+      MIN_LINES: ${{ vars.SHIPIT_REVIEW_MIN_LINES || '10' }}  # size-gate: skip the review on trivial PRs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Per-file independent review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set +e +u +o pipefail   # aggregator: handle every error manually; never spurious-fail (GH defaults to set -e)
+          base="origin/$BASE_REF"
+          git fetch -q origin "$BASE_REF" || true
+
+          # Conscious opt-out (like [no-docs]/[no-test]) — for a verified false positive.
+          if git log --format='%B' "$base..HEAD" 2>/dev/null | grep -qiF '[no-review]'; then
+            echo "[no-review] override present in a commit message — skipping independent review."
+            gh pr comment "$PR" --body "🔍 Independent review **skipped** via the \`[no-review]\` override." || true
+            exit 0
+          fi
+
+          # Size-gate: skip the (LLM-billed) review on docs-only / trivial PRs. Counts only
+          # code-file line churn (ignores .md/.mdx/.txt/.rst); numstat gives "-" for binaries → awk reads 0.
+          numstat="$(git diff --numstat "$base...HEAD" -- . ':(exclude)**/package-lock.json' ':(exclude)**/*.lock')"
+          codefiles="$(printf '%s\n' "$numstat" | awk 'NF && $3 !~ /\.(md|mdx|txt|rst)$/' | grep -c . || true)"
+          codelines="$(printf '%s\n' "$numstat" | awk '$3 !~ /\.(md|mdx|txt|rst)$/ {a+=$1; d+=$2} END{print a+d+0}')"
+          if [ "${codefiles:-0}" -eq 0 ]; then
+            gh pr comment "$PR" --body "🔍 Independent review **skipped** — docs-only change (no code files)." || true
+            exit 0
+          fi
+          if [ "${codelines:-0}" -lt "${MIN_LINES:-10}" ]; then
+            gh pr comment "$PR" --body "🔍 Independent review **skipped** — trivial change (${codelines} code line(s) < ${MIN_LINES})." || true
+            exit 0
+          fi
+
+          # Changed files, excluding lockfiles and binaries; capped at MAX_FILES.
+          mapfile -t ALL < <(git diff --name-only "$base...HEAD" -- . ':(exclude)**/package-lock.json' ':(exclude)**/*.lock')
+          FILES=("${ALL[@]:0:$MAX_FILES}")
+          SKIPPED=$(( ${#ALL[@]} - ${#FILES[@]} ))
+
+          SYS="You are an independent, adversarial code reviewer from a different model family than the author (Claude). You review ONE file's diff at a time. The diff you are given is the COMPLETE diff for that file unless a truncation note says otherwise — so do NOT speculate about code you cannot see, and never say a file 'may break' or 'is likely' buggy without pointing to a specific shown line. Reserve [MUST-FIX] for a concrete, demonstrable defect (real bug, security hole, data loss) you can cite a line for; design/style/process opinions are [NIT], never [MUST-FIX]. End with exactly one final line: 'VERDICT: MUST-FIX' if you listed a genuine [MUST-FIX] for this file, otherwise 'VERDICT: OK'."
+
+          overall_ok=1
+          : > findings.md
+          for f in "${FILES[@]}"; do
+            [ -n "$f" ] || continue
+            d="$(git diff "$base...HEAD" -- "$f")"
+            [ -z "$d" ] && continue   # no diff for this file (e.g. pure rename) — skip
+            note=""
+            if [ "${#d}" -gt "$PER_FILE_CHARS" ]; then
+              d="$(printf '%s' "$d" | head -c "$PER_FILE_CHARS")"
+              note=" (NOTE: this single file's diff was truncated at ${PER_FILE_CHARS} chars)"
+            fi
+            user="$(printf 'Review this file diff%s.\nFile: %s\n\n```diff\n%s\n```' "$note" "$f" "$d")"
+            body="$(jq -n --arg m "$REVIEW_MODEL" --arg s "$SYS" --arg u "$user" \
+              '{model:$m, max_tokens:700, messages:[{role:"system",content:$s},{role:"user",content:$u}]}')"
+            resp="$(curl -sS -X POST https://models.github.ai/inference/chat/completions \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/vnd.github+json" \
+              -d "$body" 2>/dev/null)"
+            content="$(printf '%s' "$resp" | jq -r '.choices[0].message.content // .error.message // "(no response)"' 2>/dev/null)"
+            {
+              echo "### \`$f\`"
+              echo "$content"
+              echo
+            } >> findings.md
+            # Trip ONLY on a standalone verdict line — not the string mid-prose (reviewing
+            # this very workflow, which contains verdict strings, would else false-trip).
+            # Explicit if-block so a no-match never bubbles a non-zero exit.
+            if printf '%s\n' "$content" | grep -qiE '^[[:space:]]*VERDICT:[[:space:]]*MUST-FIX[[:space:]]*$'; then
+              overall_ok=0
+            fi
+            # Strict mode: also trip on a [MUST-FIX] FINDING tag — one that LEADS a line
+            # (after list/heading markers), NOT a prose mention like "no [MUST-FIX] issues".
+            if [ "$STRICT" = "true" ] && printf '%s\n' "$content" | grep -qiE '^[[:space:]]*[-*#>0-9.)( ]*\[MUST-FIX\]'; then
+              overall_ok=0
+            fi
+          done
+
+          # --- cross-file pass: catch interactions a per-file review cannot see ---
+          if [ "${#FILES[@]}" -gt 1 ]; then
+            stat="$(git diff --stat "$base...HEAD" -- "${FILES[@]}" 2>/dev/null | head -c 4000)"
+            sigs="$(git diff "$base...HEAD" -- "${FILES[@]}" 2>/dev/null \
+              | grep -E '^[+-].*(function |def |class |export |const .+=|=>|sub |--[a-z-]+\)|^[+-][A-Za-z_]+\(\))' \
+              | head -c 16000)"
+            xsys="You are an independent reviewer given a CROSS-FILE summary of one PR (the file-change stat + the added/removed definition & signature lines across files). Identify ONLY concrete cross-file interaction risks: a changed signature/contract in one file that breaks a caller in another, a removed export/function still referenced elsewhere, an interface mismatch. Name the files. Do not repeat single-file style nits and do not speculate. Reserve [MUST-FIX] for a concrete cross-file break. End with exactly 'VERDICT: MUST-FIX' or 'VERDICT: OK'."
+            xuser="$(printf 'Change stat:\n%s\n\nDefinition/signature lines changed across files:\n%s' "$stat" "$sigs")"
+            xbody="$(jq -n --arg m "$REVIEW_MODEL" --arg s "$xsys" --arg u "$xuser" \
+              '{model:$m, max_tokens:600, messages:[{role:"system",content:$s},{role:"user",content:$u}]}')"
+            xresp="$(curl -sS -X POST https://models.github.ai/inference/chat/completions \
+              -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" -H "Accept: application/vnd.github+json" \
+              -d "$xbody" 2>/dev/null)"
+            xcontent="$(printf '%s' "$xresp" | jq -r '.choices[0].message.content // .error.message // "(no response)"' 2>/dev/null)"
+            { echo "### 🔗 Cross-file interactions"; echo "$xcontent"; echo; } >> findings.md
+            if printf '%s\n' "$xcontent" | grep -qiE '^[[:space:]]*VERDICT:[[:space:]]*MUST-FIX[[:space:]]*$'; then overall_ok=0; fi
+            if [ "$STRICT" = "true" ] && printf '%s\n' "$xcontent" | grep -qiE '^[[:space:]]*[-*#>0-9.)( ]*\[MUST-FIX\]'; then overall_ok=0; fi
+          fi
+
+          {
+            echo "## 🔍 Independent cross-model review (per-file)"
+            echo "_Reviewer: \`$REVIEW_MODEL\` via GitHub Models — one call per changed file, so each file is seen complete (no whole-diff truncation). The author (Claude) does not review its own work._"
+            if [ "$STRICT" = "true" ]; then
+              echo "_Mode: **STRICT** — any \`[MUST-FIX]\` blocks the merge. Override a false positive with \`[no-review]\` in a commit message._"
+            else
+              echo "_Mode: **advisory** — findings are informational and do **NOT** block the merge. Set repo var \`SHIPIT_REVIEW_STRICT=true\` to make \`[MUST-FIX]\` block. (Runtime correctness is the runtime-smoke gate's job, not this diff review's.)_"
+            fi
+            [ "$SKIPPED" -gt 0 ] && echo && echo "> ⚠️ ${SKIPPED} file(s) beyond the ${MAX_FILES}-file cap were NOT reviewed — review them by hand."
+            echo
+            cat findings.md
+          } > comment.md
+          gh pr comment "$PR" --body-file comment.md || true
+
+          if [ "$overall_ok" -eq 0 ]; then
+            if [ "$STRICT" = "true" ]; then
+              echo "::error::STRICT: independent review found MUST-FIX — see the PR comment."
+              exit 1
+            fi
+            echo "::warning::Independent review flagged MUST-FIX (advisory — NOT blocking). See the PR comment."
+            exit 0
+          fi
+          echo "Independent review: OK across ${#FILES[@]} reviewed file(s)."
