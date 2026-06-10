@@ -56,7 +56,16 @@ The Profile-frame's known risk (motivated reasoning that allows non-paying admir
 
 **Free vs paid line:** the validation conversation and on-screen results are *always free.* The downloadable bundle (Gamma deck, `spec.md`, `design-brief.md`, `claude-design-prompts.md`) is the paid gate. **Authentication: none on either side.** Stripe Checkout collects email at payment; bundle delivers via Resend; no account creation, no login, no portal.
 
-**Payment subsystem (Phase 1 — implemented):** Real Stripe Checkout replaces the Wizard-of-Oz email-capture flow. The one-off £4.99 button POSTs to `/api/stripe/checkout`, which creates a Stripe Checkout Session and a `pending` order in Supabase (`public.orders`). On payment completion, the Stripe webhook (`/api/stripe/webhook`) marks the order `paid` and emails Claire to fulfil manually (send the bundle within 4 hours). Artifact generation is Phase 2/3 (not yet built). The `subscription` (£9.99/mo) button is deferred to issue #37. The WoZ modal remains as a fallback for when Stripe keys are not yet configured (503 from the checkout route).
+**Payment subsystem (Phase 1 — implemented):** Real Stripe Checkout replaces the Wizard-of-Oz email-capture flow. The one-off £4.99 button POSTs to `/api/stripe/checkout`, which creates a Stripe Checkout Session and a `pending` order in Supabase (`public.orders`). On payment completion, the Stripe webhook (`/api/stripe/webhook`) marks the order `paid` and emails Claire for visibility, then kicks off automated fulfilment. The `subscription` (£9.99/mo) button is deferred to issue #37. The WoZ modal remains as a fallback for when Stripe keys are not yet configured (503 from the checkout route).
+
+**Fulfilment pipeline (Phase 2/3 — implemented):** After a payment is confirmed, `fulfilOrder(orderId)` runs automatically (fire-and-forget from the webhook). The pipeline is idempotent and resumable:
+1. Calls `composeDeckContent` — a single bounded Anthropic Haiku call (max 2048 tokens, JSON-only, no tools) that produces structured findings, recommendations, a "so what", and 3 text artifacts (spec.md, design-brief.md, prompts.md).
+2. Emails the 3 text artifacts to the buyer (status: `artifacts_sent`).
+3. Renders a branded HTML deck via `renderDeckHtml` (deterministic, html-deck system, ProveIt/Roami palette), stores it in Supabase Storage bucket `decks` at key `<orderId>.html`, and emails the buyer a shareable link at `/deck/<orderId>` (status: `deck_ready`).
+
+On any failure: status is set to `failed` with the error message, and the error is logged loudly. The paid path never silently swallows failures.
+
+**Deck system:** Uses Claire's html-deck template system (deck-stage.js, deck.css, colors_and_type.css copied verbatim to `web/public/deck-assets/`). Slides: cover (dark), confidence KPI grid, kill signals (ask/walk-away paired rows), findings, recommendations, close (dark). ProveIt palette: river `#2A5A52` + cream `#FAF6F1`. The shareable URL pattern is `proveit.tools/deck/<orderId>`.
 
 **Go-live steps (human action required):**
 1. Apply the Supabase migration: `web/supabase/migrations/0001_create_orders_table.sql` (via Supabase MCP or dashboard).

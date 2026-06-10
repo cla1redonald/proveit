@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe";
 import { getOrderByCheckoutSession, markOrderPaid } from "@/lib/orders";
 import { captureServer } from "@/lib/analytics-server";
 import { notifyOrderPaid } from "@/lib/notifications";
+import { fulfilOrder } from "@/lib/fulfilment";
 
 export const runtime = "nodejs";
 
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
         console.error("[webhook] analytics captureServer failed (swallowed):", err);
       });
 
-      // Email Claire to fulfil manually (fire-and-forget)
+      // Email Claire that a payment came in (manual visibility)
       await notifyOrderPaid({
         email: customerEmail ?? "unknown",
         ideaSummary: order?.ideaSummary ?? session.metadata?.idea_summary ?? "",
@@ -113,6 +114,18 @@ export async function POST(req: NextRequest) {
         amountPence: session.amount_total ?? 499,
         ts: new Date().toISOString(),
       });
+
+      // Kick off automated fulfilment (fire-and-forget — must not block the 200)
+      if (order?.id) {
+        fulfilOrder(order.id).catch((err: unknown) => {
+          console.error(
+            `[webhook] CRITICAL: fulfilOrder failed for order ${order!.id}:`,
+            err
+          );
+          // fulfilOrder already sets status='failed' on the order row
+          // so the next manual check will surface this correctly.
+        });
+      }
     }
 
     return new Response(JSON.stringify({ received: true }), {
