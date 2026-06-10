@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Docs-sync check (zero-cost, no LLM). Fails if agent code changed without docs.
 #
-# "Code" = scripts/ agents/ commands/  (the parts the README/CLAUDE/AGENTS/design describe).
-# "Docs" = README.md CLAUDE.md AGENTS.md docs/
+# "Code" = scripts/ agents/ commands/ (the ProveIt PLUGIN) + web/src/ (the web APP). The
+#   original CODE_RE covered only the plugin dirs, so a web-app PR matched nothing and passed
+#   green every time — docs-sync was a silent no-op on the actual product.
+# "Docs" = README.md CLAUDE.md AGENTS.md docs/ web/README.md
 # Override: put [no-docs] in any commit message in the range when a change genuinely
 # needs no doc update (e.g. a bugfix). Then this passes.
 #
@@ -12,8 +14,8 @@
 
 set -uo pipefail
 
-CODE_RE='^(scripts/|agents/|commands/)'
-DOCS_RE='^(README\.md|CLAUDE\.md|AGENTS\.md|docs/)'
+CODE_RE='^(scripts/|agents/|commands/|web/src/)'
+DOCS_RE='^(README\.md|CLAUDE\.md|AGENTS\.md|docs/|web/README\.md)'
 
 if [ "${1:-}" = "--staged" ]; then
   changed=$(git diff --cached --name-only)
@@ -30,7 +32,7 @@ override=$(printf '%s\n' "$msg" | grep -ci '\[no-docs\]' || true)
 
 if [ -n "$code" ] && [ -z "$docs" ] && [ "${override:-0}" -eq 0 ]; then
   echo "::error::Code changed but no docs were updated."
-  echo "Update README.md / CLAUDE.md / AGENTS.md / docs/ to match — or add [no-docs] to a commit message if this genuinely needs none."
+  echo "Update README.md / CLAUDE.md / AGENTS.md / docs/ / web/README.md to match — or add [no-docs] to a commit message if this genuinely needs none."
   echo "Code files changed:"
   printf '%s\n' "$code" | sed 's/^/  - /'
   exit 1
