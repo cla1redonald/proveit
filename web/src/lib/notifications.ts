@@ -120,6 +120,51 @@ export async function notifyWozIntent(entry: {
 }
 
 /**
+ * Send a notification email when a Stripe payment completes.
+ *
+ * This is the Phase 1 manual-fulfilment alert. Claire receives the email,
+ * then manually assembles and sends the bundle to the customer.
+ *
+ * Fire-and-forget — never throws, never blocks the webhook response.
+ */
+export async function notifyOrderPaid(entry: {
+  email: string;
+  ideaSummary: string;
+  orderId: string;
+  amountPence: number;
+  ts: string;
+}): Promise<void> {
+  const resend = getResend();
+  const to = process.env.WAITLIST_NOTIFY_EMAIL;
+  const from = process.env.WAITLIST_FROM_EMAIL || "onboarding@resend.dev";
+
+  if (!resend || !to) {
+    if (!resend) console.warn("[notifications] RESEND_API_KEY unset — order paid notifications disabled");
+    if (!to) console.warn("[notifications] WAITLIST_NOTIFY_EMAIL unset — order paid notifications disabled");
+    return;
+  }
+
+  const amountLabel = `£${(entry.amountPence / 100).toFixed(2)}`;
+  const subject = `[ProveIt PAID] ${amountLabel} — ${entry.email}`;
+
+  try {
+    const { error } = await resend.emails.send({
+      from,
+      to: [to],
+      replyTo: entry.email !== "unknown" ? entry.email : undefined,
+      subject,
+      html: renderOrderPaidHtml(entry, amountLabel),
+      text: renderOrderPaidText(entry, amountLabel),
+    });
+    if (error) {
+      console.error("[notifications] Resend order-paid send error (swallowed):", error);
+    }
+  } catch (err) {
+    console.error("[notifications] notifyOrderPaid threw (swallowed):", err);
+  }
+}
+
+/**
  * Test-only — reset the cached Resend client.
  */
 export function resetNotificationClient(): void {
@@ -226,6 +271,73 @@ function renderWozText(
     "Read the WoZ list: https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor",
   ]
     .filter(Boolean)
+    .join("\n");
+}
+
+function renderOrderPaidHtml(
+  entry: {
+    email: string;
+    ideaSummary: string;
+    orderId: string;
+    amountPence: number;
+    ts: string;
+  },
+  amountLabel: string
+): string {
+  const ideaBlock = entry.ideaSummary
+    ? `<p style="margin: 16px 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em;">Idea they validated</p>
+       <p style="margin: 0 0 16px; padding: 12px 16px; background: #f0eee8; border-left: 3px solid #6a8a8a; border-radius: 4px; font-size: 14px; color: #2d2a26;">${escapeHtml(entry.ideaSummary)}</p>`
+    : "";
+  const dashboardUrl = `https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor?filter=id%3Deq.${encodeURIComponent(entry.orderId)}`;
+
+  return `<!doctype html>
+<html>
+<body style="margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf6f1; color: #2d2a26;">
+  <div style="max-width: 540px; margin: 0 auto; background: #ffffff; padding: 28px; border-radius: 12px; border: 1px solid #e0d9cf;">
+    <p style="margin: 0 0 4px; font-size: 12px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.12em;">ProveIt — paid order</p>
+    <h1 style="margin: 0 0 16px; font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 500; color: #111a24;">Someone paid. Fulfil manually.</h1>
+    <p style="margin: 0 0 8px; font-size: 14px;"><strong>Amount:</strong> ${escapeHtml(amountLabel)}</p>
+    <p style="margin: 0 0 8px; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${escapeHtml(entry.email)}" style="color: #c4956a; text-decoration: none;">${escapeHtml(entry.email)}</a></p>
+    <p style="margin: 0 0 8px; font-size: 14px;"><strong>Order ID:</strong> <code style="font-size: 13px; background: #f0eee8; padding: 2px 6px; border-radius: 3px;">${escapeHtml(entry.orderId)}</code></p>
+    <p style="margin: 0 0 16px; font-size: 14px;"><strong>When:</strong> ${escapeHtml(entry.ts)}</p>
+    ${ideaBlock}
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0d9cf;" />
+    <p style="margin: 0 0 12px; font-size: 13px; color: #6b5d4f;">
+      <strong>Action required:</strong> email the bundle to the customer within 4 hours.
+      Hitting <strong>Reply</strong> goes to the customer directly.
+    </p>
+    <p style="margin: 0; font-size: 13px; color: #6b5d4f;">
+      View order in <a href="${dashboardUrl}" style="color: #c4956a;">Supabase dashboard</a>.
+    </p>
+  </div>
+</body>
+</html>`;
+}
+
+function renderOrderPaidText(
+  entry: {
+    email: string;
+    ideaSummary: string;
+    orderId: string;
+    amountPence: number;
+    ts: string;
+  },
+  amountLabel: string
+): string {
+  return [
+    `ProveIt: someone paid ${amountLabel} — fulfil manually.`,
+    "",
+    `Amount:   ${amountLabel}`,
+    `Email:    ${entry.email}`,
+    `Order ID: ${entry.orderId}`,
+    `When:     ${entry.ts}`,
+    entry.ideaSummary ? `\nIdea they validated:\n  ${entry.ideaSummary}` : "",
+    "",
+    "Action required: email the bundle to the customer within 4 hours.",
+    "Hitting Reply emails the customer directly.",
+    `View order: https://supabase.com/dashboard/project/bbpdicijaqoujnpidiho/editor`,
+  ]
+    .filter((line) => line !== undefined)
     .join("\n");
 }
 

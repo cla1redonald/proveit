@@ -15,6 +15,7 @@ const OPTION_LABELS: Record<ChosenOption, string> = {
 };
 
 export default function FullBundlePointer({ session }: FullBundlePointerProps) {
+  // WoZ modal state — used as a fallback when Stripe is not configured (503)
   const [modalOption, setModalOption] = useState<ChosenOption | null>(null);
   const [email, setEmail] = useState("");
   const [intendedUse, setIntendedUse] = useState("");
@@ -34,7 +35,8 @@ export default function FullBundlePointer({ session }: FullBundlePointerProps) {
     }
   }, [submitting, submitted]);
 
-  const handleSubmit = useCallback(
+  // WoZ modal submit handler (fallback path when Stripe not configured)
+  const handleWozSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!modalOption) return;
@@ -65,23 +67,77 @@ export default function FullBundlePointer({ session }: FullBundlePointerProps) {
     [modalOption, email, intendedUse, session?.ideaSummary]
   );
 
+  // One-off purchase handler: POST /api/stripe/checkout → redirect to Stripe Checkout.
+  // Falls back to the WoZ modal on 503 (Stripe not yet configured).
+  const handleOneOffClick = useCallback(async () => {
+    setError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proveitSessionId: session?.id,
+          ideaSummary: session?.ideaSummary ?? "",
+          transcript: session?.messages ?? [],
+        }),
+      });
+
+      if (res.status === 503) {
+        // Stripe not configured yet — fall back to WoZ email-capture modal
+        setModalOption("one_off");
+        return;
+      }
+
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? "Couldn't start checkout. Please try again.");
+      }
+
+      const data = (await res.json()) as { url?: string };
+      if (!data.url) {
+        throw new Error("No checkout URL returned. Please try again.");
+      }
+
+      window.location.assign(data.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't start checkout. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [session]);
+
   return (
     <div className="flex flex-col gap-[var(--space-4)] max-w-md">
+      {error && !modalOption && (
+        <p
+          role="alert"
+          className="font-sans text-sm"
+          style={{ color: "var(--color-contradicted-fg)" }}
+        >
+          {error}
+        </p>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-[var(--space-3)]">
         <button
           type="button"
-          onClick={() => setModalOption("one_off")}
-          className="outline-btn inline-flex items-center justify-center px-[var(--space-5)] py-[var(--space-3)] rounded-[var(--radius-md)] font-sans text-sm font-medium border"
+          disabled={submitting}
+          onClick={handleOneOffClick}
+          className="outline-btn inline-flex items-center justify-center px-[var(--space-5)] py-[var(--space-3)] rounded-[var(--radius-md)] font-sans text-sm font-medium border disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Get the bundle — £4.99 (one-off)
+          {submitting ? "Loading…" : "Get the bundle — £4.99 (one-off)"}
         </button>
-        <button
+        {/* Subscription button deferred to #37 — out of scope for v1.
+            Keeping the markup so the WoZ modal still handles subscription
+            intents via the fallback path if needed. */}
+        {/* <button
           type="button"
           onClick={() => setModalOption("subscription")}
           className="outline-btn inline-flex items-center justify-center px-[var(--space-5)] py-[var(--space-3)] rounded-[var(--radius-md)] font-sans text-sm font-medium border"
         >
           Subscribe — £9.99/mo
-        </button>
+        </button> */}
       </div>
 
       <p
@@ -105,6 +161,8 @@ export default function FullBundlePointer({ session }: FullBundlePointerProps) {
         Design prompts.
       </p>
 
+      {/* WoZ modal — renders when Stripe returns 503 (not configured yet),
+          preserving the existing email-capture fallback path. */}
       {modalOption !== null && (
         <div
           role="dialog"
@@ -140,7 +198,7 @@ export default function FullBundlePointer({ session }: FullBundlePointerProps) {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-[var(--space-4)]">
+              <form onSubmit={handleWozSubmit} className="flex flex-col gap-[var(--space-4)]">
                 <h2
                   id="woz-modal-title"
                   className="font-display text-lg"

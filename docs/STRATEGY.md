@@ -56,6 +56,13 @@ The Profile-frame's known risk (motivated reasoning that allows non-paying admir
 
 **Free vs paid line:** the validation conversation and on-screen results are *always free.* The downloadable bundle (Gamma deck, `spec.md`, `design-brief.md`, `claude-design-prompts.md`) is the paid gate. **Authentication: none on either side.** Stripe Checkout collects email at payment; bundle delivers via Resend; no account creation, no login, no portal.
 
+**Payment subsystem (Phase 1 — implemented):** Real Stripe Checkout replaces the Wizard-of-Oz email-capture flow. The one-off £4.99 button POSTs to `/api/stripe/checkout`, which creates a Stripe Checkout Session and a `pending` order in Supabase (`public.orders`). On payment completion, the Stripe webhook (`/api/stripe/webhook`) marks the order `paid` and emails Claire to fulfil manually (send the bundle within 4 hours). Artifact generation is Phase 2/3 (not yet built). The `subscription` (£9.99/mo) button is deferred to issue #37. The WoZ modal remains as a fallback for when Stripe keys are not yet configured (503 from the checkout route).
+
+**Go-live steps (human action required):**
+1. Apply the Supabase migration: `web/supabase/migrations/0001_create_orders_table.sql` (via Supabase MCP or dashboard).
+2. Set in Vercel env: `STRIPE_SECRET_KEY` (sk_live_…), `STRIPE_WEBHOOK_SECRET` (whsec_…), `STRIPE_PRICE_ID` (optional, £4.99 GBP price), `SUPABASE_SERVICE_ROLE_KEY`.
+3. Register the Stripe webhook at https://dashboard.stripe.com/webhooks → `checkout.session.completed` → `https://proveit.tools/api/stripe/webhook`.
+
 **Why this shape:** The WhatsApp friend's unprompted reaction ("impressed with the live AI without any credit gating/logins") is the empirical signal. Any monetisation move that re-introduces credit gating or login walls on the free experience destroys exactly what makes the product work. Paid converts at the moment of highest commercial intent — when the user has decided to act on the validation and needs the artefacts in their hands.
 
 **Plugin pricing:** always free. Developer-ecosystem gift to savvy users. Not a monetisation surface.
