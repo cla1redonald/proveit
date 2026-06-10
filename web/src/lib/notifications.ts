@@ -165,6 +165,101 @@ export async function notifyOrderPaid(entry: {
 }
 
 /**
+ * Send the 3 text artifacts to the buyer's email.
+ *
+ * Called by fulfilment.ts after composeDeckContent returns successfully.
+ * Throws on Resend error — the paid path must not silently swallow failures.
+ */
+export async function sendArtifactsEmail(
+  order: {
+    email: string;
+    ideaSummary: string;
+    orderId: string;
+  },
+  artifacts: {
+    specMd: string;
+    designBriefMd: string;
+    promptsMd: string;
+  }
+): Promise<void> {
+  const resend = getResend();
+  const from = process.env.WAITLIST_FROM_EMAIL || "onboarding@resend.dev";
+
+  if (!resend) {
+    console.warn("[notifications] RESEND_API_KEY unset — skipping artifacts email");
+    return;
+  }
+  if (!order.email) {
+    console.warn(`[notifications] No email address for order ${order.orderId} — skipping artifacts email`);
+    return;
+  }
+
+  const subject = `Your ProveIt validation artifacts — ${escapeHtml(order.ideaSummary).slice(0, 60)}`;
+
+  const html = renderArtifactsEmailHtml(order, artifacts);
+  const text = renderArtifactsEmailText(order, artifacts);
+
+  const { error } = await resend.emails.send({
+    from,
+    to: [order.email],
+    subject,
+    html,
+    text,
+  });
+
+  if (error) {
+    console.error(`[notifications] sendArtifactsEmail Resend error for order ${order.orderId}:`, error);
+    throw new Error(`[notifications] Failed to send artifacts email: ${JSON.stringify(error)}`);
+  }
+}
+
+/**
+ * Send the "your deck is ready" email with the public deck link.
+ *
+ * Called by fulfilment.ts after the deck is stored and the deck_url is set.
+ * Throws on Resend error — the paid path must not silently swallow failures.
+ */
+export async function sendDeckReadyEmail(
+  order: {
+    email: string;
+    ideaSummary: string;
+    orderId: string;
+  },
+  deckUrl: string
+): Promise<void> {
+  const resend = getResend();
+  const from = process.env.WAITLIST_FROM_EMAIL || "onboarding@resend.dev";
+
+  if (!resend) {
+    console.warn("[notifications] RESEND_API_KEY unset — skipping deck ready email");
+    return;
+  }
+  if (!order.email) {
+    console.warn(`[notifications] No email address for order ${order.orderId} — skipping deck ready email`);
+    return;
+  }
+
+  const fullUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://proveit.tools"}${deckUrl}`;
+  const subject = `Your ProveIt validation deck is ready`;
+
+  const html = renderDeckReadyEmailHtml(order, fullUrl);
+  const text = renderDeckReadyEmailText(order, fullUrl);
+
+  const { error } = await resend.emails.send({
+    from,
+    to: [order.email],
+    subject,
+    html,
+    text,
+  });
+
+  if (error) {
+    console.error(`[notifications] sendDeckReadyEmail Resend error for order ${order.orderId}:`, error);
+    throw new Error(`[notifications] Failed to send deck ready email: ${JSON.stringify(error)}`);
+  }
+}
+
+/**
  * Test-only — reset the cached Resend client.
  */
 export function resetNotificationClient(): void {
@@ -339,6 +434,114 @@ function renderOrderPaidText(
   ]
     .filter((line) => line !== undefined)
     .join("\n");
+}
+
+function renderArtifactsEmailHtml(
+  order: { email: string; ideaSummary: string; orderId: string },
+  artifacts: { specMd: string; designBriefMd: string; promptsMd: string }
+): string {
+  return `<!doctype html>
+<html>
+<body style="margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf6f1; color: #2d2a26;">
+  <div style="max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #e0d9cf;">
+    <p style="margin: 0 0 4px; font-size: 12px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.12em;">ProveIt — your validation bundle</p>
+    <h1 style="margin: 0 0 12px; font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 500; color: #111a24;">Your validation artifacts are ready.</h1>
+    <p style="margin: 0 0 24px; font-size: 14px; color: #4a5568;">Here are the three documents from your ProveIt validation of: <strong>${escapeHtml(order.ideaSummary.slice(0, 120))}</strong>. Your visual deck is coming in a second email.</p>
+
+    <div style="margin-bottom: 24px;">
+      <p style="margin: 0 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">Product spec</p>
+      <pre style="margin: 0; padding: 16px; background: #f4f0e8; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #2d2a26; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;">${escapeHtml(artifacts.specMd)}</pre>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <p style="margin: 0 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">Design brief</p>
+      <pre style="margin: 0; padding: 16px; background: #f4f0e8; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #2d2a26; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;">${escapeHtml(artifacts.designBriefMd)}</pre>
+    </div>
+
+    <div style="margin-bottom: 24px;">
+      <p style="margin: 0 0 8px; font-size: 13px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">Follow-up prompts</p>
+      <pre style="margin: 0; padding: 16px; background: #f4f0e8; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #2d2a26; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;">${escapeHtml(artifacts.promptsMd)}</pre>
+    </div>
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0d9cf;" />
+    <p style="margin: 0; font-size: 13px; color: #6b5d4f;">Made with <a href="https://proveit.tools" style="color: #2a5a52;">ProveIt</a>. Order ID: <code style="font-size: 12px; background: #f0eee8; padding: 2px 5px; border-radius: 3px;">${escapeHtml(order.orderId)}</code></p>
+  </div>
+</body>
+</html>`;
+}
+
+function renderArtifactsEmailText(
+  order: { email: string; ideaSummary: string; orderId: string },
+  artifacts: { specMd: string; designBriefMd: string; promptsMd: string }
+): string {
+  return [
+    `ProveIt — Your validation bundle`,
+    ``,
+    `Validation of: ${order.ideaSummary.slice(0, 120)}`,
+    ``,
+    `Your three artifacts are below. Your visual deck is coming in a second email.`,
+    ``,
+    `─── PRODUCT SPEC ───────────────────────────────────`,
+    artifacts.specMd,
+    ``,
+    `─── DESIGN BRIEF ───────────────────────────────────`,
+    artifacts.designBriefMd,
+    ``,
+    `─── FOLLOW-UP PROMPTS ──────────────────────────────`,
+    artifacts.promptsMd,
+    ``,
+    `────────────────────────────────────────────────────`,
+    `Made with ProveIt at proveit.tools`,
+    `Order ID: ${order.orderId}`,
+  ].join("\n");
+}
+
+function renderDeckReadyEmailHtml(
+  order: { email: string; ideaSummary: string; orderId: string },
+  deckUrl: string
+): string {
+  return `<!doctype html>
+<html>
+<body style="margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #faf6f1; color: #2d2a26;">
+  <div style="max-width: 540px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #e0d9cf;">
+    <p style="margin: 0 0 4px; font-size: 12px; color: #6a8a8a; text-transform: uppercase; letter-spacing: 0.12em;">ProveIt — your validation deck</p>
+    <h1 style="margin: 0 0 12px; font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 500; color: #111a24;">Your validation deck is ready.</h1>
+    <p style="margin: 0 0 24px; font-size: 14px; color: #4a5568;">The interactive slide deck for your validation of <strong>${escapeHtml(order.ideaSummary.slice(0, 120))}</strong> is ready to view and share.</p>
+
+    <div style="text-align: center; margin: 28px 0;">
+      <a href="${escapeHtml(deckUrl)}"
+         style="display: inline-block; padding: 14px 32px; background: #2a5a52; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 8px; letter-spacing: 0.02em;">
+        View your deck
+      </a>
+    </div>
+
+    <p style="margin: 0 0 8px; font-size: 13px; color: #6b5d4f;">Or copy this link: <a href="${escapeHtml(deckUrl)}" style="color: #2a5a52; word-break: break-all;">${escapeHtml(deckUrl)}</a></p>
+    <p style="margin: 0 0 8px; font-size: 13px; color: #6b5d4f;">The deck is keyboard-driven: arrow keys to navigate, F for full screen.</p>
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e0d9cf;" />
+    <p style="margin: 0; font-size: 13px; color: #6b5d4f;">Made with <a href="https://proveit.tools" style="color: #2a5a52;">ProveIt</a>. Order ID: <code style="font-size: 12px; background: #f0eee8; padding: 2px 5px; border-radius: 3px;">${escapeHtml(order.orderId)}</code></p>
+  </div>
+</body>
+</html>`;
+}
+
+function renderDeckReadyEmailText(
+  order: { email: string; ideaSummary: string; orderId: string },
+  deckUrl: string
+): string {
+  return [
+    `ProveIt — Your validation deck is ready`,
+    ``,
+    `The interactive deck for your validation of:`,
+    `"${order.ideaSummary.slice(0, 120)}"`,
+    ``,
+    `View it here: ${deckUrl}`,
+    ``,
+    `The deck is keyboard-driven: arrow keys to navigate, F for full screen.`,
+    ``,
+    `Made with ProveIt at proveit.tools`,
+    `Order ID: ${order.orderId}`,
+  ].join("\n");
 }
 
 function renderText(entry: WaitlistEntry): string {

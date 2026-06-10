@@ -256,6 +256,94 @@ export async function markOrderPaid(
   return true;
 }
 
+/**
+ * Look up an order by its primary key (order id).
+ *
+ * Used by fulfilment to load the full order before generating artifacts.
+ * Returns null when not found. THROWS on Supabase errors.
+ */
+export async function getOrderById(
+  orderId: string
+): Promise<MemoryOrder | null> {
+  const supabase = getServiceSupabase();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (error) {
+      console.error("[orders] getOrderById Supabase error:", error);
+      throw new Error(`[orders] Failed to read order by id: ${error.message}`);
+    }
+    if (!data) return null;
+    return {
+      id: data.id as string,
+      checkoutSessionId: data.checkout_session_id as string,
+      proveitSessionId: data.proveit_session_id as string | null,
+      ideaSummary: data.idea_summary as string | null,
+      transcript: data.transcript,
+      email: data.email as string | null,
+      status: data.status as OrderStatus,
+      amountPence: data.amount_pence as number,
+      currency: data.currency as string,
+      deckUrl: data.deck_url as string | null,
+      error: data.error as string | null,
+      createdAt: data.created_at as string,
+      updatedAt: data.updated_at as string,
+    };
+  }
+
+  // In-memory fallback
+  return memoryStore.find((o) => o.id === orderId) ?? null;
+}
+
+/**
+ * Update the status (and optionally deck_url / error) of an order.
+ *
+ * Used by fulfilment.ts to advance through the pipeline stages.
+ * THROWS on Supabase errors — the paid path must not silently swallow failures.
+ */
+export async function updateOrderStatus(
+  orderId: string,
+  status: OrderStatus,
+  extras?: { deckUrl?: string; error?: string }
+): Promise<void> {
+  const supabase = getServiceSupabase();
+  const now = new Date().toISOString();
+
+  if (supabase) {
+    const patch: Record<string, unknown> = {
+      status,
+      updated_at: now,
+    };
+    if (extras?.deckUrl !== undefined) patch.deck_url = extras.deckUrl;
+    if (extras?.error !== undefined) patch.error = extras.error;
+
+    const { error } = await supabase
+      .from("orders")
+      .update(patch)
+      .eq("id", orderId);
+
+    if (error) {
+      console.error(`[orders] updateOrderStatus Supabase error for ${orderId}:`, error);
+      throw new Error(`[orders] Failed to update order status: ${error.message}`);
+    }
+    return;
+  }
+
+  // In-memory fallback
+  const order = memoryStore.find((o) => o.id === orderId);
+  if (!order) {
+    console.error(`[orders] updateOrderStatus: no order found for id ${orderId}`);
+    return;
+  }
+  order.status = status;
+  order.updatedAt = now;
+  if (extras?.deckUrl !== undefined) order.deckUrl = extras.deckUrl;
+  if (extras?.error !== undefined) order.error = extras.error;
+}
+
 // ─── Test helpers ─────────────────────────────────────────────────────────────
 
 /**
