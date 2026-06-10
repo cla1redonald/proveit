@@ -27,3 +27,6 @@ review-*.md
 
 # Codex local tool config
 .codex/
+
+# Supabase CLI local cache
+supabase/.temp/
