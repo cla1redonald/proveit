@@ -207,43 +207,42 @@ export async function markOrderPaid(
 ): Promise<boolean> {
   const supabase = getServiceSupabase();
   if (supabase) {
-    // Read current status first to check idempotency
-    const { data: existing, error: readError } = await supabase
-      .from("orders")
-      .select("status")
-      .eq("checkout_session_id", checkoutSessionId)
-      .maybeSingle();
-
-    if (readError) {
-      console.error("[orders] markOrderPaid read error:", readError);
-      throw new Error(`[orders] Failed to read order before marking paid: ${readError.message}`);
-    }
-    if (!existing) {
-      // Order not found — could be a very late webhook for an order we never
-      // stored. Log loudly but don't crash the webhook.
-      console.error(`[orders] markOrderPaid: no order found for session ${checkoutSessionId}`);
-      return false;
-    }
-    const currentStatus = existing.status as OrderStatus;
-    if (currentStatus !== "pending") {
-      // Already processed — idempotency guard
-      return false;
-    }
-
-    const { error: updateError } = await supabase
+    // ATOMIC conditional update — the `status = 'pending'` predicate IS the idempotency
+    // guard, enforced by the database in a single statement. Two concurrent/duplicate
+    // webhooks can no longer both read 'pending' and both fire: whichever commits first
+    // flips the row to 'paid', and the other's predicate no longer matches → 0 rows updated
+    // → returns false. (The old read-then-update had a theoretical double-fire race.)
+    const { data, error } = await supabase
       .from("orders")
       .update({
         status: "paid",
         email,
         updated_at: new Date().toISOString(),
       })
-      .eq("checkout_session_id", checkoutSessionId);
+      .eq("checkout_session_id", checkoutSessionId)
+      .eq("status", "pending")
+      .select("id");
 
-    if (updateError) {
-      console.error("[orders] markOrderPaid Supabase update error:", updateError);
-      throw new Error(`[orders] Failed to mark order paid: ${updateError.message}`);
+    if (error) {
+      console.error("[orders] markOrderPaid Supabase update error:", error);
+      throw new Error(`[orders] Failed to mark order paid: ${error.message}`);
     }
-    return true;
+
+    const updated = (data?.length ?? 0) > 0;
+    if (!updated) {
+      // 0 rows: either already processed (normal idempotent skip — no log) or an order we
+      // never stored (a late/unknown webhook — worth a warning). One extra read ONLY on this
+      // rare false path, purely for the log — it does not affect the atomic decision above.
+      const { data: existing } = await supabase
+        .from("orders")
+        .select("status")
+        .eq("checkout_session_id", checkoutSessionId)
+        .maybeSingle();
+      if (!existing) {
+        console.error(`[orders] markOrderPaid: no order found for session ${checkoutSessionId} (late/unknown webhook)`);
+      }
+    }
+    return updated;
   }
 
   // In-memory fallback
