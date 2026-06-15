@@ -7,12 +7,14 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 2
-generated: 2026-06-08
-generated_by: frontier-scan
-next_scan_due: 2026-06-22
+snapshot_version: 3
+generated: 2026-06-15
+generated_by: frontier-delta-watch
+next_scan_due: 2026-06-29
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
+
+**Latest delta (2026-06-15):** Claude Fable 5 (Mythos class) shipped June 9; OpenAI GPT-5.3-Codex confirmed; xAI Grok video generation live.
 
 **How to read this:** every claim carries a date and a source. A claim with no date is a defect.
 The agent cites this file by section; it does *not* re-derive the frontier from scratch each run.
@@ -24,19 +26,22 @@ The agent cites this file by section; it does *not* re-derive the frontier from 
 | Lab | Flagship | Shipped | Standout | Price (in/out per Mtok) |
 |-----|----------|---------|----------|--------------------------|
 | Anthropic | **Claude Opus 4.8** (`claude-opus-4-8`) | 2026-05-28 | Dynamic Workflows (hundreds of parallel subagents with adversarial verification); computer-use 84% on Online-Mind2Web; multimodal PDF 61% cheaper than Opus 4.7 | $5 / $25 (fast: $10 / $50) |
+| Anthropic | **Claude Fable 5** (`claude-fable-5`, Mythos class) | 2026-06-09 | State-of-the-art on benchmarks; always-on adaptive thinking; 1M context, 128K output tokens. **⚠️ Status:** Temporarily restricted (US export directive, 2026-06-12); removed from subscription access 2026-06-23. | $TBD |
 | OpenAI | **GPT-5.5** | 2026-04-24 | Latest flagship; batch/flex halves short-context rates to $2.50 / $15 | $5 / $30 ($0.50 cached in) |
+| OpenAI | **GPT-5.3-Codex** | 2026-06-01 | Dedicated coding model (Codex + GPT-5 stack); ~25% faster than prior; new benchmark highs on agentic coding. | $1.75 / $14 |
 | Google | **Gemini 3.5 Flash** (`gemini-3.5-flash`) | 2026-05-19 | Beats Gemini 3.1 Pro on agentic/coding benchmarks (Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%, GDPval-AA 1656 Elo); claimed 4× faster | $1.50 / $9.00 |
 | DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-04-24 | SWE-bench Verified 80.6%, MMLU 90.1%, HumanEval 76.8%, GSM8K 92.6%, 1M context; self-hostable | $0.435 / $0.87 |
 
-**Net:** the frontier remains a multi-lab race in which no single model dominates every axis —
-Anthropic leads native multi-agent orchestration, Google's Flash tier now beats last-generation
-flagships on coding/agentic benchmarks, OpenAI holds the consumer default, and an MIT-licensed
-open-weight model (DeepSeek V4-Pro) now scores within striking distance of GPT-5.5 and Claude Opus
-4.7 on agentic coding at roughly 1/30th the per-token cost. Flagship prices have also deflated fast:
-Opus 4.1/4 were $15/$75, a 3× reduction to today's $5/$25 Opus — a 67% within-tier drop in roughly
-12 months.
+**Net:** the frontier is widening, not narrowing. Anthropic now fields two distinct flagships (Opus 4.8
+for production orchestration, Fable 5 for raw capability), OpenAI is shipping specialized variants
+(GPT-5.3-Codex targets coding), and commoditization has split every lab into "production-safe" tiers
+(Opus 4.8, GPT-5.5, Gemini 3.5 Flash, DeepSeek V4-Flash) vs. "highest-capability" variants (Fable 5,
+GPT-5.5 Pro, o4-max). No single model dominates every axis — Anthropic leads multi-agent orchestration,
+Google/OpenAI compete on coding/agentic benchmarks, OpenAI holds consumer distribution, and MIT-licensed
+DeepSeek V4-Pro scores within striking distance of the best on agentic coding at 1/30th per-token cost.
+Flagship prices have deflated 67% in 12 months (Opus 4.1/4 at $15/$75 → $5/$25 today).
 
-_Sources: [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [OpenRouter — GPT-5.5](https://openrouter.ai/openai/gpt-5.5), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/), [DeepSeek — V4 release](https://api-docs.deepseek.com/news/news260424), [codersera — V4-Pro review](https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
+_Sources: [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [InfoQ — Fable 5 release & restriction](https://www.infoq.com/news/2026/06/claude-5-release/), [OpenRouter — GPT-5.5](https://openrouter.ai/openai/gpt-5.5), [OpenAI — GPT-5.3-Codex](https://openai.com/blog/gpt-5-3-codex-code-intelligence/), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/), [DeepSeek — V4 release](https://api-docs.deepseek.com/news/news260424), [codersera — V4-Pro review](https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
 
 ---
 
