@@ -65,13 +65,17 @@ proveit/
 │   ├── proveit-fast.md    # Quick assumption check
 │   ├── proveit-dashboard.md # Portfolio comparison view
 │   └── proveit-retro.md   # Calibration retrospective
+├── packages/core/         # Shared scan/parse/types + synthesis prompts (Studio, sync, MCP)
+├── studio/                # ProveIt Studio — personal local reader/synthesiser (see studio/README.md)
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
+│   ├── synthesise.ts               # Studio synthesiser — per-idea + portfolio, runs on Max via claude -p
 │   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
 │   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
 ├── docs/
-│   ├── design.md             # Design decisions and validation framework
-│   └── frontier-snapshot.md  # Living, dated record of the AI frontier (AI-currency engine)
+│   ├── design.md               # Design decisions and validation framework
+│   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
+│   └── studio-architecture.md  # ProveIt Studio — architecture & build plan
 └── .claude/settings.json     # Permissions config (Bash disabled by default)
 ```
 
@@ -100,7 +104,7 @@ Research phases are delegated to Sonnet subagents for speed.
 
 ## Keeping docs in sync with code — enforced
 
-When you change `scripts/`, `agents/`, or `commands/` (the plugin) **or `web/src/` (the web app)**, update the docs that describe them: `README.md`, `CLAUDE.md`, `AGENTS.md`, `docs/`, or `web/README.md` (including the directory trees). This is **enforced**, not advisory:
+When you change `scripts/`, `agents/`, or `commands/` (the plugin), `web/src/` (the web app), **or `studio/src/` / `packages/` (ProveIt Studio)**, update the docs that describe them: `README.md`, `CLAUDE.md`, `AGENTS.md`, `docs/`, `web/README.md`, or `studio/README.md` (including the directory trees). This is **enforced**, not advisory:
 
 - **CI gate** — `.github/workflows/docs-check.yml` flags any PR where code changed without a doc update (pure bash, no LLM, no token cost).
 - **In-session reminder** — a `PreToolUse` hook in `.claude/settings.json` warns at commit time if code is staged without docs.

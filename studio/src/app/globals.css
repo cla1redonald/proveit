@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@import "./roami-tokens.css";
+@plugin "@tailwindcss/typography";
+
+/* ── ProveIt Studio — Deep Tay dark theme ──────────────────────────────────
+ * Mapped from the Roami tokens. Dark, calm, copper accent, instrument-like.
+ */
+:root {
+  --bg-base: var(--roami-midnight);   /* #0d141c page */
+  --bg-surface: var(--roami-ink);     /* #111a24 panels */
+  --bg-elevated: var(--roami-tay);    /* #1a2832 raised */
+
+  --text-primary: var(--roami-mist);  /* #f0eee8 */
+  --text-secondary: var(--roami-sage);/* #6a8a8a */
+  --text-muted: #4a3f35;
+
+  --color-accent: var(--roami-copper);
+  --color-accent-hover: var(--roami-copper-dark);
+  --color-river: var(--roami-river);
+
+  /* Evidence / verdict semantics — only on state, never decoration */
+  --verdict-strong: var(--roami-pine);  /* #5a7247 */
+  --verdict-weak: #d4a857;              /* amber */
+  --verdict-threat: var(--roami-error); /* #a04040 */
+
+  --border-subtle: rgba(224, 217, 207, 0.06);
+  --border-default: rgba(224, 217, 207, 0.12);
+  --border-focus: var(--roami-copper);
+
+  --font-display: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-fira-code), 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--bg-base);
+  }
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Playfair display — case titles + verdict, used with restraint */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+/* Fira Code — the data layer (scores, dates, tallies) */
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kinfolk-magazine eyebrow */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+@keyframes case-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.case-enter { animation: case-enter 0.32s cubic-bezier(0, 0, 0.2, 1) both; }
+
+/* ── Reader content — styled to the Claude Design block aesthetics ── */
+.studio-prose { color: #d4cfc5; }
+.studio-prose > :first-child { margin-top: 0; }
+.studio-prose h1 { font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -0.01em; color: #f0eee8; line-height: 1.12; margin: 0 0 22px; }
+.studio-prose h2 { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: #f0eee8; margin: 36px 0 12px; line-height: 1.2; }
+.studio-prose h3 { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #6a8a8a; font-weight: 500; margin: 30px 0 10px; }
+.studio-prose h4 { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: #6a8a8a; margin: 24px 0 8px; }
+.studio-prose p { font-size: 16px; line-height: 1.72; color: #d4cfc5; margin: 0 0 17px; text-wrap: pretty; }
+.studio-prose strong { color: #f0eee8; font-weight: 600; }
+.studio-prose em { color: #e3ded4; }
+.studio-prose a { color: #c4956a; text-decoration: none; }
+.studio-prose a:hover { text-decoration: underline; }
+.studio-prose code { font-family: var(--font-mono); font-size: 13px; color: #c4956a; background: rgba(196,149,106,0.08); padding: 1px 5px; border-radius: 3px; }
+.studio-prose pre { background: #111a24; border: 1px solid var(--border-default); border-radius: 6px; padding: 16px; overflow-x: auto; margin: 0 0 18px; }
+.studio-prose pre code { background: none; color: #d4cfc5; padding: 0; }
+.studio-prose ul { margin: 0 0 18px; padding: 0; list-style: none; }
+.studio-prose ul > li { position: relative; padding-left: 22px; font-size: 15.5px; line-height: 1.65; color: #d4cfc5; margin-bottom: 9px; }
+.studio-prose ul > li::before { content: ''; position: absolute; left: 2px; top: 9px; width: 5px; height: 5px; background: #c4956a; transform: rotate(45deg); }
+.studio-prose ol { margin: 0 0 18px; padding-left: 24px; color: #d4cfc5; }
+.studio-prose ol > li { font-size: 15.5px; line-height: 1.65; margin-bottom: 9px; padding-left: 4px; }
+.studio-prose blockquote { margin: 20px 0; padding: 4px 0 4px 22px; border-left: 2px solid #c4956a; font-family: var(--font-display); font-style: italic; font-size: 19px; line-height: 1.5; color: #ece7dd; }
+.studio-prose hr { border: 0; border-top: 1px solid rgba(224,217,207,0.12); margin: 28px 0; }
+.studio-prose table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 0 0 18px; display: block; overflow-x: auto; }
+.studio-prose th { text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(224,217,207,0.18); color: #9fb0b0; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; }
+.studio-prose td { padding: 8px 12px; border-bottom: 1px solid rgba(224,217,207,0.08); color: #d4cfc5; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@proveit/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared scan/parse/types for ProveIt Studio, the Obsidian mirror, the sync command, and the MCP dashboard tool. Framework-agnostic, dependency-free.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "scan": "node src/cli.ts"
+  }
+}

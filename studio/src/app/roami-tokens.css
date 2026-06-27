@@ -1,0 +1,30 @@
+/* Roami Design System — Deep Tay
+ * Vendored copy for ProveIt Studio (kept in sync with web/src/app/roami-tokens.css).
+ * Do not edit here — edit at source (@roami/design-system).
+ */
+
+:root {
+  /* === COLOUR — Brand === */
+  --roami-ink: #111a24;
+  --roami-tay: #1a2832;
+  --roami-midnight: #0d141c;
+
+  --roami-river: #2a5a5a;
+  --roami-copper: #c4956a;
+  --roami-copper-dark: #a87d55;
+  --roami-pine: #5a7247;
+
+  --roami-cream: #faf6f1;
+  --roami-sand: #a89880;
+  --roami-stone: #e0d9cf;
+
+  --roami-heading: #2d2a26;
+  --roami-umber: #6b5d4f;
+  --roami-mist: #f0eee8;
+  --roami-sage: #6a8a8a;
+
+  --roami-success: #5a7247;
+  --roami-warning: #c4956a;
+  --roami-error: #a04040;
+  --roami-info: #2a5a5a;
+}

@@ -4,10 +4,11 @@
 
 ProveIt is an evidence-based product validation tool for product managers. It takes a raw idea through structured discovery, automated competitor and market research, a configurable adversarial swarm, a falsifiable pre-mortem, an optional Wave 3 scenario and experiment phase, and a triple-output handoff bundle (stakeholder deck + engineering spec + validation playbook).
 
-It exists as **two surfaces** that share the same methodology:
+It exists as **three surfaces**:
 
 - **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via an independent OpenAI model (GPT-5.5 by default), and a Gamma deck output. This README covers the plugin.
-- **A web app** at **[https://proveit.tools/]** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
+- **A web app** at **[https://proveit.tools/]** — public customer product, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
+- **ProveIt Studio** (`studio/`) — a *personal, local* reader + synthesiser for your own validated ideas: reads the markdown the plugin writes into your Obsidian vault and renders it as browsable case files, with a synthesiser that runs on your Max plan. Not a methodology surface — a way to *see* the outputs. See [`studio/README.md`](studio/README.md) and [`docs/studio-architecture.md`](docs/studio-architecture.md).
 
 ---
 
@@ -296,16 +297,20 @@ proveit/
 │   ├── proveit-fast.md         # /proveit-fast — 10-15 min preflight
 │   ├── proveit-dashboard.md    # /proveit:dashboard — portfolio comparison
 │   └── proveit-retro.md        # /proveit:retro — calibration retrospective
+├── packages/core/              # Shared scan/parse/types + synthesis prompts (Studio, sync, MCP all consume it)
+├── studio/                     # ProveIt Studio — personal local reader/synthesiser (see studio/README.md)
 ├── docs/
 │   ├── design.md               # Long-form design doc (v3.1)
 │   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
+│   ├── studio-architecture.md  # ProveIt Studio — architecture & build plan
 │   ├── plans/                  # Dated plans for major changes
 │   └── specs/                  # Dated implementation specs
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
+│   ├── synthesise.ts               # Studio synthesiser — per-idea + portfolio, runs on Max via claude -p
 │   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot (run on Max)
 │   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
-├── web/                        # The standalone web app (proveit.tools)
+├── web/                        # The customer web app (proveit.tools)
 ├── .claude/settings.json       # No bash allows by default
 ├── setup.sh                    # Install / uninstall script
 └── CLAUDE.md                   # Agent-side instructions

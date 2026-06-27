@@ -54,13 +54,17 @@ proveit/
 │   ├── proveit-fast.md    # Quick assumption check
 │   ├── proveit-dashboard.md # Portfolio comparison view
 │   └── proveit-retro.md   # Calibration retrospective
+├── packages/core/         # Shared scan/parse/types + synthesis prompts (Studio, sync, MCP)
+├── studio/                # ProveIt Studio — personal local reader/synthesiser (see studio/README.md)
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
+│   ├── synthesise.ts               # Studio synthesiser — per-idea + portfolio, runs on Max via claude -p
 │   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
 │   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
 ├── docs/
-│   ├── design.md             # Design decisions and validation framework
-│   └── frontier-snapshot.md  # Living, dated record of the AI frontier (AI-currency engine)
+│   ├── design.md               # Design decisions and validation framework
+│   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
+│   └── studio-architecture.md  # ProveIt Studio — architecture & build plan
 └── .claude/settings.json     # Permissions config (Bash disabled by default)
 ```
 

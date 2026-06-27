@@ -25,6 +25,9 @@ review-*.md
 .session-state/
 .playwright-mcp/
 
+# Studio local-verification screenshots (not for source control)
+/studio-*.png
+
 # Codex local tool config
 .codex/
 
