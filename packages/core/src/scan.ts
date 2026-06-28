@@ -68,7 +68,7 @@ function isDiscoveryCandidate(text: string): boolean {
 
 // ── Markdown walk ────────────────────────────────────────────────────────────
 
-async function* walkMarkdown(root: string, depth = 0): AsyncGenerator<string> {
+export async function* walkMarkdown(root: string, depth = 0): AsyncGenerator<string> {
   if (depth > MAX_DEPTH) return
   let entries
   try {

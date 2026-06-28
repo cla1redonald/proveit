@@ -308,6 +308,7 @@ proveit/
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
 │   ├── synthesise.ts               # Studio synthesiser — per-idea + portfolio, runs on Max via claude -p
+│   ├── mirror.ts                   # Mirror project-dir ProveIt outputs into the vault (per-idea folders)
 │   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot (run on Max)
 │   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
 ├── web/                        # The customer web app (proveit.tools)

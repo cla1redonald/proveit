@@ -5,12 +5,14 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type {
   DataSource,
+  FastCheckIdea,
   Idea,
   IdeaSummary,
   PortfolioSynthesis,
   Synthesis,
 } from './types.ts'
 import { loadIdea, scanRoots } from './scan.ts'
+import { scanFastChecks } from './fast-check.ts'
 
 export function createFsSource(roots: string[]): DataSource {
   // Cache the scan within a single source instance; cheap and avoids re-walking
@@ -60,6 +62,10 @@ export function createFsSource(roots: string[]): DataSource {
         }
       }
       return null
+    },
+
+    async listFastChecks(): Promise<FastCheckIdea[]> {
+      return scanFastChecks(roots)
     },
   }
 }

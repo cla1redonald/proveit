@@ -103,6 +103,31 @@ export interface PortfolioSynthesis {
   body: string
 }
 
+// ── Fast checks ──────────────────────────────────────────────────────────────
+// `/proveit-fast` writes many ideas into ONE note, each a verdict-based check
+// (SUPPORTED / WEAK / CONTRADICTED per dimension) with no 1-10 scores. A
+// different shape from a scored discovery — surfaced separately, never faked
+// into a spine.
+
+export type FastCheckVerdict = 'SUPPORTED' | 'WEAK' | 'CONTRADICTED' | 'MIXED'
+
+export interface FastCheckAssessment {
+  dimension: string
+  verdict: FastCheckVerdict
+  detail: string
+}
+
+export interface FastCheckIdea {
+  slug: string
+  name: string
+  /** The **Verdict:** headline for the idea. */
+  verdict: string
+  assessments: FastCheckAssessment[]
+  insight?: string
+  source: string
+  date?: string
+}
+
 /**
  * The one interface every Studio view talks to. `FsVaultSource` (local) and
  * `SupabaseSource` (hosted) implement it; the UI never knows which it has.
@@ -113,4 +138,5 @@ export interface DataSource {
   readArtifact(slug: string, fileName: string): Promise<string>
   getSynthesis(slug: string): Promise<Synthesis | null>
   getPortfolioSynthesis(): Promise<PortfolioSynthesis | null>
+  listFastChecks(): Promise<FastCheckIdea[]>
 }

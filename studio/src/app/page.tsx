@@ -2,6 +2,7 @@ import { combined } from '@proveit/core'
 import { source } from '@/lib/source'
 import { Masthead } from '@/components/Masthead'
 import { Registry, type CaseRowData } from '@/components/Registry'
+import { FastChecks } from '@/components/FastChecks'
 import { Markdown } from '@/components/Markdown'
 import { spineInputs, scores3, descriptor, statusColor } from '@/lib/spine'
 
@@ -11,6 +12,7 @@ export const dynamic = 'force-dynamic'
 export default async function PortfolioPage() {
   const ideas = await source.listIdeas()
   const portfolioSynthesis = await source.getPortfolioSynthesis()
+  const fastChecks = await source.listFastChecks()
   const cases: CaseRowData[] = ideas.map((idea) => {
     const { live, resolved } = spineInputs(idea)
     return {
@@ -85,6 +87,8 @@ export default async function PortfolioPage() {
             <Markdown>{portfolioSynthesis.body}</Markdown>
           </section>
         )}
+
+        <FastChecks ideas={fastChecks} />
       </div>
     </>
   )
