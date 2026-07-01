@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 2
-generated: 2026-06-08
-generated_by: frontier-scan
-next_scan_due: 2026-06-22
+snapshot_version: 3
+generated: 2026-07-01
+generated_by: frontier-watch
+next_scan_due: 2026-07-15
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -23,20 +23,23 @@ The agent cites this file by section; it does *not* re-derive the frontier from 
 
 | Lab | Flagship | Shipped | Standout | Price (in/out per Mtok) |
 |-----|----------|---------|----------|--------------------------|
+| OpenAI | **GPT-5.6 Sol** (`gpt-5-6-sol`) | 2026-06-26 (limited preview) | Next-generation flagship for science/coding/cybersecurity; preview includes Terra (balanced, 2× cheaper than GPT-5.5) and Luna (fastest/cheapest tier); full GA planned "coming weeks" | $5 / $30 (Sol, est.); Terra ~$2.50 / $15 (est.) |
+| Anthropic | **Claude Fable 5** (`claude-fable-5`) | 2026-06-09 (suspended 06-12, restored 2026-07-01) | Mythos-class model with always-on adaptive thinking; 1M context; 128K max output; safety classifiers auto-fallback to Opus for flagged requests | $10 / $50 |
 | Anthropic | **Claude Opus 4.8** (`claude-opus-4-8`) | 2026-05-28 | Dynamic Workflows (hundreds of parallel subagents with adversarial verification); computer-use 84% on Online-Mind2Web; multimodal PDF 61% cheaper than Opus 4.7 | $5 / $25 (fast: $10 / $50) |
-| OpenAI | **GPT-5.5** | 2026-04-24 | Latest flagship; batch/flex halves short-context rates to $2.50 / $15 | $5 / $30 ($0.50 cached in) |
 | Google | **Gemini 3.5 Flash** (`gemini-3.5-flash`) | 2026-05-19 | Beats Gemini 3.1 Pro on agentic/coding benchmarks (Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%, GDPval-AA 1656 Elo); claimed 4× faster | $1.50 / $9.00 |
 | DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-04-24 | SWE-bench Verified 80.6%, MMLU 90.1%, HumanEval 76.8%, GSM8K 92.6%, 1M context; self-hostable | $0.435 / $0.87 |
 
-**Net:** the frontier remains a multi-lab race in which no single model dominates every axis —
-Anthropic leads native multi-agent orchestration, Google's Flash tier now beats last-generation
-flagships on coding/agentic benchmarks, OpenAI holds the consumer default, and an MIT-licensed
-open-weight model (DeepSeek V4-Pro) now scores within striking distance of GPT-5.5 and Claude Opus
-4.7 on agentic coding at roughly 1/30th the per-token cost. Flagship prices have also deflated fast:
-Opus 4.1/4 were $15/$75, a 3× reduction to today's $5/$25 Opus — a 67% within-tier drop in roughly
-12 months.
+**Net:** the frontier remains a multi-lab race in which no single model dominates every axis.
+OpenAI's GPT-5.6 series (in limited preview) introduces tiered flagships (Sol, Terra 2× cheaper, Luna)
+signaling aggressive price deflation beyond the frontier; Anthropic's Fable 5 (Mythos-class, $10/$50)
+is now publicly available after export-control suspension lift; Anthropic leads multi-agent orchestration
+with Dynamic Workflows; Google's Flash tier beats prior flagships on coding/agentic; an MIT-licensed
+open-weight model (DeepSeek V4-Pro) scores within striking distance of GPT-5.5 / Opus 4.7 at 1/30th
+cost. Flagship prices have deflated structurally: Opus 4.1/4 ($15/$75) → Opus 4.8 ($5/$25) is 67% in
+12 months; OpenAI's new sub-flagship tiers (Terra 2× cheaper) signal further commoditization below the
+frontier line.
 
-_Sources: [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [OpenRouter — GPT-5.5](https://openrouter.ai/openai/gpt-5.5), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/), [DeepSeek — V4 release](https://api-docs.deepseek.com/news/news260424), [codersera — V4-Pro review](https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
+_Sources: [OpenAI — GPT-5.6 Sol preview](https://openai.com/index/previewing-gpt-5-6-sol/), [Anthropic — Claude Fable 5](https://www.anthropic.com/claude/fable), [Anthropic — Fable 5 export-control lift](https://www.cnbc.com/2026/06/30/anthropic-says-trump-admin-has-lifted-export-controls-on-claude-fable-5-and-mythos-5.html), [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/), [DeepSeek — V4 release](https://api-docs.deepseek.com/news/news260424), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
 
 ---
 
@@ -117,11 +120,11 @@ _Sources: [Anthropic — Opus 4.8 / Dynamic Workflows](https://www.anthropic.com
   Western/proprietary frontier labs, Gemini 2.5 Flash-Lite at **$0.10 / $0.40** is the cheapest;
   GPT-4.1 nano matches at $0.10 / $0.40. _(2026-04-24 / 2026-06.)_
 - **Current per-Mtok rates (in / out):**
-  - Anthropic — Opus 4.8 $5 / $25 (fast $10 / $50); Sonnet 4.6 $3 / $15 (1M ctx); Haiku 4.5 $1 / $5.
-    Batch 50% cheaper; prompt caching cuts cached-input cost 90%. _(2026-06-01.)_
-  - OpenAI — GPT-5.5 $5 / $30 ($0.50 cached in), GPT-5.5 Pro $30 / $180, batch/flex $2.50 / $15;
+  - Anthropic — Fable 5 $10 / $50; Opus 4.8 $5 / $25 (fast $10 / $50); **Sonnet 5 $2 / $10 (promotional through 2026-08-31, then $3/$15)**; Sonnet 4.6 $3 / $15 (1M ctx); Haiku 4.5 $1 / $5.
+    Batch 50% cheaper; prompt caching cuts cached-input cost 90%. _(2026-07-01.)_
+  - OpenAI — **GPT-5.6 Sol $5 / $30 (est., limited preview as of 2026-06-26)**; GPT-5.5 $5 / $30 ($0.50 cached in), GPT-5.5 Pro $30 / $180, batch/flex $2.50 / $15;
     GPT-4.1 $2 / $8 (1M ctx, 75% cache discount), 4.1 mini $0.40 / $1.60, 4.1 nano $0.10 / $0.40;
-    o4-mini $1.10 / $4.40. _(2026-04-24 / 2025-04-14.)_
+    o4-mini $1.10 / $4.40. _(2026-06-26 / 2026-04-24 / 2025-04-14.)_
   - Google — Gemini 3.5 Flash $1.50 / $9.00 (1M ctx); 2.5 Pro $1.25–$2.50 / $10–$15; 2.5 Flash
     $0.30 / $2.50; 2.5 Flash-Lite $0.10 / $0.40. Batch 50% off. _(2026-06-08.)_
   - DeepSeek — V4-Pro $0.435 / $0.87; V4-Flash $0.14 / $0.28 (cache-hit in $0.0028); both 1M ctx,
@@ -182,6 +185,12 @@ _Sources: [Anthropic — Dynamic Workflows](https://claude.com/blog/introducing-
 The `frontier-scan` workflow appends a diff here every run. Structural changes (a new lab enters the
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
+
+- **2026-07-01 (snapshot v3)** — Lightweight frontier delta-watch (23 days post-snapshot, 2 days stale).
+  - **`[AGENT-IMPACT]`** OpenAI previewed GPT-5.6 series (2026-06-26): Sol (next flagship for science/coding/cybersecurity), Terra (2× cheaper than GPT-5.5 @ ~$2.50/$15), Luna (fastest/cheapest tier). Limited preview with GA planned "coming weeks" — signals aggressive commoditization below the frontier with tiered pricing.
+  - **`[AGENT-IMPACT]`** Anthropic released Claude Fable 5 (2026-06-09, now restored 2026-07-01 after export-control suspension lift): Mythos-class model with always-on adaptive thinking, 1M context, 128K output, safety classifiers. $10/$50 pricing — first new Anthropic frontier model since Opus 4.8.
+  - **`[AGENT-IMPACT]`** Anthropic launched Claude Sonnet 5 (2026-06-30): New Sonnet tier at $2/$10 promotional through 2026-08-31 (then $3/$15), 1M context, now default in Claude Code. Represents a new production-safe sub-flagship tier below Opus.
+  - Net: Three new or significantly repositioned models in 23 days (GPT-5.6 series, Fable 5, Sonnet 5) signal accelerating model velocity and aggressive pricing/tiering below the frontier line. Survival window for exposed AI-feature startups continues to tighten.
 
 - **2026-06-08 (snapshot v2)** — First automated `frontier-scan` pass; supersedes the v1 seed.
   - Flagships refreshed to verified IDs/dates: Opus 4.8 (2026-05-28, $5/$25), GPT-5.5 (2026-04-24,
