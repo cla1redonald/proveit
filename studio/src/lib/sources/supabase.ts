@@ -43,9 +43,11 @@ export function createSupabaseSource(url: string, serviceKey: string): DataSourc
     },
 
     async getIdea(slug) {
-      const { data: row } = await db.from('studio_ideas').select('*').eq('slug', slug).maybeSingle()
+      const { data: row, error } = await db.from('studio_ideas').select('*').eq('slug', slug).maybeSingle()
+      if (error) throw error
       if (!row) return null
-      const { data: arts } = await db.from('studio_artifacts').select('*').eq('idea_slug', slug)
+      const { data: arts, error: artsError } = await db.from('studio_artifacts').select('*').eq('idea_slug', slug)
+      if (artsError) throw artsError
       const all = arts ?? []
       const discovery = all.find((a) => a.kind === 'discovery')
       const artifacts: Artifact[] = all
@@ -64,18 +66,20 @@ export function createSupabaseSource(url: string, serviceKey: string): DataSourc
     },
 
     async readArtifact(slug, fileName) {
-      const { data } = await db
+      const { data, error } = await db
         .from('studio_artifacts')
         .select('content')
         .eq('idea_slug', slug)
         .eq('file_name', fileName)
         .maybeSingle()
+      if (error) throw error
       if (!data) throw new Error(`No artifact ${fileName} for ${slug}`)
       return data.content ?? ''
     },
 
     async getSynthesis(slug) {
-      const { data } = await db.from('studio_synthesis').select('*').eq('idea_slug', slug).maybeSingle()
+      const { data, error } = await db.from('studio_synthesis').select('*').eq('idea_slug', slug).maybeSingle()
+      if (error) throw error
       if (!data) return null
       return {
         slug,
@@ -89,13 +93,15 @@ export function createSupabaseSource(url: string, serviceKey: string): DataSourc
     },
 
     async getPortfolioSynthesis() {
-      const { data } = await db.from('studio_portfolio_synthesis').select('*').eq('id', 1).maybeSingle()
+      const { data, error } = await db.from('studio_portfolio_synthesis').select('*').eq('id', 1).maybeSingle()
+      if (error) throw error
       if (!data) return null
       return { generatedAt: data.generated_at ?? undefined, body: data.body ?? '' }
     },
 
     async listFastChecks(): Promise<FastCheckIdea[]> {
-      const { data } = await db.from('studio_fast_checks').select('*')
+      const { data, error } = await db.from('studio_fast_checks').select('*')
+      if (error) throw error
       return (data ?? []).map((r) => ({
         slug: r.slug,
         name: r.name,

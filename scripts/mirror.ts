@@ -9,11 +9,10 @@
 
 import { mkdir, copyFile } from 'node:fs/promises'
 import { join, basename } from 'node:path'
-import { scanRoots, loadIdea } from '../packages/core/src/index.ts'
+import { scanRoots, loadIdea, resolveVault } from '../packages/core/src/index.ts'
 
-const VAULT = process.env.PROVEIT_VAULT_PATH ?? '/Users/clairedonald/claudesidian'
 const MIRROR_DIR =
-  process.env.PROVEIT_MIRROR_DIR ?? join(VAULT, '01_Projects/Micro_Business_Portfolio/ProveIt Research')
+  process.env.PROVEIT_MIRROR_DIR ?? join(resolveVault(), '01_Projects/Micro_Business_Portfolio/ProveIt Research')
 
 const projectDirs = process.argv.slice(2)
 if (projectDirs.length === 0) {

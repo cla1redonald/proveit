@@ -136,7 +136,7 @@ function killStatus(label: string, detail = ''): KillSignal['status'] {
 }
 
 function parseKillSignals(text: string): KillSignal[] {
-  const body = sectionBody(text, /^##\s+Kill Signals\s*$/im, 20)
+  const body = sectionBody(text, /^##\s+Kill Signals\b/im, 20)
   if (!body || /^\s*none\b/i.test(body)) return []
   const out: KillSignal[] = []
   for (const line of body.split('\n')) {
@@ -201,15 +201,15 @@ export function parseDiscovery(text: string): ParsedDiscovery {
   const generated = /^Generated:\s*(.+)$/im.exec(text)?.[1]?.trim()
   const lastUpdated = /^Last updated:\s*(.+)$/im.exec(text)?.[1]?.trim()
 
-  const deckBody = sectionBody(text, /^##\s+Gamma Deck\s*$/im, 4)
+  const deckBody = sectionBody(text, /^##\s+Gamma Deck\b/im, 4)
   const deckFirst = deckBody.split('\n').find((l) => l.trim())?.trim()
   const hasDeck = !!deckFirst && /^https?:\/\//i.test(deckFirst)
 
   const brainDump =
-    sectionBody(text, /^##\s+Idea \(Brain Dump\)\s*$/im, 8) ||
-    sectionBody(text, /^##\s+Brain Dump\s*$/im, 8) ||
+    sectionBody(text, /^##\s+Idea \(Brain Dump\b/im, 8) ||
+    sectionBody(text, /^##\s+Brain Dump\b/im, 8) ||
     undefined
-  const recommendation = sectionBody(text, /^##\s+Recommendation\s*$/im, 6) || undefined
+  const recommendation = sectionBody(text, /^##\s+Recommendation\b/im, 6) || undefined
 
   let oneLiner: string | undefined
   if (brainDump) {
@@ -329,7 +329,11 @@ async function listArtifacts(dir: string, discoveryFile: string): Promise<Artifa
   for (const name of entries) {
     if (name === discoveryFile) continue
     const c = classifyArtifact(name, { dedicatedDir })
-    if (c && c.kind !== 'discovery') out.push({ ...c, path: join(dir, name) })
+    // Exclude the discovery index itself and the cached synthesis.json
+    // (the latter is read via getSynthesis, and sync + the supabase adapter
+    // both drop it — so keep `artifacts`/artifactCount consistent with them).
+    if (c && c.kind !== 'discovery' && c.kind !== 'synthesis-cache')
+      out.push({ ...c, path: join(dir, name) })
   }
   out.sort((a, b) => (a.round ?? 0) - (b.round ?? 0) || a.label.localeCompare(b.label))
   return out

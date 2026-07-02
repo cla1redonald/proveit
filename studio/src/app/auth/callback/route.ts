@@ -4,7 +4,10 @@ import { createServerClient } from '@supabase/ssr'
 // Exchanges the magic-link code for a session cookie, then sends you home.
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code')
-  const next = req.nextUrl.searchParams.get('next') ?? '/'
+  // Only allow a same-origin relative path: exactly one leading '/', never a
+  // protocol-relative ('//') or backslash-tricked ('/\') off-origin target.
+  const raw = req.nextUrl.searchParams.get('next') ?? '/'
+  const next = raw.startsWith('/') && !raw.startsWith('//') && !raw.startsWith('/\\') ? raw : '/'
   const res = NextResponse.redirect(new URL(next, req.url))
 
   if (code) {
@@ -19,6 +22,16 @@ export async function GET(req: NextRequest) {
       },
     )
     await supabase.auth.exchangeCodeForSession(code)
+
+    // Defense in depth: even a valid session must be the allow-listed address.
+    const allowed = (process.env.STUDIO_ALLOWED_EMAIL ?? '').toLowerCase()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!allowed || user?.email?.toLowerCase() !== allowed) {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
   }
   return res
 }

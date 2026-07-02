@@ -40,7 +40,7 @@ export function parseFastCheckNote(text: string, path: string): FastCheckIdea[] 
         insight = keyM[1].trim()
         continue
       }
-      const aM = /^(.+?):\s*(SUPPORTED|WEAK|CONTRADICTED|MIXED)\b\s*[—–-]?\s*(.*)$/i.exec(raw)
+      const aM = /^(.+?):\s*(SUPPORTED|WEAK|CONTRADICTED|MIXED)\b\s*[—–-]?\s*(.*)$/.exec(raw)
       if (aM) {
         assessments.push({
           dimension: aM[1].trim(),

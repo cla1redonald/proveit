@@ -8,13 +8,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { scanRoots, loadIdea, scanFastChecks, type IdeaSummary } from '../packages/core/src/index.ts'
+import { scanRoots, loadIdea, scanFastChecks, resolveRoots, type IdeaSummary } from '../packages/core/src/index.ts'
 
-const VAULT = process.env.PROVEIT_VAULT_PATH ?? '/Users/clairedonald/claudesidian'
-const ROOTS = (process.env.STUDIO_ROOTS ?? `${VAULT}/01_Projects`)
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean)
+const ROOTS = resolveRoots()
 
 const url = process.env.SUPABASE_URL
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -71,6 +67,17 @@ async function syncIdea(summary: IdeaSummary): Promise<void> {
     }
   }
   ;({ error } = await db.from('studio_artifacts').upsert(rows))
+  if (error) throw error
+
+  // Delete orphans: sync is upsert-only, so renamed/deleted vault artifacts leave
+  // stale rows the hosted reader renders as phantoms. Drop rows for this idea that
+  // are no longer present in the set just upserted.
+  const fileNames = rows.map((r) => r.file_name as string)
+  ;({ error } = await db
+    .from('studio_artifacts')
+    .delete()
+    .eq('idea_slug', idea.slug)
+    .not('file_name', 'in', '(' + fileNames.map((f) => `"${f}"`).join(',') + ')'))
   if (error) throw error
 
   const synth = await readJson<{ generatedAt?: string; summary: string; bull: string; bear: string; devil: string; body?: string }>(

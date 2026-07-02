@@ -15,14 +15,11 @@ import {
   perIdeaSynthesisPrompt,
   portfolioSynthesisPrompt,
   extractJson,
+  resolveRoots,
   type IdeaSummary,
 } from '../packages/core/src/index.ts'
 
-const VAULT = process.env.PROVEIT_VAULT_PATH ?? '/Users/clairedonald/claudesidian'
-const ROOTS = (process.env.STUDIO_ROOTS ?? `${VAULT}/01_Projects`)
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean)
+const ROOTS = resolveRoots()
 const MODEL = process.env.PROVEIT_SYNTH_MODEL ?? 'sonnet'
 
 function runClaude(prompt: string): Promise<string> {

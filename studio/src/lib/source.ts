@@ -1,5 +1,5 @@
 import 'server-only'
-import { createFsSource, type DataSource } from '@proveit/core'
+import { createFsSource, resolveRoots, type DataSource } from '@proveit/core'
 import { createSupabaseSource } from './sources/supabase'
 
 // One Studio, two data adapters. STUDIO_SOURCE picks which:
@@ -13,11 +13,7 @@ function build(): DataSource {
     return createSupabaseSource(url, key)
   }
 
-  const vault = process.env.PROVEIT_VAULT_PATH ?? '/Users/clairedonald/claudesidian'
-  const roots = (process.env.STUDIO_ROOTS ?? `${vault}/01_Projects`)
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+  const roots = resolveRoots()
   return createFsSource(roots)
 }
 

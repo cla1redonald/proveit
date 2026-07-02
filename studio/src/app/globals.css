@@ -19,8 +19,6 @@
   --color-river: var(--roami-river);
 
   /* Evidence / verdict semantics — only on state, never decoration */
-  --verdict-strong: var(--roami-pine);  /* #5a7247 */
-  --verdict-weak: #d4a857;              /* amber */
   --verdict-threat: var(--roami-error); /* #a04040 */
 
   --border-subtle: rgba(224, 217, 207, 0.06);
