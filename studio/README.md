@@ -39,9 +39,19 @@ node scripts/synthesise.ts --portfolio   # cross-idea → _portfolio-synthesis.j
 
 Re-run to refresh. Model via `PROVEIT_SYNTH_MODEL` (default `sonnet`).
 
-## Architecture in one line
+## Two surfaces, one app
 
-The shared scan/parse lives in [`../packages/core`](../packages/core) and feeds a pluggable `DataSource`: `FsVaultSource` (local, here today) and — later — `SupabaseSource` for the read-only hosted version at `studio.proveit.tools`. Same UI, swap the adapter.
+The shared scan/parse lives in [`../packages/core`](../packages/core) and feeds a pluggable `DataSource`, chosen by `STUDIO_SOURCE`:
+
+- **Local** (`fs`, default) — `FsVaultSource` reads the Obsidian vault straight off disk. No auth.
+- **Hosted** (`supabase`) — `SupabaseSource` reads the synced mirror. **Live at [studio.proveit.tools](https://studio.proveit.tools)**, private behind single-user **magic-link auth** (Supabase Auth, allow-listed to one email via `STUDIO_ALLOWED_EMAIL`; gate in `src/middleware.ts`). Populate/refresh it with `scripts/sync.ts`.
+
+Same UI, same components — only the adapter swaps.
+
+### Deploy notes
+
+- Monorepo: the Vercel project's **Root Directory is `studio`**; deploy from the repo root so the `@proveit/core` workspace resolves.
+- `src/lib/source.ts` builds the data source **lazily** (first request), because the sensitive service-role key isn't present during `next build`.
 
 ## Feedback loop
 

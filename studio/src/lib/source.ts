@@ -21,4 +21,16 @@ function build(): DataSource {
   return createFsSource(roots)
 }
 
-export const source: DataSource = build()
+// Build LAZILY on first use (request time), not at import time — sensitive env
+// vars (the service role key) are present at runtime but NOT during `next build`,
+// so a module-load build would crash page-data collection.
+let cached: DataSource | undefined
+const resolve = (): DataSource => (cached ??= build())
+
+export const source: DataSource = new Proxy({} as DataSource, {
+  get(_target, prop: string) {
+    const s = resolve() as unknown as Record<string, unknown>
+    const value = s[prop]
+    return typeof value === 'function' ? (value as (...args: unknown[]) => unknown).bind(s) : value
+  },
+})
