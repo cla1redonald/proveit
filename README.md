@@ -6,7 +6,7 @@ ProveIt is an evidence-based product validation tool for product managers. It ta
 
 It exists as **two surfaces** that share the same methodology:
 
-- **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional brand identity generation, optional cross-model review via an independent OpenAI model (GPT-5.5 by default), and a Gamma deck output. This README covers the plugin.
+- **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional cross-model review via an independent OpenAI model (GPT-5.5 by default), and a Gamma deck output. This README covers the plugin.
 - **A web app** at **[https://proveit.tools/]** — public, no install, single-shot Fast Check or full conversational validation. See [`web/README.md`](web/README.md).
 
 ---
@@ -29,7 +29,7 @@ ProveIt is what I wanted: a fast, structured, evidence-based preflight check tha
 - [When to run it](#when-to-run-it)
 - [What it does](#what-it-does)
 - [Methodology](#methodology)
-- [Pipeline (BrandIt + ShipIt)](#pipeline-brandit--shipit)
+- [Pipeline (ShipIt)](#pipeline-shipit)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Quick start](#quick-start)
@@ -47,7 +47,7 @@ ProveIt is what I wanted: a fast, structured, evidence-based preflight check tha
 Run ProveIt **before** you write a ticket, pitch a feature to your tech lead, or put something on the roadmap. It's a preflight check, not a post-analysis.
 
 - **Fast check (10–15 min):** `/proveit:proveit-fast [your idea]` — surfaces the 3 assumptions most likely to kill this specific idea, picked from a 7-category adaptive catalog (not a fixed Desirability / Viability / Competition default)
-- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm (up to 10 angles, opt-out, with independent verification), pre-mortem, optional Wave 3 scenario + experiment artefacts, brand identity, handoff bundle
+- **Full validation (1–2 hrs):** `/proveit:proveit [your idea]` — structured discovery, automated research, scoring, deep-dive swarm (up to 10 angles, opt-out, with independent verification), pre-mortem, optional Wave 3 scenario + experiment artefacts, handoff bundle
 
 ---
 
@@ -57,7 +57,7 @@ The full validation runs as a series of named phases. Each one writes its own fi
 
 | Phase | What it does | Why it matters |
 |---|---|---|
-| **0. Intake** | Captures *context type* (new idea vs iteration on existing) and *prior context* (URLs, files, prior research the PM wants read first). 3 questions, ~3 minutes. | Lets ProveIt start warm rather than cold. Branches the rest of the flow — existing-iteration sessions automatically skip BrandIt and shift swarm framing toward inheritance. |
+| **0. Intake** | Captures *context type* (new idea vs iteration on existing) and *prior context* (URLs, files, prior research the PM wants read first). 3 questions, ~3 minutes. | Lets ProveIt start warm rather than cold. Branches the rest of the flow — existing-iteration sessions shift swarm framing toward inheritance and reuse the parent brand in the deck. |
 | 1. Brain Dump | Casual extraction — gets the idea out conversationally before frameworks kick in | Preserves the spark; PMs lose ideas in scaffolding |
 | 2. Discovery | Targeted questions across Desirability, Viability, Feasibility (14 questions, anchored by Bob Moesta, Teresa Torres, Marty Cagan, Madhavan Ramanujam, Sean Ellis) | Identifies gaps before research; turns vague intent into testable claims |
 | 3. Research | Three parallel tracks (competitor landscape, market evidence, viability signals) — minimum 9 searches, each round writes its own `research-N.md` | Evidence beats opinion; multiple rounds preserve a trail |
@@ -66,10 +66,9 @@ The full validation runs as a series of named phases. Each one writes its own fi
 | 6. Cross-Model Review | An independent OpenAI model (GPT-5.5 by default) reads everything and flags gaps, bias, logical leaps | Single-model bias is real; a reviewer from a different lab catches it |
 | **6.5. Pre-Mortem & Kill Criteria** | 3 falsifiable bets, calendar kill dates, "we keep going if" list | Founders quit too late, not too early. Annie Duke's framework, applied. |
 | **6.7. Wave 3 — Scenario & Experiment** *(optional)* | 3 future scenarios with probability weights + real experiment artefacts (landing page copy, interview scripts, pricing-test page, technical spike spec) | Turns "things to validate" into paste-and-run assets. Anchored by Annie Duke, Lane Shackleton, Teresa Torres. |
-| 7. Brand Identity *(gated on context type)* | For new ideas: full BrandIt run — name, logo, colours, fonts, tokens. For iterations on existing brand: skipped automatically; optional lightweight BrandIt-extend produces a campaign / sub-brand on top of the parent. | The deck and downstream design work need real brand assets. Skip it cleanly when the brand already exists; don't ask the PM to invent something they have. |
-| 8. Final Review | Cross-model review #2 before outputs | Belt-and-braces |
-| 9. Outputs | **Five** artefacts: Gamma deck (stakeholders) + Validation Playbook (PM) + `spec.md` PRD (engineering) + `design-brief.md` (synthesis any designer can read on its own) + `claude-design-prompts.md` (paste-ready prompts for the claude.ai/design canvas — deck, wireframes, logos, social cards) | Different audiences, different artefacts. The design-brief and prompts were added in v3.5 after a 5-probe study of claude.ai/design — the canvas rewards specificity at the prompt boundary, so ProveIt populates each prompt with the PM's evidence before the PM ever sees it. |
-| 10. Next Steps | Three downstream tool paths with mostly non-overlapping outputs: `/orchestrate` to build · claude.ai/design for visual artefacts (paste a prompt from `claude-design-prompts.md`, or hit "Handoff to Claude Code" from any canvas to round-trip) · hand `spec.md` to engineering directly. Plus Gamma deck for stakeholders and Wave 3 scenarios if they ran. | This is the bridge between "idea" and "shippable". BrandIt and Claude Design overlap on logos only — the boundary table in Phase 7 / Phase 10 explains when each one wins. |
+| 7. Final Review | Cross-model review #2 before outputs | Belt-and-braces |
+| 8. Outputs | **Five** artefacts: Gamma deck (stakeholders) + Validation Playbook (PM) + `spec.md` PRD (engineering) + `design-brief.md` (synthesis any designer can read on its own) + `claude-design-prompts.md` (paste-ready prompts for the claude.ai/design canvas — deck, wireframes, logos, social cards) | Different audiences, different artefacts. The design-brief and prompts were added in v3.5 after a 5-probe study of claude.ai/design — the canvas rewards specificity at the prompt boundary, so ProveIt populates each prompt with the PM's evidence before the PM ever sees it. |
+| 9. Next Steps | Three downstream tool paths with non-overlapping outputs: `/orchestrate` to build · claude.ai/design for visual artefacts (paste a prompt from `claude-design-prompts.md`, or hit "Handoff to Claude Code" from any canvas to round-trip) · hand `spec.md` to engineering directly. Plus Gamma deck for stakeholders and Wave 3 scenarios if they ran. | This is the bridge between "idea" and "shippable". |
 
 Additional commands:
 
@@ -123,16 +122,16 @@ ProveIt's discovery questions and swarm agents apply named frameworks from produ
 
 ---
 
-## Pipeline (BrandIt + ShipIt)
+## Pipeline (ShipIt)
 
-ProveIt connects to two sister tools for an idea-to-product flow:
+ProveIt connects to [ShipIt V4](https://github.com/cla1redonald/shipit-v4) for an idea-to-product flow:
 
 ```
-/proveit  →  /brandit  →  claude.ai/design  →  /orchestrate
- validate    brand it    design the UI       build it
+/proveit  →  claude.ai/design  →  /orchestrate
+ validate     design the UI       build it
 ```
 
-Each step is optional. ProveIt offers BrandIt in-session before generating the deck, and suggests `/orchestrate` after handing off the `spec.md` PRD.
+Each step is optional. ProveIt suggests `/orchestrate` after handing off the `spec.md` PRD — it reads `discovery.md` and `spec.md` for context.
 
 ---
 
@@ -144,11 +143,11 @@ Each step is optional. ProveIt offers BrandIt in-session before generating the d
 
 **Recommended MCP integrations:**
 - **Firecrawl** — deep web research and competitor analysis (required for serious research; ProveIt falls back to WebSearch/WebFetch without it)
-- **Gamma** — generates the technical handoff presentation in Phase 9 (skipped gracefully if absent)
+- **Gamma** — generates the technical handoff presentation in Phase 8 (skipped gracefully if absent)
 - **Lenny's Podcast MCP** — runtime PM expert priors. Install with `claude mcp add -t http -s user lenny-transcripts https://lenny-mcp.onrender.com/mcp`. Source: [akshayvkt/lenny-mcp](https://github.com/akshayvkt/lenny-mcp).
 
 **Optional:**
-- `OPENAI_API_KEY` — enables the cross-model review in Phase 6 and Phase 8 (an independent OpenAI model, GPT-5.5 by default; override with `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`), plus DALL-E logo generation in BrandIt. Put it in a `.env` file (in your project dir or `~/proveit/.env`) or export it in your shell — see `.env.example`. Skipped gracefully if missing.
+- `OPENAI_API_KEY` — enables the cross-model review in Phase 6 and Phase 7 (an independent OpenAI model, GPT-5.5 by default; override with `PROVEIT_REVIEW_MODEL` / `PROVEIT_REVIEW_EFFORT`). Put it in a `.env` file (in your project dir or `~/proveit/.env`) or export it in your shell — see `.env.example`. Skipped gracefully if missing.
 
 ---
 
@@ -264,11 +263,7 @@ Three future scenarios (best / expected / kill case) with explicit probability w
 
 An independent OpenAI model (GPT-5.5 by default) reads everything and flags gaps, bias, logical leaps, contradictions. CRITICAL findings get incorporated into scores. NOTABLE findings are surfaced for PM judgement.
 
-### `brand.md` — brand identity (if BrandIt phase runs)
-
-Complete brand guidelines: name, tagline, colours (full neutral scale + semantic), typography (Google Fonts), tone of voice, spacing, border radius, shadows. Plus `brand-tokens.css` and `brand-tokens.json` for direct import into your build, and logo PNGs (DALL-E generated).
-
-### `spec.md` — engineering PRD (Phase 9 Output 3)
+### `spec.md` — engineering PRD (Phase 8 Output 3)
 
 A structured PRD that drops cleanly into Linear, Jira, or Notion. Critically, the success metrics in `spec.md` are pulled directly from the kill criteria in `pre-mortem-N.md` — so the team's leading indicators are the same conditions the PM committed to monitor. No metric divergence between strategy and delivery.
 
@@ -280,7 +275,7 @@ Stakeholder / leadership deck — 9 slides covering the problem, market landscap
 
 ## Security model
 
-This repo commits **zero Bash permission allows** in `.claude/settings.json`. Anyone who clones it will be prompted to approve every command individually. This is intentional — see [ShipIt's security rationale](https://github.com/cla1redonald/shipit-v2) for why shared repos should never pre-approve command execution.
+This repo commits **zero Bash permission allows** in `.claude/settings.json`. Anyone who clones it will be prompted to approve every command individually. This is intentional — see [ShipIt V4's security rationale](https://github.com/cla1redonald/shipit-v4) for why shared repos should never pre-approve command execution.
 
 The agent never sees your API keys directly — they're only loaded by the Claude Code runtime when calling the relevant MCP server. Generated research files are gitignored by default to prevent accidental exposure of competitor analysis or business strategy.
 
@@ -339,7 +334,7 @@ A few decisions worth knowing if you're evaluating the engineering:
 
 **The success metrics in `spec.md` come from the pre-mortem.** Engineering's leading indicators are the same conditions the PM is using as kill criteria. No metric divergence between strategy and delivery — a quiet but important property of the handoff bundle.
 
-**Single agent on Opus, all subagents on Sonnet.** Cost-efficient. Opus does the judgement work (discovery scoring, deep-dive question crafting, pre-mortem framing, validation playbook). Sonnet does the structured/parallel work (research subagents, swarm agents, deck generation, brand directions).
+**Single agent on Opus, all subagents on Sonnet.** Cost-efficient. Opus does the judgement work (discovery scoring, deep-dive question crafting, pre-mortem framing, validation playbook). Sonnet does the structured/parallel work (research subagents, swarm agents, deck generation).
 
 **Files are standalone Markdown.** Every output is shareable, pasteable, has no proprietary dependencies. The PM can stop using ProveIt mid-session and the artefacts remain useful.
 

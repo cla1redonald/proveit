@@ -1,5 +1,8 @@
 # Plan: Phase 0 Intake, New-vs-Existing Context Type, and Brand/Design/Gamma Boundary
 
+> **Historical note (2026-07-09):** The BrandIt / Brand Identity phase referenced in this document was removed from ProveIt in v3.8.0 (phases renumbered; no brand outputs) — see the `docs/design.md` changelog. Kept as a historical record; do not implement from it.
+
+
 **Date:** 2026-05-10
 **Status:** Implemented in v3.2
 **Related spec:** [`docs/specs/2026-05-10-phase-0-intake-and-context-type.md`](../specs/2026-05-10-phase-0-intake-and-context-type.md)

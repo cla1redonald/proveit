@@ -6,7 +6,7 @@ Approaches that consistently produced better outcomes when used in this repo. Th
 
 ## Observation-first before drafting integrations
 
-**Context:** Designing an integration between ProveIt and an external tool (Claude Design, Gamma, BrandIt, Stripe, etc.). Especially when the external tool is new, evolving, or under-documented.
+**Context:** Designing an integration between ProveIt and an external tool (Claude Design, Gamma, Stripe, etc.). Especially when the external tool is new, evolving, or under-documented.
 
 **The framework:**
 

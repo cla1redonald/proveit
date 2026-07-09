@@ -8,7 +8,7 @@ Products don't fail at launch — they fail at the idea, when nobody checked if 
 
 ## What It Does
 
-Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Optionally creates brand identity in-session via BrandIt. Outputs a confidence score and a seven-artefact handoff bundle: `discovery.md`, `brand.md`, `spec.md`, a branded Gamma deck, `design-brief.md` (synthesis any designer can read), and `claude-design-prompts.md` (four paste-ready prompt blocks pre-populated with the PM's evidence for use in Claude Design on claude.ai).
+Takes a raw product idea through Desirability, Viability, and light Feasibility assessment using structured discovery and automated market research. Outputs a confidence score and a handoff bundle: `discovery.md`, `spec.md`, a Gamma deck, `design-brief.md` (synthesis any designer can read), and `claude-design-prompts.md` (four paste-ready prompt blocks pre-populated with the PM's evidence for use in Claude Design on claude.ai).
 
 ## Staying Current (AI-currency engine)
 
@@ -59,7 +59,7 @@ Records what happened with an idea — tracks prediction accuracy.
 
 ```
 proveit/
-├── agents/proveit.md      # Core agent definition — 10 phases, scoring, outputs
+├── agents/proveit.md      # Core agent definition — 9 phases (0–6.7, 7–9), scoring, outputs
 ├── commands/
 │   ├── proveit.md         # Skill entry point for /proveit
 │   ├── proveit-fast.md    # Quick assumption check
@@ -88,7 +88,6 @@ Research phases are delegated to Sonnet subagents for speed.
 - **Gamma** — Generates technical handoff presentations (`mcp__claude_ai_Gamma__generate`)
 - **Firecrawl** — Competitor/market research (`firecrawl_search`, `firecrawl_scrape`, `firecrawl_agent`)
 - **WebSearch/WebFetch** — Fallback web research
-- **BrandIt** (via `~/brandit/scripts/generate-logo.mjs`) — In-session brand identity and logo generation (Phase 7)
 
 ## Core Principles
 

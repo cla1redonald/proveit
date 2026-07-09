@@ -1,5 +1,8 @@
 # Phase Restructure & Seamless Pipeline Implementation Plan
 
+> **Historical note (2026-07-09):** The BrandIt / Brand Identity phase referenced in this document was removed from ProveIt in v3.8.0 (phases renumbered; no brand outputs) — see the `docs/design.md` changelog. Kept as a historical record; do not implement from it.
+
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Rename ProveIt's decimal-numbered phases (4.5, 4.6, 4.85, 4.9) to named phases 1-10, add in-session BrandIt invocation as Phase 7, and add Next Steps as Phase 10.

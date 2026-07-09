@@ -155,7 +155,6 @@ export default function FullBundlePointer({ session }: FullBundlePointerProps) {
         </a>{" "}
         — same idea, full pipeline including{" "}
         <code className="font-mono text-[0.72rem]">discovery.md</code>,{" "}
-        <code className="font-mono text-[0.72rem]">brand.md</code>,{" "}
         <code className="font-mono text-[0.72rem]">spec.md</code>,{" "}
         <code className="font-mono text-[0.72rem]">design-brief.md</code>, and paste-ready Claude
         Design prompts.

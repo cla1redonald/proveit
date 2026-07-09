@@ -1,5 +1,8 @@
 # Plan: Agent Maturation, Pre-Mortem Phase, and Spec Output
 
+> **Historical note (2026-07-09):** The BrandIt / Brand Identity phase referenced in this document was removed from ProveIt in v3.8.0 (phases renumbered; no brand outputs) — see the `docs/design.md` changelog. Kept as a historical record; do not implement from it.
+
+
 **Date:** 2026-05-09
 **Author:** Claire Donald
 **Status:** Implemented (commits `81ae8c9`, `a1728b4`)

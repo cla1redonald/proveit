@@ -26,7 +26,7 @@ Conversational. A chat interface guides you through:
 4. **Findings** — confidence scores, kill signals (when evidence supports them), recommendation
 5. **Download** — a `discovery.md` summary you can paste into Linear, Notion, Slack, or anywhere
 
-On completion, a pointer below the Download button surfaces the full plugin pipeline (`/proveit` in Claude Code) for PMs who want the seven-artefact bundle: `discovery.md`, `brand.md`, `spec.md`, Gamma deck, `design-brief.md`, and paste-ready Claude Design prompts.
+On completion, a pointer below the Download button surfaces the full plugin pipeline (`/proveit` in Claude Code) for PMs who want the full handoff bundle: `discovery.md`, `spec.md`, Gamma deck, `design-brief.md`, and paste-ready Claude Design prompts.
 
 The session persists in localStorage so you can close the tab and resume later from the same browser.
 
@@ -224,10 +224,9 @@ The plugin (`/proveit` in [Claude Code](https://claude.ai/download)) and this we
 - Multi-agent Deep Dive swarm (10 parallel adversarial agents)
 - Cross-Model Review via an independent OpenAI model (GPT-5.5 by default)
 - Wave 3 — Scenario & Experiment phase with paste-ready experiment artefacts
-- In-session BrandIt (full brand identity generation)
-- Gamma deck output (Phase 9 Output 1)
-- Engineering `spec.md` PRD output (Phase 9 Output 3)
-- `design-brief.md` and `claude-design-prompts.md` (Phase 9 Outputs 4 + 5 — v3.5)
+- Gamma deck output (Phase 8 Output 1)
+- Engineering `spec.md` PRD output (Phase 8 Output 3)
+- `design-brief.md` and `claude-design-prompts.md` (Phase 8 Outputs 4 + 5 — v3.5)
 - Lenny's Podcast MCP integration (runtime PM expert priors)
 - Calendar kill dates on bets (the web is single-session; no persistent date tracking yet)
 

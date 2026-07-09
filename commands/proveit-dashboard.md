@@ -16,7 +16,6 @@ Use Glob to search for `**/discovery.md` under the user's home directory (`~/`).
 - `node_modules/`
 - `.git/`
 - `.claude/`
-- `.brandit-temp/`
 - `Library/`
 - `.Trash/`
 - `Applications/`
