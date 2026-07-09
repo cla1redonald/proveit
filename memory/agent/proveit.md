@@ -22,7 +22,7 @@ Patterns specific to the ProveIt agent's behaviour and outputs.
 
 **Learning:** A missing API does not mean a missing integration. claude.ai/design exposes a "Handoff to Claude Code" button in its Share menu, which makes ProveIt a legitimate *destination* for designs that need validation — not just a *caller* of design generation. Phase 10 copy was originally written apologetically ("manually paste discovery.md"); the fix was to surface the round-trip as the actual workflow. (Phase 10 is now Phase 9 after the BrandIt phase was removed, 2026-07-09.)
 
-**Action:** When designing handoff phases, name **both directions** explicitly: how a PM moves work *out* of ProveIt into the external tool, AND how a PM brings work *back* into ProveIt from the external tool. If the external tool exposes any "send to Claude Code" / "export as markdown" / "download bundle" affordance, that is the inbound surface — Phase 10 should reference it, not apologise around it.
+**Action:** When designing handoff phases, name **both directions** explicitly: how a PM moves work *out* of ProveIt into the external tool, AND how a PM brings work *back* into ProveIt from the external tool. If the external tool exposes any "send to Claude Code" / "export as markdown" / "download bundle" affordance, that is the inbound surface — Phase 9 (Next Steps) should reference it, not apologise around it.
 
 **Source:** Claude Design integration session, 2026-05-10. v3.5.0.
 

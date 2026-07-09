@@ -1,5 +1,8 @@
 # Spec: Swarm Expansion, Adaptive Fast Check, Wave 3
 
+> **Historical note (2026-07-09):** The BrandIt / Brand Identity phase referenced in this document was removed from ProveIt in v3.8.0 (phases renumbered; no brand outputs) — see the `docs/design.md` changelog. Kept as a historical record; do not implement from it.
+
+
 **Date:** 2026-05-10
 **Status:** Implemented
 **Related plan:** [`docs/plans/2026-05-10-swarm-expansion-fastcheck-wave3.md`](../plans/2026-05-10-swarm-expansion-fastcheck-wave3.md)

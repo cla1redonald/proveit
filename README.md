@@ -334,7 +334,7 @@ A few decisions worth knowing if you're evaluating the engineering:
 
 **The success metrics in `spec.md` come from the pre-mortem.** Engineering's leading indicators are the same conditions the PM is using as kill criteria. No metric divergence between strategy and delivery — a quiet but important property of the handoff bundle.
 
-**Single agent on Opus, all subagents on Sonnet.** Cost-efficient. Opus does the judgement work (discovery scoring, deep-dive question crafting, pre-mortem framing, validation playbook). Sonnet does the structured/parallel work (research subagents, swarm agents, deck generation, brand directions).
+**Single agent on Opus, all subagents on Sonnet.** Cost-efficient. Opus does the judgement work (discovery scoring, deep-dive question crafting, pre-mortem framing, validation playbook). Sonnet does the structured/parallel work (research subagents, swarm agents, deck generation).
 
 **Files are standalone Markdown.** Every output is shareable, pasteable, has no proprietary dependencies. The PM can stop using ProveIt mid-session and the artefacts remain useful.
 
