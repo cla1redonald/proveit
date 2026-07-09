@@ -4,6 +4,8 @@
 
 ProveIt is an evidence-based product validation tool for product managers. It takes a raw idea through structured discovery, automated competitor and market research, a configurable adversarial swarm, a falsifiable pre-mortem, an optional Wave 3 scenario and experiment phase, and a triple-output handoff bundle (stakeholder deck + engineering spec + validation playbook).
 
+**What it is, architecturally:** a validation *harness*, not a suite of agents. One Opus agent runs a phased discovery methodology and fans out disposable Sonnet subagents and dynamic workflows for adversarial research — every claim verified by an independent skeptic, then sanity-checked by a cross-model review from a different lab. One agent, one loop, a disposable swarm: the interesting part isn't any single agent, it's the scaffolding that stops them agreeing with you.
+
 It exists as **two surfaces** that share the same methodology:
 
 - **A Claude Code plugin** (`/proveit`) — full-fidelity, runs locally, agents have access to web search, [Lenny's Podcast MCP](https://github.com/akshayvkt/lenny-mcp) for current PM expert priors, optional cross-model review via an independent OpenAI model (GPT-5.5 by default), and a Gamma deck output. This README covers the plugin.
