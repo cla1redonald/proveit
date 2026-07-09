@@ -1,5 +1,8 @@
 # ProveIt: Phase Restructure & Seamless Pipeline
 
+> **Historical note (2026-07-09):** The BrandIt / Brand Identity phase referenced in this document was removed from ProveIt in v3.8.0 (phases renumbered; no brand outputs) — see the `docs/design.md` changelog. Kept as a historical record; do not implement from it.
+
+
 **Date:** 2026-03-15
 **Issues:** #15 (seamless pipeline), #16 (phase restructure)
 **Author:** Claire Donald

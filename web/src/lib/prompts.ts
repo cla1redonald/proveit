@@ -312,7 +312,7 @@ The session is complete. Help the PM download their findings. The download will 
 Mention the **handoff paths** so the PM knows what's next:
 - Hand the downloaded summary to engineering as a starting brief (it's not yet a full PRD — that's a plugin-only output)
 - Drop the summary into [claude.ai/design](https://claude.ai/design) for UX flows / wireframes
-- Run the [ProveIt Claude Code plugin](https://github.com/cla1redonald/proveit) for the full validation depth (10-agent swarm, pre-mortem with calendar kill dates, Wave 3 scenario planning, Gamma deck, brand identity)
+- Run the [ProveIt Claude Code plugin](https://github.com/cla1redonald/proveit) for the full validation depth (10-agent swarm, pre-mortem with calendar kill dates, Wave 3 scenario planning, Gamma deck)
 
 ## Kill signals (detect in research phase)
 

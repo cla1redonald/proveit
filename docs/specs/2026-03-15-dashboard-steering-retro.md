@@ -64,7 +64,7 @@ If the Obsidian MCP is not available, skip the Board column and show the table w
 ### Constraints
 
 - **Read-only** — never modifies any discovery.md or the Ideas Board
-- **Skips directories:** `node_modules/`, `.git/`, `.claude/`, `.brandit-temp/`
+- **Skips directories:** `node_modules/`, `.git/`, `.claude/`
 - **No arguments needed** — always scans from `~/`
 
 ### File
