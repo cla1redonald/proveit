@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 2
-generated: 2026-06-08
-generated_by: frontier-scan
-next_scan_due: 2026-06-22
+snapshot_version: 3
+generated: 2026-07-15
+generated_by: frontier-delta-watch
+next_scan_due: 2026-07-29
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -24,19 +24,25 @@ The agent cites this file by section; it does *not* re-derive the frontier from 
 | Lab | Flagship | Shipped | Standout | Price (in/out per Mtok) |
 |-----|----------|---------|----------|--------------------------|
 | Anthropic | **Claude Opus 4.8** (`claude-opus-4-8`) | 2026-05-28 | Dynamic Workflows (hundreds of parallel subagents with adversarial verification); computer-use 84% on Online-Mind2Web; multimodal PDF 61% cheaper than Opus 4.7 | $5 / $25 (fast: $10 / $50) |
-| OpenAI | **GPT-5.5** | 2026-04-24 | Latest flagship; batch/flex halves short-context rates to $2.50 / $15 | $5 / $30 ($0.50 cached in) |
-| Google | **Gemini 3.5 Flash** (`gemini-3.5-flash`) | 2026-05-19 | Beats Gemini 3.1 Pro on agentic/coding benchmarks (Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%, GDPval-AA 1656 Elo); claimed 4× faster | $1.50 / $9.00 |
-| DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-04-24 | SWE-bench Verified 80.6%, MMLU 90.1%, HumanEval 76.8%, GSM8K 92.6%, 1M context; self-hostable | $0.435 / $0.87 |
+| | **Claude Sonnet 5** | 2026-06-30 | New mid-tier for agentic coding, tool use, reasoning. Intro pricing through 8/31. | $2 / $10 (intro); then $3 / $15 |
+| | **Claude Fable 5 & Mythos 5** | 2026-06-09 (restored 2026-07-01) | Always-on adaptive thinking; 1M token context, 128K output tokens; state-of-the-art on most benchmarks. Suspended June 12 by US export controls, restored July 1. | TBD |
+| OpenAI | **GPT-5.6 Sol** | 2026-07-09 | New flagship family (Sol/Terra/Luna). Sol 54% more token-efficient on coding; tuned for biology, chemistry, cybersecurity. Terra 2× cheaper than GPT-5.5. GPT-Live (simultaneous voice listen/speak) also shipped 2026-07-09. | Sol $5 / $30; Terra $2.50 / $15; Luna TBD; cached in $0.50 |
+| Google | **Gemini 3.5 Flash** (`gemini-3.5-flash`) | 2026-05-19 | Beats Gemini 3.1 Pro on agentic/coding benchmarks (Terminal-Bench 2.1 76.2%, MCP Atlas 83.6%, CharXiv 84.2%, GDPval-AA 1656 Elo); 1M context. Gemini 3.5 Pro arrives 2026-07-17: 2M context (largest production), Deep Think Reasoning, major architecture redesign. | Flash $1.50 / $9.00; Pro (July 17) TBD |
+| DeepSeek (open-weight) | **DeepSeek-V4** (1.6T/49B MoE) | 2026-04-24 (preview); mid-July 2026 (official) | SWE-bench Verified 80.6%, MMLU 90.1%, 1M context standard. Official release (mid-July) introduces peak/off-peak API pricing: peak hrs (9-12, 14-18) charge 2× off-peak rate. | V4-Pro $0.435 / $0.87; V4-Flash $0.14 / $0.28; 2× during peak |
+| Meta (open-weight) | **Llama 4 Maverick** (17B active, 128 experts) | June-July 2026 | Natively multimodal; **beats GPT-4o and Gemini 2.0 Flash** on benchmarks. Scout (17B/16 experts, 10M context) fits single H100. Behemoth (288B active, still training) **beats GPT-4.5, Claude Sonnet 3.7, Gemini 2.0 Pro** on STEM benchmarks. | Self-hosted / open |
+| xAI | **Grok 4.5** | 2026-07-08 | First ground-up coding/agentic model; Opus 4.7-class but much faster (~80 tok/s). Trained on Cursor data. 500K context. Supports 100+ tool calls in sequence. | $2 / $6 |
 
-**Net:** the frontier remains a multi-lab race in which no single model dominates every axis —
-Anthropic leads native multi-agent orchestration, Google's Flash tier now beats last-generation
-flagships on coding/agentic benchmarks, OpenAI holds the consumer default, and an MIT-licensed
-open-weight model (DeepSeek V4-Pro) now scores within striking distance of GPT-5.5 and Claude Opus
-4.7 on agentic coding at roughly 1/30th the per-token cost. Flagship prices have also deflated fast:
-Opus 4.1/4 were $15/$75, a 3× reduction to today's $5/$25 Opus — a 67% within-tier drop in roughly
-12 months.
+**Net:** the frontier is now a multi-lab race with new entrants and pricing competition. **MATERIAL CHANGES (2026-06-08 → 2026-07-15):**
+- OpenAI introduced **GPT-5.6 family** (Sol/Terra/Luna, July 9): Terra cuts the GPT-5.5 price in half ($2.50/$15 vs $5/$30); Sol is 54% more efficient on coding.
+- Anthropic released **Claude Sonnet 5** (June 30) as a new $2/$10 intro tier for agentic/coding, and restored **Fable 5 & Mythos 5** (July 1) with always-on adaptive thinking and 128K output.
+- **Meta Llama 4 Maverick** (open-weight) now beats proprietary GPT-4o and Gemini 2.0 Flash on benchmarks; Behemoth (still training) claims to beat GPT-4.5/Claude Sonnet 3.7 on STEM.
+- **xAI Grok 4.5** (July 8) launched as Opus 4.7-class coded specifically for agentic/coding at $2/$6, trained on Cursor data.
+- Google's **Gemini 3.5 Pro** (arriving July 17) promises 2M context (largest production frontier) and major architectural redesign.
+- DeepSeek's **V4 official** (mid-July) introduces **peak/off-peak pricing** (peak 2× off-peak), a new monetization model.
 
-_Sources: [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [OpenRouter — GPT-5.5](https://openrouter.ai/openai/gpt-5.5), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/), [DeepSeek — V4 release](https://api-docs.deepseek.com/news/news260424), [codersera — V4-Pro review](https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
+The survival window for startups in orchestration, desktop automation, and no-code builders is now compressed further: Anthropic ships Dynamic Workflows natively, OpenAI ships Codex with computer use, and open-weight models (Llama 4) have closed the capability gap while underpricing proprietary solutions by 2–30×. **[AGENT-IMPACT]** Pricing pressure and commoditization have accelerated.
+
+_Sources: [Anthropic — Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [Anthropic — Claude Sonnet 5](https://releasebot.io/updates/anthropic/claude), [Anthropic — Fable 5 & Mythos 5 restore](https://releasebot.io/updates/anthropic), [OpenAI — GPT-5.6 Sol/Terra/Luna](https://openai.com/index/previewing-gpt-5-6-sol/), [TechCrunch — GPT-5.6 release](https://techcrunch.com/2026/07/09/openai-launches-its-new-family-of-models-with-gpt-5-6/), [Google — Gemini 3.5](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/), [DeepSeek — V4 official + peak pricing](https://technode.com/2026/06/30/deepseek-to-launch-v4-in-mid-july-with-new-peak-time-api-pricing/), [Meta — Llama 4](https://ai.meta.com/blog/llama-4-multimodal-intelligence/), [xAI — Grok 4.5](https://techcrunch.com/2026/07/08/spacexai-releases-grok-4-5-which-elon-describes-as-an-opus-class-model/), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)._
 
 ---
 
@@ -83,8 +89,9 @@ ship this as a default before the idea reaches PMF?*
 | Text-to-video / video editing | **Closing fast** | Gemini Omni Flash does prompt-based video editing free on YouTube; coverage names Runway and Pika as exposed (2026-05-19) |
 | No-code website builders | **Closing fast** | Codex Sites generates and deploys hosted web projects natively in ChatGPT Business (2026-06-02) |
 | Cross-app productivity agents | **Closing fast** | Gemini Spark acts across Search, Android, YouTube, and Google apps for AI Ultra subscribers (2026-05-20) |
-| Coding-assistant startups | **Closing fast** | Codex ships dedicated agentic-coding model variants (GPT-5.3-Codex etc.) on a ~monthly cadence — a model-level moat for OpenAI (2026-02-05) |
-| Open-weight vs closed-frontier on code | **Closed enough to compete** | DeepSeek V4-Pro scores 80.6% SWE-bench Verified, MIT-licensed and self-hostable, ~1/30th per-token cost vs GPT-5.5 / Opus 4.7 (2026-04-27) |
+| Coding-assistant startups | **Closing fast** | Codex ships dedicated agentic-coding model variants (GPT-5.3-Codex etc.) on a ~monthly cadence — a model-level moat for OpenAI. **NEW:** xAI Grok 4.5 (July 8, 2026) enters at $2/$6, built for coding/agentic, with Opus 4.7-class performance and 500K context (2026-07-08) |
+| Open-weight vs closed-frontier on code | **NOW BEATS proprietary on agentic/multimodal** | **[AGENT-IMPACT]** Meta Llama 4 Maverick (17B/128 experts) now beats GPT-4o and Gemini 2.0 Flash on benchmarks; Behemoth (288B, still training) beats GPT-4.5, Claude Sonnet 3.7, Gemini 2.0 Pro on STEM. Combined with DeepSeek V4-Pro's 80.6% SWE-bench and MIT license, open-weight models have crossed the "feature parity" line and entered "better than proprietary at 1/30th cost" territory (June–July 2026) |
+| Frontier pricing pressure (mid-tier) | **ACCELERATING** | **[AGENT-IMPACT]** New entrants (xAI, Meta) and price wars (Anthropic Sonnet 5 intro $2/$10, OpenAI Terra $2.50/$15) are compressing mid-tier pricing. Startups aiming at "$X per query" business models are being priced out. Grok 4.5 at $2/$6 (Opus-class) and Llama 4 (self-hosted, open) set hard ceilings below which closed-source startups cannot compete (2026-07-15) |
 | "Free AI tool" consumer products | **Pressured** | ChatGPT Ads (self-serve since 2026-05-05) and the $8/mo ChatGPT Go tier with 10× usage anchor the price ceiling (2026-01-15) |
 | Distribution / proprietary-data / workflow-embedded products | **Defensible** | Evans's Feb-2026 thesis: no durable model moat; value accrues to distribution, vertical data, and deep workflow integration (2026-02-19) |
 
@@ -117,15 +124,14 @@ _Sources: [Anthropic — Opus 4.8 / Dynamic Workflows](https://www.anthropic.com
   Western/proprietary frontier labs, Gemini 2.5 Flash-Lite at **$0.10 / $0.40** is the cheapest;
   GPT-4.1 nano matches at $0.10 / $0.40. _(2026-04-24 / 2026-06.)_
 - **Current per-Mtok rates (in / out):**
-  - Anthropic — Opus 4.8 $5 / $25 (fast $10 / $50); Sonnet 4.6 $3 / $15 (1M ctx); Haiku 4.5 $1 / $5.
-    Batch 50% cheaper; prompt caching cuts cached-input cost 90%. _(2026-06-01.)_
-  - OpenAI — GPT-5.5 $5 / $30 ($0.50 cached in), GPT-5.5 Pro $30 / $180, batch/flex $2.50 / $15;
-    GPT-4.1 $2 / $8 (1M ctx, 75% cache discount), 4.1 mini $0.40 / $1.60, 4.1 nano $0.10 / $0.40;
-    o4-mini $1.10 / $4.40. _(2026-04-24 / 2025-04-14.)_
-  - Google — Gemini 3.5 Flash $1.50 / $9.00 (1M ctx); 2.5 Pro $1.25–$2.50 / $10–$15; 2.5 Flash
-    $0.30 / $2.50; 2.5 Flash-Lite $0.10 / $0.40. Batch 50% off. _(2026-06-08.)_
-  - DeepSeek — V4-Pro $0.435 / $0.87; V4-Flash $0.14 / $0.28 (cache-hit in $0.0028); both 1M ctx,
-    384K max output. _(2026-04-24.)_
+  - Anthropic — Opus 4.8 $5 / $25 (fast $10 / $50); Sonnet 5 $2 / $10 (intro through 8/31, then $3/$15); Sonnet 4.6 $3 / $15 (1M ctx); Haiku 4.5 $1 / $5.
+    Batch 50% cheaper; prompt caching cuts cached-input cost 90%. _(2026-06-30 Sonnet 5 launch.)_
+  - OpenAI — GPT-5.6 Sol $5 / $30; Terra $2.50 / $15; GPT-5.5 $5 / $30 ($0.50 cached in); GPT-5.5 Pro $30 / $180; batch/flex $2.50 / $15;
+    GPT-4.1 $2 / $8 (1M ctx, 75% cache discount), 4.1 mini $0.40 / $1.60, 4.1 nano $0.10 / $0.40; o4-mini $1.10 / $4.40.
+    _(2026-07-09 GPT-5.6 launch.)_
+  - Google — Gemini 3.5 Flash $1.50 / $9.00 (1M ctx); 2.5 Pro $1.25–$2.50 / $10–$15; 2.5 Flash $0.30 / $2.50; 2.5 Flash-Lite $0.10 / $0.40. Batch 50% off. _(2026-07-15.)_
+  - DeepSeek — V4-Pro $0.435 / $0.87; V4-Flash $0.14 / $0.28 (cache-hit in $0.0028); both 1M ctx, 384K max output. **NEW: peak/off-peak pricing from mid-July**: peak hrs (9-12, 14-18) charge 2× off-peak rate. _(2026-07-15.)_
+  - xAI Grok — Grok 4.5 $2 / $6; 500K context, ~80 tok/sec throughput. _(2026-07-08 launch.)_
 - **Output multiplier.** Anthropic 4.x models run a consistent 5× output-to-input ratio; GPT-5.5 is 6×
   ($30 out is ~20% pricier than Opus 4.8's $25); Gemini 3.5 Flash is 6×. Budget the output side.
 - **"Flash" no longer means cheap.** Gemini 3.5 Flash is a 3× increase over Gemini 3 Flash and 6× over
@@ -182,6 +188,18 @@ _Sources: [Anthropic — Dynamic Workflows](https://claude.com/blog/introducing-
 The `frontier-scan` workflow appends a diff here every run. Structural changes (a new lab enters the
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
+
+- **2026-07-15 (snapshot v3)** — Biweekly frontier-delta-watch refresh (lightweight scan, no workflow).
+  - **`[AGENT-IMPACT]`** New flagship families & tier compression:
+    - OpenAI: GPT-5.6 Sol/Terra/Luna family (July 9); Sol 54% more token-efficient on coding; Terra 2× cheaper than GPT-5.5 ($2.50/$15).
+    - Anthropic: Claude Sonnet 5 (June 30) enters as new $2/$10 intro mid-tier; Fable 5 & Mythos 5 (June 9, restored July 1) now available with always-on adaptive thinking, 128K output tokens.
+    - Google: Gemini 3.5 Pro redesign (July 17 launch, delayed): 2M context (largest production frontier), Deep Think Reasoning Layer.
+  - **`[AGENT-IMPACT]`** New entrants: xAI Grok 4.5 (July 8) enters at $2/$6, Opus 4.7-class, built ground-up for coding/agentic. Meta Llama 4 Maverick/Scout/Behemoth (open-weight) now **beat proprietary models on benchmarks** — Maverick beats GPT-4o/Gemini 2.0 Flash, Behemoth beats GPT-4.5/Claude Sonnet 3.7 on STEM.
+  - **`[AGENT-IMPACT]`** Pricing compression: DeepSeek V4 official (mid-July) introduces peak/off-peak API pricing (peak 2×). Combined with Sonnet 5 intro pricing, Terra, and Grok 4.5 at $2/$6, mid-tier startups face a hard ceiling.
+  - **`[AGENT-IMPACT]`** Commoditization watchlist: open-weight models have crossed into "beats proprietary at 1/30th cost" territory. New row added: "Frontier pricing pressure (mid-tier)" now ACCELERATING.
+  - **Survival window compressed further:** Anthropic ships Dynamic Workflows natively, OpenAI ships Codex computer use, and open-weight models now undercut closed-source startups on capability *and* price. Distribution/data flywheels remain the only defensible moat.
+  - GPT-Live (simultaneous voice listen/speak) also shipped 2026-07-09.
+  - Gemini 3.5 Pro context (2M) is largest production frontier by July 17.
 
 - **2026-06-08 (snapshot v2)** — First automated `frontier-scan` pass; supersedes the v1 seed.
   - Flagships refreshed to verified IDs/dates: Opus 4.8 (2026-05-28, $5/$25), GPT-5.5 (2026-04-24,
