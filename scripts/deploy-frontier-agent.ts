@@ -46,7 +46,7 @@ function buildDeploymentConfig(instructions: string): DeploymentConfig {
   return {
     name: "frontier-scan",
     description:
-      "Daily AI-frontier knowledge refresh: scans the frontier, detects [AGENT-IMPACT] changes, and updates ProveIt agent scoring via PR.",
+      "Lightweight AI-frontier announcement monitor: checks for new model releases every 2 weeks, flags [AGENT-IMPACT] changes, auto-PRs the snapshot.",
     model: "claude-sonnet-5",
     instructions,
     tools: [

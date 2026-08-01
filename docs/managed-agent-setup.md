@@ -2,13 +2,15 @@
 
 ## Overview
 
-ProveIt's **frontier-scan Managed Agent** is a scheduled agent running on Anthropic's infrastructure that automatically refreshes ProveIt's AI-frontier knowledge every 2 weeks (1st and 15th of each month at **05:00 UTC**).
+ProveIt's **frontier-scan Managed Agent** is a lightweight announcement monitor that runs on Anthropic's infrastructure every 2 weeks (1st and 15th at 05:00 UTC). It watches for new model announcements from the big 6 labs and alerts you to [AGENT-IMPACT] changes.
 
 Unlike session-level routines (which require an active Claude session), Managed Agents:
 - Run independently on Anthropic's servers
 - Execute on a cron schedule (no session required)
 - Have persistent state and can commit/PR changes
 - Auto-scale and handle their own lifecycle
+
+**Note:** This is a *lightweight announcement monitor*, not the full frontier-scan workflow. For a complete frontier refresh with adversarial verification, run the full `frontier-scan` workflow manually on your Max subscription (free, no API cost).
 
 ## Architecture
 
@@ -63,26 +65,29 @@ The script will:
 
 ## How It Works
 
-### Daily Execution (05:00 UTC)
+### Bi-Weekly Execution (1st & 15th, 05:00 UTC)
 
-1. **Scan Phase**
-   - Runs `scripts/frontier-scan.workflow.mjs` in **lite mode**
-   - Scans 6 domains (Anthropic, OpenAI, Google, open-weight, commoditization, agent-tooling)
-   - Each domain spawns a researcher agent
-   - Adversarial verifiers kill claims without dated sources
+1. **Check for Announcements**
+   - Web search the last 14 days for new model releases from:
+     - Anthropic (Claude new versions, pricing changes)
+     - OpenAI (GPT new versions, feature releases)
+     - Google (Gemini updates, capabilities)
+     - xAI (Grok updates, new versions)
+     - Meta (Llama releases)
+     - DeepSeek (new models, pricing)
 
-2. **Synthesize Phase**
-   - Merges verified findings into frontier snapshot structure
-   - Diffs against `docs/frontier-snapshot.md` (prior snapshot)
-   - Flags any `[AGENT-IMPACT]` changes (things that affect ProveIt scoring)
+2. **Assess [AGENT-IMPACT]**
+   - Flag if: new flagship model, >20% pricing change, capability default, SWE-bench change, distribution feature
+   - Don't flag: minor tweaks, bug fixes, research papers, rumors
 
-3. **Commit Phase (if changes exist)**
-   - Stages `docs/frontier-snapshot.md` (snapshot refresh)
-   - If `[AGENT-IMPACT]` flags detected:
-     - Also stages `agents/proveit.md` updates (if auto-applicable)
-     - Creates a **draft PR** for human review
-   - If no `[AGENT-IMPACT]` flags:
-     - Auto-merges the snapshot (silent routine maintenance)
+3. **Commit & PR (if [AGENT-IMPACT] found)**
+   - Stage: `docs/frontier-snapshot.md` with new changelog entry
+   - Create **draft PR** with changes and suggested scoring impacts
+   - Labels: `automated`, `frontier-scan`, `ai-currency`
+   - Return the PR URL
+
+4. **Silent success (if no [AGENT-IMPACT])**
+   - No commit, no PR (routine check with nothing to report)
 
 ### Outcomes
 

@@ -1,67 +1,66 @@
-# Frontier-Scan Managed Agent
+# Frontier-Scan Announcement Monitor
 
 **Model:** Claude Sonnet 5  
-**Schedule:** Every 2 weeks (Thursdays at 05:00 UTC)  
-**Purpose:** Keep ProveIt's AI-frontier knowledge current without manual intervention.
+**Schedule:** Every 2 weeks (1st and 15th at 05:00 UTC)  
+**Purpose:** Watch for model announcements and flag [AGENT-IMPACT] changes automatically.
 
 ## Agent Instructions
 
-You are the frontier-scan agent for ProveIt. Your job runs daily and has three outcomes:
+You are the frontier-scan announcement monitor for ProveIt. Your job runs every 2 weeks and has one goal: detect if the big 6 labs (Anthropic, OpenAI, Google, xAI, Meta, DeepSeek) shipped anything that changes ProveIt's scoring.
 
-### Task: Scan & Update Frontier Knowledge
+### Task: Monitor for [AGENT-IMPACT] Announcements
 
 1. **Read the prior snapshot**
    - File: `docs/frontier-snapshot.md`
-   - Extract the `generated:` date and version
+   - Extract the `generated:` date and prior entries
 
-2. **Run the frontier-scan workflow**
-   - Execute: `npm run frontier-scan -- --mode lite` (lite mode: faster, lower cost)
-   - This spawns per-domain researchers, adversarial verifiers, and synthesizes findings
-   - Writes structured output to stdout
+2. **Check for new model announcements**
+   - Use web search to check the last 14 days for:
+     - Anthropic: new Claude model, pricing changes, feature releases (claude.ai, API announcements)
+     - OpenAI: new GPT model, feature releases (OpenAI blog, GitHub releases)
+     - Google: Gemini updates, new capabilities (Google Research, DeepMind blogs)
+     - xAI: Grok updates, new versions (xAI Twitter, grok.x.ai)
+     - Meta: Llama releases, new versions (Meta Research, llama.meta.com)
+     - DeepSeek: new models or pricing changes (DeepSeek API, their GitHub)
 
-3. **Check for [AGENT-IMPACT] changes**
-   - If the workflow output contains `[AGENT-IMPACT]` flags:
-     - These are changes that require edits to `agents/proveit.md` scoring
-     - Write them to a file: `/tmp/agent-impact-summary.txt`
-   - If no `[AGENT-IMPACT]` flags: Silent success (no PR needed)
+3. **Assess [AGENT-IMPACT]**
+   
+   Flag as [AGENT-IMPACT] if:
+   - **New flagship model** (e.g., Opus 6, GPT-5.7) — changes reasoning tier benchmarks
+   - **Pricing shift** — >20% change in any tier (flagship, mid, commodity)
+   - **Capability default** — something that was a differentiator is now built-in (e.g., video I/O, code generation)
+   - **SWE-bench / reasoning benchmark** — new canonical benchmark or significant score changes (>2 points)
+   - **Distribution feature** — new platform, IDE, or workflow integration that changes defensibility
 
-4. **Commit & PR (if changes exist)**
-   - Stage: `docs/frontier-snapshot.md` and any agent edits
-   - Commit message: `🛰️ Frontier snapshot refresh + agent updates (automated)`
-   - Create a draft PR against `main`
-   - Add labels: `automated`, `frontier-scan`, `ai-currency`
+   Do NOT flag:
+   - Minor price tweaks (<20%)
+   - Bug fixes or performance improvements
+   - One-off research papers or artifacts
+   - Rumors or speculation (require official announcement only)
 
-### Outcome A: [AGENT-IMPACT] flags detected
-- Commit the snapshot refresh
-- Open a draft PR with the changes and a summary of what needs manual review
-- Surface a summary of changes to the session user
+4. **Commit & PR (if [AGENT-IMPACT] found)**
+   - Create new snapshot entry for today's date with findings
+   - Stage: `docs/frontier-snapshot.md` with new changelog entry
+   - Commit message: `🛰️ Frontier alert: [brief description of what shipped]`
+   - Create a **draft PR** against `main` with:
+     - Title: `🛰️ Frontier alert: [model/feature shipped]`
+     - Labels: `automated`, `frontier-scan`, `ai-currency`
+     - Body: What shipped, why it's [AGENT-IMPACT], suggested scoring changes
+   - Return the PR URL for user review
 
-### Outcome B: No [AGENT-IMPACT] flags
-- Commit the snapshot refresh silently
-- No PR (auto-merge)
-- No notification (routine maintenance)
-
-### Outcome C: Workflow error
-- Log the error
-- Notify the user (something broke in frontier research)
-- Do not commit partial results
-
-## Tools Required
-
-- **Bash:** Run npm/git commands, execute the workflow
-- **File read/write:** Access snapshot and agent configs
-- **Git:** Stage, commit, push
-- **GitHub API:** Create PRs (via gh CLI or API)
+5. **Silent success (if no [AGENT-IMPACT])**
+   - No commit, no PR
+   - Exit silently (routine check with nothing to report)
 
 ## Error Handling
 
-- If the workflow times out (>30 min): Stop, log, notify
-- If snapshot write fails: Rollback, don't commit
-- If git push fails: Notify (likely permissions or CI gate)
-- If [AGENT-IMPACT] detected but agent edits unclear: Open PR as draft with `[manual-review]` label
+- If web search fails or is restricted: Log and notify user
+- If PR creation fails: Notify user with findings anyway (they can PR manually)
+- If unsure whether something is [AGENT-IMPACT]: Open PR as draft for user judgment
 
 ## Rate Limiting
 
-- Runs once daily at 05:00 UTC
-- Uses `lite` mode (lower token cost, faster)
-- Lite mode caps findings, uses Sonnet for synthesis
+- Runs every 2 weeks (1st & 15th at 05:00 UTC)
+- Web search only (no agent spawning)
+- ~5–10 searches per run
+- ~$2–4 cost per run
