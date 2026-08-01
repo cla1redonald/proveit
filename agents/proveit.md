@@ -765,6 +765,37 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 >
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
+#### Category-Specific AI-Commoditization Scoring (Frontier v3, 2026-08-01)
+
+*Updated based on frontier shifts since June 2026. The following categories face accelerated commoditization. Adjust Viability scoring down and Feasibility survival-window assumptions accordingly.*
+
+**RED ZONE — Survival window < 6 months. High risk of foundation-lab absorption:**
+
+- **Video I/O products** (native video input now default — Grok 4.5 2026-07-08): Any product positioning video understanding as core differentiator is at critical risk. Viability threshold: raise to 7+; if V ≤ 6, kill signal triggered unless product has embedded workflow/workflow-distribution moat.
+- **Coding-assistant startups** (SWE-bench Verified is canonical; GPT-5.6 Sol 96.2%, Claude Fable 5 95.0%, Opus 5 ~88.6%): Frontier models now saturate the coding benchmark. Viability threshold: raise to 8+; if V ≤ 7, kill signal triggered unless startup has: (a) enterprise workflow lock-in + data flywheel, (b) language/domain specificity that generalizes poorly, or (c) team/IDE/repository distribution moat (e.g., embedded in Slack, GitHub, VS Code).
+- **Reasoning-stage inference products** (Opus 5 $5/$25, GPT-5.6 Sol $5/$30): Tier compression and flagship parity mean reasoning is no longer a differentiator. If product's core value is "better reasoning than GPT-4," kill it outright. Viability floor: 8+ *and* documented distribution or data moat. Otherwise, move to Feature category (sell as embedded capability, not standalone product).
+
+**ORANGE ZONE — Survival window 6–12 months. Monitor closely:**
+
+- **Orchestration middleware / multi-agent frameworks** (Opus 5 Dynamic Workflows native, 2026-05-28): Orchestration is now a platform feature. Viability threshold: raise to 7+; kill signal if product's core value is "framework for running parallel agents." Survival strategy: vertical specialization (e.g., only for customer-support agents, only for medical discovery workflows) + embedded distribution.
+- **Desktop automation / "AI that controls your computer"** (Codex Windows Computer Use 2026-05-29): Now a first-party feature. Viability threshold: raise to 7+; kill signal if value is "AI clicking buttons in Windows." Survival strategy: task-domain expertise (e.g., "AI for accounting software only") + workflow embeddedness.
+- **No-code / low-code website builders** (Codex Sites 2026-06-02): Native web-project generation is now default. Viability threshold: raise to 7+. Survival strategy: vertical specialization (e.g., "AI builder for landing pages," "AI builder for SaaS dashboards") + design/brand moat.
+
+**YELLOW ZONE — Pricing inflection hitting all tiers:**
+
+- **Commodity LLM inference / API wrappers** (GPT-5.6 Luna $0.20/$1.20 undercuts DeepSeek V4-Flash off-peak): Proprietary frontier labs are now pricing below open-weight on commodity workloads. Viability threshold: 8+ and must have *either* (a) embedded distribution, (b) vertical data flywheel, or (c) latency/compliance moat (e.g., on-device, EU-hosted). Cost-only differentiation is dead.
+- **Unit economics assumptions**: Any 12-month roadmap that assumes input prices stay above $0.50/Mtok is likely 5–10× too high by ship time. Flag assumptions and require explicit "what breaks if prices fall 10× more?" scenarios. Snapshot §4 shows commodity floor at $0.10–$0.20; budget for further decline.
+
+**GREEN ZONE — Defensible structures (distribute, own data, embed in workflow):**
+
+- **Vertical AI products with proprietary data**: Product owns domain-specific data (legal contracts, medical imaging, financial statements). Value = model + data, not model alone. Survival window: 24+ months. Viability floor: 6+ (not 8+).
+- **Embedded AI (AI as feature, not product)**: AI is one capability in a larger workflow (e.g., Slack has an AI copilot for channel summaries; Notion has AI for write assists). Survival window: indefinite if platform controls distribution. Viability floor: 6+ (not 8+).
+- **Workflow-specific AI (task-domain + distribution lock-in)**: E.g., "AI for sales reps on Salesforce," "AI for customer-support reps on Zendesk," "AI pair programmer for code review in GitHub." Value = narrowness + embeddedness. Survival window: 18+ months if distribution is defensible. Viability floor: 6+ (not 8+).
+
+**Peak/Off-Peak Pricing Note** (DeepSeek V4, 2026-07-10): DeepSeek introduced 2× pricing multiplier during peak hours (9am–12pm, 2pm–6pm UTC). Cost unpredictability now a factor in unit economics. Flag ideas that require predictable inference costs; ask "how sensitive is viability to 2–3× cost spikes during peak hours?"
+
+---
+
 **Regulatory / Compliance** (`swarm-[N]-regulatory.md`) — *default-on-conditional, skip only per Step 3 criteria*:
 > "You are the REGULATORY / COMPLIANCE research agent. Question: '[QUESTION]'. Your mandate: For ideas in regulated categories — health, finance, kids' content, data privacy, employment, lending, education accreditation — the difference between launch and lawsuit is whether the team built compliance in from day one or bolted it on after pre-revenue. Your job is to identify the regulations that apply, the cost of compliance, and the credible threats from regulators or claimants.
 >
