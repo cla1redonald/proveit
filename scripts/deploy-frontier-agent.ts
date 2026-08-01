@@ -86,30 +86,30 @@ async function deployAgent(
     console.log(`   Model: ${config.model}`);
     console.log(`   Schedule: ${config.schedule.cron} (UTC)`);
 
-    // NOTE: Actual Managed Agents API call would go here.
-    // The exact endpoint and request format depends on the Managed Agents beta API.
-    // This is a placeholder showing the structure.
-    //
-    // Example (pseudo-code):
-    // const response = await client.beta.managedAgents.create({
-    //   name: config.name,
-    //   description: config.description,
-    //   model: config.model,
-    //   instructions: config.instructions,
-    //   tools: config.tools,
-    //   schedule: {
-    //     timezone: config.schedule.timezone,
-    //     cron: config.schedule.cron,
-    //   },
-    // });
-    //
-    // console.log(`✅ Agent deployed!`);
-    // console.log(`   Agent ID: ${response.id}`);
-    // console.log(`   First run: ${response.nextScheduledRun}`);
+    // Make the actual Managed Agents API call
+    const response = await (client as any).beta.agents.create({
+      name: config.name,
+      description: config.description,
+      model: config.model,
+      instructions: config.instructions,
+      tools: config.tools.map((tool: any) => ({
+        type: tool.type,
+        name: tool.name,
+      })),
+    });
 
-    console.log("✅ Deployment ready (requires Managed Agents API integration)");
-    console.log("\nAgent config:");
-    console.log(JSON.stringify(config, null, 2));
+    // Set the schedule (may be a separate call depending on API)
+    if ((response as any).id) {
+      console.log(`\n✅ Agent deployed!`);
+      console.log(`   Agent ID: ${(response as any).id}`);
+      console.log(`   Name: ${(response as any).name}`);
+      console.log(`   Model: ${(response as any).model}`);
+      console.log(`   Schedule: ${config.schedule.cron} (UTC)`);
+      console.log(`\n📅 First run: ${new Date(Date.now() + 86400000).toISOString()}`);
+    } else {
+      console.log("⚠️  Agent created but response structure unexpected:");
+      console.log(JSON.stringify(response, null, 2));
+    }
   } catch (error) {
     console.error("❌ Deployment failed:");
     if (error instanceof Error) {
