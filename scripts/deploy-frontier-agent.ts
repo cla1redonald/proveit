@@ -89,13 +89,8 @@ async function deployAgent(
     // Make the actual Managed Agents API call
     const response = await (client as any).beta.agents.create({
       name: config.name,
-      description: config.description,
       model: config.model,
-      instructions: config.instructions,
-      tools: config.tools.map((tool: any) => ({
-        type: tool.type,
-        name: tool.name,
-      })),
+      system: config.instructions,
     });
 
     // Set the schedule (may be a separate call depending on API)
