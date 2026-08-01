@@ -65,7 +65,7 @@ function buildDeploymentConfig(instructions: string): DeploymentConfig {
     ],
     schedule: {
       timezone: "UTC",
-      cron: "0 5 * * *", // Daily at 05:00 UTC
+      cron: "0 5 1,15 * *", // Every 2 weeks: 1st and 15th at 05:00 UTC
     },
   };
 }

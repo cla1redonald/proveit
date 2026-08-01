@@ -2,7 +2,7 @@
 
 ## Overview
 
-ProveIt's **frontier-scan Managed Agent** is a scheduled agent running on Anthropic's infrastructure that automatically refreshes ProveIt's AI-frontier knowledge daily at **05:00 UTC**.
+ProveIt's **frontier-scan Managed Agent** is a scheduled agent running on Anthropic's infrastructure that automatically refreshes ProveIt's AI-frontier knowledge every 2 weeks (1st and 15th of each month at **05:00 UTC**).
 
 Unlike session-level routines (which require an active Claude session), Managed Agents:
 - Run independently on Anthropic's servers
@@ -13,7 +13,7 @@ Unlike session-level routines (which require an active Claude session), Managed 
 ## Architecture
 
 ```
-┌─ Daily at 05:00 UTC ─────────────────────────────┐
+┌─ Every 2 weeks (1st & 15th, 05:00 UTC) ──────────┐
 │                                                   │
 │  Managed Agent (Sonnet 5)                        │
 │  ├── Run frontier-scan workflow (lite mode)      │
@@ -119,15 +119,15 @@ Auto-generated PRs will appear in the repository with:
 
 ## Cost Estimation
 
-**Lite mode** (default):
+**Lite mode** (default, bi-weekly):
 - ~100 agents (6 domains × researchers + verifiers)
-- ~2M tokens per run
-- ~$6–8 per daily run (Sonnet pricing)
-- ~$200–250/month if unchanged
+- ~1M tokens per run (capped findings, Sonnet synthesis)
+- ~$3–4 per run (Sonnet 5 pricing)
+- **~$85–112/month** (24 runs/year, roughly every 15 days)
 
 **Full mode** (for manual runs):
 - ~300 agents (deeper research + Opus synthesis)
-- ~4–5M tokens
+- ~3.7M tokens
 - ~$20–25 per run
 
 ## Troubleshooting

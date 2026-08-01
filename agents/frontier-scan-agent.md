@@ -1,7 +1,7 @@
 # Frontier-Scan Managed Agent
 
 **Model:** Claude Sonnet 5  
-**Schedule:** Daily at 05:00 UTC  
+**Schedule:** Every 2 weeks (Thursdays at 05:00 UTC)  
 **Purpose:** Keep ProveIt's AI-frontier knowledge current without manual intervention.
 
 ## Agent Instructions
