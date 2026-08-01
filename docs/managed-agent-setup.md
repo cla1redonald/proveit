@@ -28,7 +28,16 @@ Unlike session-level routines (which require an active Claude session), Managed 
 
 ## Deployment
 
-### Prerequisites
+### Current Status
+
+✅ **Deployed and active**
+- **Agent ID:** `agent_01FoF2hJGMYJ5cP6P9v1EbVe`
+- **Model:** Claude Sonnet 5
+- **Schedule:** Every 2 weeks (1st & 15th at 05:00 UTC)
+- **Deployed:** 2026-08-01 13:13 UTC
+- **Next run:** 2026-09-01 05:00 UTC
+
+### Prerequisites (for re-deployment)
 
 - `ANTHROPIC_API_KEY` set in environment
 - Node.js 18+ with TypeScript support
@@ -45,15 +54,17 @@ This adds:
 - `@anthropic-ai/sdk` — for Managed Agents API calls
 - `typescript` & `ts-node` — for the deployment script
 
-### Deploy
+### Deploy or Re-deploy
 
 **Dry run** (see what would be deployed):
 ```bash
+export ANTHROPIC_API_KEY=your-key
 npm run frontier-scan:dry
 ```
 
-**Live deployment** (deploys the agent to Anthropic):
+**Live deployment** (deploys/updates the agent to Anthropic):
 ```bash
+export ANTHROPIC_API_KEY=your-key
 npm run frontier-scan
 ```
 
