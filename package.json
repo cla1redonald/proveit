@@ -4,6 +4,16 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@anthropic-ai/sdk": "latest",
     "openai": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.0.0"
+  },
+  "scripts": {
+    "frontier-scan": "npx ts-node scripts/deploy-frontier-agent.ts",
+    "frontier-scan:dry": "npx ts-node scripts/deploy-frontier-agent.ts --dry-run"
   }
 }
