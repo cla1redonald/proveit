@@ -76,7 +76,8 @@ proveit/
 │   ├── mirror.ts                   # Mirror project-dir ProveIt outputs into the vault (per-idea folders)
 │   ├── sync.ts                     # Push the vault into Supabase for the hosted Studio (one-way)
 │   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
-│   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
+│   ├── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
+│   └── validate-proveit-agent.mjs  # CI smoke test — orchestrator phase paths exist on disk
 ├── docs/
 │   ├── design.md               # Design decisions and validation framework
 │   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
@@ -112,6 +113,7 @@ Research phases are delegated to Sonnet subagents for speed.
 When you change `scripts/`, `agents/`, or `commands/` (the plugin), `web/src/` (the web app), **or `studio/src/` / `packages/` (ProveIt Studio)**, update the docs that describe them: `README.md`, `CLAUDE.md`, `AGENTS.md`, `docs/`, `web/README.md`, or `studio/README.md` (including the directory trees). This is **enforced**, not advisory:
 
 - **CI gate** — `.github/workflows/docs-check.yml` flags any PR where code changed without a doc update (pure bash, no LLM, no token cost).
+- **Agent structure gate** — `.github/workflows/ci.yml` (`plugin` job) runs `scripts/validate-proveit-agent.mjs` on every PR; fails if `agents/proveit.md` references a missing phase file or `proveit-fast.md` drifts from `agents/phases/fast-mode.md`.
 - **In-session reminder** — a `PreToolUse` hook in `.claude/settings.json` warns at commit time if code is staged without docs.
 - **Override** — if a change genuinely needs no doc update (e.g. a pure bugfix), put `[no-docs]` in a commit message. The check then passes.
 

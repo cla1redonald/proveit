@@ -100,3 +100,17 @@ jobs:
 
       - name: Test
         run: npm test
+
+  plugin:
+    name: Plugin — agent structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate agent phase files
+        run: node scripts/validate-proveit-agent.mjs
