@@ -40,7 +40,7 @@ The session persists in localStorage so you can close the tab and resume later f
 - **Tailwind CSS v4** + shadcn/ui primitives
 - **Zod** for input validation in route handlers
 - **Upstash Redis** for distributed rate limiting (with an in-memory fallback for local dev only)
-- **Vitest** + React Testing Library — 311 tests across unit + integration
+- **Vitest** + React Testing Library — 328 tests across unit + integration
 - **Vercel** for hosting; Node.js runtime on the route handlers (Edge would break the Anthropic SDK)
 - **Supabase** for waitlist, orders, woz-intent, and deck storage (server-side only)
 - **Stripe** for one-off paid validation bundle checkout
@@ -124,6 +124,8 @@ npm run build      # Production build
 npm run lint       # ESLint
 npm run test       # Vitest in watch mode
 npm run test:run   # Vitest one-shot
+npm run e2e:install # One-time Playwright browser install
+npm run e2e        # Local Playwright E2E (mocked API routes)
 ```
 
 Tests live in `tests/unit/` (component + utility tests) and `tests/integration/` (API route handler tests). The route handler tests mock the Anthropic SDK at module level via Vitest.
@@ -189,7 +191,7 @@ web/
 │   │   └── utils.ts              # cn() + getRelativeTime
 │   ├── middleware.ts             # Origin guard for /api/*
 │   └── types/index.ts            # All shared TypeScript interfaces
-└── tests/                        # Unit + integration (311 tests)
+└── tests/                        # Unit + integration (328 tests) + e2e/
 ```
 
 For the long-form architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
