@@ -15,10 +15,24 @@ import {
 // The hosted read path. Reads the studio_* mirror (populated by `proveit sync`)
 // with the service role, server-side only. RLS denies everything else.
 
+interface StudioIdeaRow {
+  slug: string
+  name: string
+  one_liner?: string | null
+  scores?: Scores | null
+  status?: string | null
+  generated?: string | null
+  last_updated?: string | null
+  kill_signals?: KillSignal[] | null
+  has_deck?: boolean | null
+  deck?: string | null
+  artifact_count?: number | null
+}
+
 export function createSupabaseSource(url: string, serviceKey: string): DataSource {
   const db = createClient(url, serviceKey, { auth: { persistSession: false } })
 
-  const toSummary = (row: Record<string, any>, discoveryFile = ''): IdeaSummary => ({
+  const toSummary = (row: StudioIdeaRow, discoveryFile = ''): IdeaSummary => ({
     slug: row.slug,
     name: row.name,
     oneLiner: row.one_liner ?? undefined,

@@ -27,6 +27,17 @@ Config (optional — defaults to Claire's vault):
 
 The reader reads the vault **live** off disk — no build step, no sync, nothing generated.
 
+## Development
+
+```bash
+npm run lint -w proveit-studio     # ESLint (next/core-web-vitals)
+npx tsc --noEmit                   # from studio/
+npm run build -w proveit-studio
+npm test -w @proveit/core          # shared scan/parse tests (packages/core)
+```
+
+CI runs lint, typecheck, and build for Studio plus tests for `@proveit/core` on PRs to `main` and `feat/proveit-studio` (see `.github/workflows/ci.yml`).
+
 ## The synthesiser (runs on your Max plan)
 
 The Bull/Bear/Devil verdict and the portfolio synthesis are LLM-generated. They run **locally on your Claude Max subscription** via `claude -p` (not the API wallet), and cache to JSON beside each idea so the reader just displays them:
