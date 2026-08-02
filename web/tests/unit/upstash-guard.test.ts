@@ -9,16 +9,14 @@ import {
 } from "@/lib/upstash-guard";
 
 describe("upstash-guard", () => {
-  const env = process.env;
-
   beforeEach(() => {
-    process.env = { ...env };
+    vi.unstubAllEnvs();
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
   });
 
   afterEach(() => {
-    process.env = env;
+    vi.unstubAllEnvs();
   });
 
   it("isUpstashConfigured is false when env vars are missing", () => {
@@ -32,28 +30,28 @@ describe("upstash-guard", () => {
   });
 
   it("requireUpstashInProduction allows missing Upstash in test/dev", () => {
-    process.env.NODE_ENV = "test";
+    vi.stubEnv("NODE_ENV", "test");
     expect(requireUpstashInProduction()).toBeNull();
   });
 
   it("requireUpstashInProduction returns 503 in production without Upstash", async () => {
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     const res = requireUpstashInProduction();
     expect(res?.status).toBe(503);
     expect(await res?.json()).toMatchObject({ error: expect.stringMatching(/misconfigured/i) });
   });
 
   it("requireUpstashInProduction passes in production when Upstash is set", () => {
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     process.env.UPSTASH_REDIS_REST_TOKEN = "token";
     expect(requireUpstashInProduction()).toBeNull();
   });
 
   it("upstashRequiredInProduction only triggers for NODE_ENV=production", () => {
-    process.env.NODE_ENV = "development";
+    vi.stubEnv("NODE_ENV", "development");
     expect(upstashRequiredInProduction()).toBe(false);
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     expect(upstashRequiredInProduction()).toBe(true);
   });
 });

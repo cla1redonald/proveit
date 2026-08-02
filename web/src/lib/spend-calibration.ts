@@ -31,16 +31,28 @@ export function logSpendCalibration(args: {
   );
 }
 
+/** Partial usage shape from Anthropic stream events (nullable fields). */
+type StreamUsageFields = {
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+};
+
 /** Accumulate usage from Anthropic streaming events. */
 export function trackStreamUsage(
-  event: { type: string; message?: { usage?: AnthropicUsage }; usage?: AnthropicUsage },
+  event: {
+    type: string;
+    message?: { usage?: StreamUsageFields };
+    usage?: StreamUsageFields;
+  },
   current: AnthropicUsage
 ): AnthropicUsage {
-  if (event.type === "message_start" && event.message?.usage) {
-    current.input_tokens = event.message.usage.input_tokens ?? current.input_tokens;
+  if (event.type === "message_start") {
+    const input = event.message?.usage?.input_tokens;
+    if (input != null) current.input_tokens = input;
   }
-  if (event.type === "message_delta" && event.usage) {
-    current.output_tokens = event.usage.output_tokens ?? current.output_tokens;
+  if (event.type === "message_delta") {
+    const output = event.usage?.output_tokens;
+    if (output != null) current.output_tokens = output;
   }
   return current;
 }
