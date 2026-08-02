@@ -1,9 +1,9 @@
 # Plan: Codebase Hardening — CI, Tests, Docs, Production Guardrails
 
 **Date:** 2026-08-02  
-**Status:** Proposed — ready to execute  
+**Status:** Implemented — merged to `feat/proveit-studio` 2026-08-02 (PRs #77–#83)  
 **Scope:** All items from the 2026-08-02 codebase review (15 workstreams)  
-**Base branch:** `feat/proveit-studio` (merge to `main` when complete)
+**Base branch:** `feat/proveit-studio` — merge to `main` when Studio branch ships
 
 ## Why now
 
@@ -71,14 +71,15 @@ flowchart TD
 
 Ship as **6 stacked PRs** to keep review manageable. Each PR is independently mergeable; later PRs rebase on earlier ones.
 
-| PR | Phase | Branch suffix | Est. files |
-|----|-------|---------------|------------|
-| 1 | Phase 0 — Quick wins | `hardening-docs` | ~8 |
-| 2 | Phase 1 — CI foundation | `hardening-ci` | ~12 |
-| 3 | Phase 2 — Core + webhook tests | `hardening-core-tests` | ~20 |
-| 4 | Phase 3 — UI tests + E2E | `hardening-ui-e2e` | ~25 |
-| 5 | Phase 4 — Production guardrails | `hardening-prod-guards` | ~10 |
-| 6 | Phase 5 + 6 — Agent split + calibration | `hardening-agent-types` | ~30 |
+| PR | Phase | Branch suffix | Merged |
+|----|-------|---------------|--------|
+| [#77](https://github.com/cla1redonald/proveit/pull/77) | Phase 0 — Quick wins | `hardening-docs` | ✅ |
+| [#78](https://github.com/cla1redonald/proveit/pull/78) | Phase 1 — CI foundation | `hardening-ci` | ✅ |
+| [#79](https://github.com/cla1redonald/proveit/pull/79) | Phase 2 — Core + webhook tests | `hardening-core-tests` | ✅ |
+| [#80](https://github.com/cla1redonald/proveit/pull/80) | Phase 3 — UI tests + E2E | `hardening-ui-e2e` | ✅ |
+| [#81](https://github.com/cla1redonald/proveit/pull/81) | Phase 4 — Production guardrails | `hardening-prod-guards` | ✅ |
+| [#82](https://github.com/cla1redonald/proveit/pull/82) | Phase 5 + 6 — Agent split + calibration | `hardening-agent-types` | ✅ |
+| [#83](https://github.com/cla1redonald/proveit/pull/83) | Agent structure CI gate (follow-up) | `ci-agent-validate` | ✅ |
 
 Branch naming: `cursor/codebase-hardening-<suffix>-0954`
 
@@ -352,30 +353,30 @@ No user-facing behaviour change.
 ## Order of operations (execution checklist)
 
 ```
-[ ] Phase 0.1  docs-sync scope
-[ ] Phase 0.2  ARCHITECTURE.md + web/README.md
-[ ] Phase 0.3  web/.claude/settings.json
-[ ] ── PR 1 merge ──
-[ ] Phase 1.1  CI matrix (web + studio + core)
-[ ] Phase 1.2  Studio ESLint
-[ ] Phase 1.3  Core Vitest scaffold
-[ ] ── PR 2 merge ──
-[ ] Phase 2.1  Core fixture tests (all green)
-[ ] Phase 2.2  Stripe webhook tests
-[ ] ── PR 3 merge ──
-[ ] Phase 3.1  Hook tests
-[ ] Phase 3.2  Component tests
-[ ] Phase 3.3  Playwright E2E (local)
-[ ] ── PR 4 merge ──
-[ ] Phase 4.1  Upstash prod guard
-[ ] Phase 4.2  Studio email guard
-[ ] Phase 4.3  Dependabot + audit triage
-[ ] ── PR 5 merge ──
-[ ] Phase 5.1  Split proveit.md + validate one run
-[ ] Phase 5.2  Shared types audit
-[ ] Phase 6    Cost calibration logging
-[ ] ── PR 6 merge ──
-[ ] Final: full CI green on main; update this plan Status → Implemented
+[x] Phase 0.1  docs-sync scope                    (#77)
+[x] Phase 0.2  ARCHITECTURE.md + web/README.md    (#77)
+[x] Phase 0.3  web/.claude/settings.json          (#77)
+[x] ── PR 1 merge ──
+[x] Phase 1.1  CI matrix (web + studio + core)    (#78)
+[x] Phase 1.2  Studio ESLint                      (#78)
+[x] Phase 1.3  Core Vitest scaffold               (#78)
+[x] ── PR 2 merge ──
+[x] Phase 2.1  Core fixture tests (all green)     (#79)
+[x] Phase 2.2  Stripe webhook tests               (#79)
+[x] ── PR 3 merge ──
+[x] Phase 3.1  Hook tests                         (#80)
+[x] Phase 3.2  Component tests                    (#80)
+[x] Phase 3.3  Playwright E2E (local)             (#80)
+[x] ── PR 4 merge ──
+[x] Phase 4.1  Upstash prod guard                 (#81)
+[x] Phase 4.2  Studio email guard                 (#81)
+[x] Phase 4.3  Dependabot + audit triage          (#81)
+[x] ── PR 5 merge ──
+[x] Phase 5.1  Split proveit.md + validate        (#82, #83 CI gate)
+[x] Phase 5.2  Shared types audit                 (#82)
+[x] Phase 6    Cost calibration logging           (#82)
+[x] ── PR 6 merge ──
+[ ] Final: merge feat/proveit-studio → main; one manual /proveit session in Claude Code
 ```
 
 ---
@@ -398,13 +399,15 @@ No user-facing behaviour change.
 
 **Recommendation:** Option A if Upstash free tier covers previews; Option B if preview abuse is acceptable.
 
+**Implemented (2026-08-02):** Option A posture via `NODE_ENV=production` guard on AI routes only (`web/src/lib/upstash-guard.ts`). Preview deployments that run with `NODE_ENV=production` need Upstash; local dev and Vitest omit it. No `VERCEL_ENV=preview` exemption was added.
+
 ---
 
 ## Files touched (summary)
 
 | Area | New | Modified |
 |------|-----|----------|
-| CI | — | `.github/workflows/ci.yml`, `.github/dependabot.yml` |
+| CI | — | `.github/workflows/ci.yml`, `.github/dependabot.yml`, `scripts/validate-proveit-agent.mjs` |
 | Docs-sync | — | `scripts/check-docs-sync.sh`, `.claude/settings.json`, `web/ARCHITECTURE.md`, `web/README.md` |
 | Core | `packages/core/tests/**`, `vitest.config.ts` | `package.json` |
 | Web tests | `api-stripe-webhook.test.ts`, hook/component tests, `playwright.config.ts`, `tests/e2e/**` | `package.json` |
@@ -424,6 +427,20 @@ No user-facing behaviour change.
 
 ---
 
+## Outcomes (2026-08-02)
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Web Vitest tests | 303 | 337 |
+| Core tests | 0 | 23 |
+| Studio tests | 0 | 3 |
+| CI jobs | web only | web, studio, core, plugin |
+| Agent definition | 1,915-line monolith | ~155-line orchestrator + 14 phase files |
+
+**Deferred (by design):** Playwright E2E in CI; web → `@proveit/core` type import; full `/proveit` end-to-end validation in Claude Code (manual); `feat/proveit-studio` → `main` merge.
+
+---
+
 ## Next step
 
-Start **Phase 0 / PR 1** on branch `cursor/codebase-hardening-docs-0954`. Phases 0–2 deliver the highest ROI; Phases 5–6 can slip to a follow-up sprint without leaving production risk on the table.
+Merge **`feat/proveit-studio` → `main`** when Studio is ready to ship. Run one full `/proveit` session locally to confirm the split agent reads phase files correctly.
