@@ -7,7 +7,7 @@ name: Docs sync check
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/proveit-studio]
 
 permissions:
   contents: read
