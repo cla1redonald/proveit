@@ -1,5 +1,11 @@
 // All TypeScript interfaces for ProveIt Web
 // Source: ARCHITECTURE.md §4
+//
+// Cross-surface types: @proveit/core owns vault/Studio parse types (see
+// packages/core/src/types.ts). Web keeps runtime session/API shapes here.
+// Verdict values must stay a subset of core FastCheckVerdict — see
+// packages/core/tests/types-parity.test.ts. KillSignal differs intentionally:
+// web = live chat flags; core = parsed markdown annotations.
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 

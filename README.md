@@ -291,7 +291,10 @@ The agent never sees your API keys directly — they're only loaded by the Claud
 
 ```
 proveit/
-├── agents/proveit.md           # The main agent definition (Opus model)
+├── agents/proveit.md           # Orchestrator — routes to agents/phases/*.md
+│   ├── phases/                 # Phase content (verbatim split)
+│   ├── swarm/                  # Swarm fallback prompt reference
+│   └── templates/              # Output format templates
 ├── commands/                   # Slash command entry points
 │   ├── proveit.md              # /proveit — full validation
 │   ├── proveit-fast.md         # /proveit-fast — 10-15 min preflight

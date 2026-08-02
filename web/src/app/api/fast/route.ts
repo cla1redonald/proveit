@@ -7,6 +7,11 @@ import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
 import { captureServerException } from "@/lib/posthog-server";
 import { requireUpstashInProduction } from "@/lib/upstash-guard";
+import {
+  logSpendCalibration,
+  trackStreamUsage,
+  type AnthropicUsage,
+} from "@/lib/spend-calibration";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -105,6 +110,7 @@ export async function POST(req: NextRequest) {
       const timeoutId = setTimeout(() => abortController.abort(), 90_000);
 
       try {
+        const usage: AnthropicUsage = { input_tokens: 0, output_tokens: 0 };
         const anthropicStream = await anthropic.messages.create(
           {
             model: "claude-sonnet-4-6",
@@ -117,6 +123,7 @@ export async function POST(req: NextRequest) {
         );
 
         for await (const event of anthropicStream) {
+          trackStreamUsage(event, usage);
           if (
             event.type === "content_block_delta" &&
             event.delta.type === "text_delta"
@@ -131,6 +138,11 @@ export async function POST(req: NextRequest) {
         // Record successful spend in the daily ledger. Errors are swallowed
         // by recordSpend itself — best-effort, ledger drift is acceptable.
         await recordSpend(ip, fastCost);
+        logSpendCalibration({
+          endpoint: "fast",
+          estimatedUsd: fastCost,
+          usage,
+        });
       } catch (err) {
         const anthropicErr = err as {
           status?: number;

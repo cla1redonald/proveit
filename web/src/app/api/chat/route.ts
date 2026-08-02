@@ -7,6 +7,11 @@ import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
 import { captureServerException } from "@/lib/posthog-server";
 import { requireUpstashInProduction } from "@/lib/upstash-guard";
+import {
+  logSpendCalibration,
+  trackStreamUsage,
+  type AnthropicUsage,
+} from "@/lib/spend-calibration";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -152,6 +157,7 @@ export async function POST(req: NextRequest) {
       const timeoutId = setTimeout(() => abortController.abort(), 90_000);
 
       try {
+        const usage: AnthropicUsage = { input_tokens: 0, output_tokens: 0 };
         const anthropicStream = await anthropic.messages.create(
           {
             model: "claude-sonnet-4-6",
@@ -165,6 +171,7 @@ export async function POST(req: NextRequest) {
         );
 
         for await (const event of anthropicStream) {
+          trackStreamUsage(event, usage);
           // Detect web search tool call starting.
           // Anthropic SDK >= 0.50 emits server-side tools (web_search, web_fetch,
           // code_execution, etc.) as `server_tool_use` blocks; client-callable
@@ -250,6 +257,12 @@ export async function POST(req: NextRequest) {
 
         // Record successful spend in the daily ledger.
         await recordSpend(ip, chatCost);
+        logSpendCalibration({
+          endpoint: "chat",
+          phase,
+          estimatedUsd: chatCost,
+          usage,
+        });
       } catch (err) {
         // Always clear the searching indicator on error, regardless of cause
         if (searchingActive) {
