@@ -191,7 +191,7 @@ web/
 │   │   └── utils.ts              # cn() + getRelativeTime
 │   ├── middleware.ts             # Origin guard for /api/*
 │   └── types/index.ts            # All shared TypeScript interfaces
-└── tests/                        # Unit + integration (311 tests)
+└── tests/                        # Unit + integration (328 tests) + e2e/
 ```
 
 For the long-form architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
