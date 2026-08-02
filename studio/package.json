@@ -7,7 +7,9 @@
     "dev": "next dev --port 4317",
     "build": "next build",
     "start": "next start --port 4317",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@proveit/core": "*",
@@ -30,6 +32,7 @@
     "eslint": "9.28.0",
     "eslint-config-next": "^15.3.9",
     "tailwindcss": "^4.2.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
   }
 }

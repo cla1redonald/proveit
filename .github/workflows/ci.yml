@@ -44,7 +44,7 @@ jobs:
         run: npm test -- --passWithNoTests
 
   studio:
-    name: Studio — lint, build & typecheck
+    name: Studio — lint, build, test & typecheck
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -74,6 +74,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+
+      - name: Test
+        run: npm test
 
   core:
     name: Core — test

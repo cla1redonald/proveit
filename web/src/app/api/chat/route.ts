@@ -6,6 +6,7 @@ import { buildChatSystemPrompt } from "@/lib/prompts";
 import { checkRateLimit, getClientIp, RATE_LIMITS } from "@/lib/rate-limit";
 import { checkSpend, estimateCost, recordSpend } from "@/lib/spend-ledger";
 import { captureServerException } from "@/lib/posthog-server";
+import { requireUpstashInProduction } from "@/lib/upstash-guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -48,6 +49,9 @@ const ChatRequestSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const upstashGuard = requireUpstashInProduction();
+  if (upstashGuard) return upstashGuard;
+
   // 0. Rate limiting — checked before any parsing to fail fast
   const ip = getClientIp(req);
   const { limit, windowMs } = RATE_LIMITS.chat;

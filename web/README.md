@@ -40,7 +40,7 @@ The session persists in localStorage so you can close the tab and resume later f
 - **Tailwind CSS v4** + shadcn/ui primitives
 - **Zod** for input validation in route handlers
 - **Upstash Redis** for distributed rate limiting (with an in-memory fallback for local dev only)
-- **Vitest** + React Testing Library — 328 tests across unit + integration
+- **Vitest** + React Testing Library — 334 tests across unit + integration
 - **Vercel** for hosting; Node.js runtime on the route handlers (Edge would break the Anthropic SDK)
 - **Supabase** for waitlist, orders, woz-intent, and deck storage (server-side only)
 - **Stripe** for one-off paid validation bundle checkout
@@ -130,6 +130,8 @@ npm run e2e        # Local Playwright E2E (mocked API routes)
 
 Tests live in `tests/unit/` (component + utility tests) and `tests/integration/` (API route handler tests). The route handler tests mock the Anthropic SDK at module level via Vitest.
 
+**npm audit:** Vitest is pinned to ≥3.2.7 (GHSA-5xrq-8626-4rwp). Remaining high-severity advisories are transitive via `sharp`/`next` image optimisation — no non-breaking fix as of 2026-08-02; tracked via Dependabot (`.github/dependabot.yml`).
+
 ---
 
 ## Deployment
@@ -191,7 +193,7 @@ web/
 │   │   └── utils.ts              # cn() + getRelativeTime
 │   ├── middleware.ts             # Origin guard for /api/*
 │   └── types/index.ts            # All shared TypeScript interfaces
-└── tests/                        # Unit + integration (328 tests) + e2e/
+└── tests/                        # Unit + integration (334 tests) + e2e/
 ```
 
 For the long-form architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
@@ -210,7 +212,7 @@ A few non-obvious decisions worth knowing before touching the code:
 
 **Web search activates only in the research phase.** The `web_search_20250305` tool is included in the Anthropic request only when `phase === "research"`, with `max_uses: 12`. Anthropic SDK ≥ 0.50 delivers web-search invocations as `server_tool_use` content blocks (not `tool_use`); the route handler matches both shapes so the Searching indicator fires correctly.
 
-**Rate limiting is built in — and Upstash is required for production.** `/api/chat` allows 5 requests per IP per 60s; `/api/fast` allows 10. The implementation uses Upstash Redis when the env vars are set, and falls back to an in-process sliding window otherwise. The fallback is per-instance and resets on cold start — on Vercel's serverless runtime this means parallel requests across instances effectively bypass the limiter, so a single client can drain the Anthropic credit budget. Always provision Upstash before exposing the deployment to any audience beyond yourself.
+**Rate limiting is built in — and Upstash is required for production.** `/api/chat` allows 5 requests per IP per 60s; `/api/fast` allows 10. The implementation uses Upstash Redis when the env vars are set, and falls back to an in-process sliding window otherwise. The fallback is per-instance and resets on cold start — on Vercel's serverless runtime this means parallel requests across instances effectively bypass the limiter, so a single client can drain the Anthropic credit budget. **`requireUpstashInProduction()` in `src/lib/upstash-guard.ts` blocks both AI routes with 503 when `NODE_ENV=production` and Upstash env vars are missing** — local dev and Vitest may omit them.
 
 **Daily spend ledger / circuit breaker (v3.3, complementary to rate limiting).** Per-IP rate limiting handles single-machine abuse. It does NOT stop viral distribution (1000 strangers from a Reddit link) or VPN-rotation. The spend ledger (`src/lib/spend-ledger.ts`) tracks estimated daily Anthropic spend at two layers — global and per-IP — and returns 503 when either ceiling is breached. Cost is estimated per call (Fast = $0.10, chat without research = $0.05, chat in research phase = $0.50, brain_dump with web_search = $0.10) since Anthropic doesn't surface dollar cost in responses. Ceilings come from env (`DAILY_SPEND_CEILING_USD` default $5, `PER_IP_DAILY_CEILING_USD` default $1) so you can change them without redeploying. Backed by the same Upstash instance as the rate limiter; falls open on Upstash errors (better to over-spend a few dollars than block all users on a transient hiccup).
 
