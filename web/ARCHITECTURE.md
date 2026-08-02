@@ -1,27 +1,27 @@
 # ProveIt Web — Architecture Specification
 
-**Version:** 1.0
-**Date:** 2026-02-22
+**Version:** 1.1  
+**Date:** 2026-02-22 (§1 updated 2026-08-02)  
 **Status:** Approved for build
 
 ---
 
 ## 1. System Overview
 
-ProveIt Web is a public Next.js 15 App Router application. It exposes the ProveIt validation workflow — currently a Claude Code plugin — as a web UI accessible without any tooling setup. There is no authentication, no database, and no user accounts. All state lives in the browser's localStorage. Anthropic API calls are made exclusively from server-side Route Handlers.
+ProveIt Web is a public Next.js 15 App Router application. It exposes the ProveIt validation workflow — currently a Claude Code plugin — as a web UI accessible without any tooling setup. There is **no user authentication** and **no cross-device session sync** — Full Validation state lives in the browser's localStorage. **Server-side persistence** uses Supabase for transactional data (waitlist signups, paid orders, Wizard-of-Oz purchase intent) and deck storage; Stripe handles the one-off paid bundle checkout. Anthropic API calls are made exclusively from server-side Route Handlers.
 
 **Two modes, one product:**
 
 - **Fast Check** — Single-shot: user pastes an idea, receives three streamed assumption verdict cards. No conversation. Target completion: under 90 seconds.
-- **Full Validation** — Conversational: chat interface drives a multi-phase discovery loop, delegates to Anthropic's native web search for research, returns scored results with a downloadable markdown summary.
+- **Full Validation** — Conversational: chat interface drives a multi-phase discovery loop, delegates to Anthropic's native web search for research, returns scored results with a downloadable markdown summary. On completion, users can optionally purchase a full validation bundle via Stripe.
 
-**What this is not:** No auth, no database, no persistence across devices, no Gamma deck generation (cut for web MVP), no multi-user sessions.
+**What this is not:** No user accounts or login, no persistence across devices for chat sessions, no in-browser Gamma deck generation (paid orders receive a deck via fulfilment pipeline), no multi-user sessions.
 
 ---
 
 ## 2. Component Diagram
 
-Reflects actual `src/` tree as of 2026-05-10. Updated after the security/typography pass, the FastPageContent refactor, and the v3.5 Claude Design integration (FullBundlePointer added).
+Reflects actual `src/` tree as of 2026-08-02. Updated after Supabase/Stripe integration and the v3.5 Claude Design integration (FullBundlePointer added).
 
 ```
 Browser
@@ -37,18 +37,20 @@ Browser
 │           ├── AssumptionCard (Client)    — individual verdict card (x3)
 │           └── StreamingIndicator (Client) — live typing animation
 │
-└── /validate (Full Validation — src/app/validate/page.tsx, Server shell)
-    └── ChatInterface (Client)              — orchestrates session; idea input form + chat UI
-        ├── MessageList (Client)            — renders conversation history
-        │   ├── UserMessage (Client)
-        │   └── AssistantMessage (Client)
-        │       └── StreamingText (Client) — token-level stream render
-        ├── ChatInput (Client)              — text input + send / stop button
-        ├── PhaseIndicator (Client)         — Brain Dump / Discovery / Research / Findings / Complete
-        ├── SearchingIndicator (Client)     — search-query log + dots during research phase
-        ├── ScorePanel (Client)             — live Desirability/Viability/Feasibility + kill signals
-        ├── DownloadButton (Client)         — generates + downloads discovery.md (with inline error)
-        └── FullBundlePointer (Client)      — shown on complete; points to /proveit CLI for full 7-artefact bundle
+├── /validate (Full Validation — src/app/validate/page.tsx, Server shell)
+│   └── ChatInterface (Client)              — orchestrates session; idea input form + chat UI
+│       ├── MessageList (Client)            — renders conversation history
+│       │   ├── UserMessage (Client)
+│       │   └── AssistantMessage (Client)
+│       │       └── StreamingText (Client) — token-level stream render
+│       ├── ChatInput (Client)              — text input + send / stop button
+│       ├── PhaseIndicator (Client)         — Brain Dump / Discovery / Research / Findings / Complete
+│       ├── SearchingIndicator (Client)     — search-query log + dots during research phase
+│       ├── ScorePanel (Client)             — live Desirability/Viability/Feasibility + kill signals
+│       ├── DownloadButton (Client)         — generates + downloads discovery.md (with inline error)
+│       └── FullBundlePointer (Client)      — shown on complete; Stripe checkout for paid bundle
+│
+└── /deck/[orderId] (Route Handler)         — serves fulfilled deck HTML from Supabase Storage
 
 Hooks (src/hooks/)
 ├── useStream                              — wraps fetch + ReadableStream for /api/* calls
@@ -58,14 +60,21 @@ Server-side libraries (src/lib/, all "server-only" where applicable)
 ├── anthropic.ts                           — Anthropic SDK client (server-only guard)
 ├── prompts.ts                             — Fast Check + Full Validation system prompts
 ├── rate-limit.ts                          — Upstash + in-memory limiter, getClientIp helper
+├── spend-ledger.ts                        — daily Anthropic-spend circuit breaker (Upstash)
 ├── streaming.ts                           — line-based stream parser shared by hooks
 ├── markdown.ts                            — discovery.md generation for download
 ├── session.ts                             — localStorage schema + CRUD
+├── orders.ts / fulfilment.ts              — Supabase order lifecycle + automated fulfilment
+├── deck/                                  — deck template + Supabase Storage read/write
 └── utils.ts                               — cn() + getRelativeTime()
 
 API Route Handlers (server-side only)
 ├── POST /api/fast                         — single-shot Fast Check (rate-limited 10/min)
-└── POST /api/chat                         — streaming Full Validation turns (rate-limited 5/min)
+├── POST /api/chat                         — streaming Full Validation turns (rate-limited 5/min)
+├── POST /api/waitlist                     — email capture when spend cap hit (Supabase INSERT)
+├── POST /api/woz-intent                   — Wizard-of-Oz purchase intent capture (Supabase)
+├── POST /api/stripe/checkout              — creates Stripe Checkout session for paid bundle
+└── POST /api/stripe/webhook               — Stripe webhook (signature-verified, idempotent)
 
 Middleware
 └── src/middleware.ts                      — origin guard for /api/* (CORS, derives allowed origin from Host)
@@ -836,11 +845,18 @@ Fonts are loaded via `next/font/google` (self-hosted at build time) rather than 
 ### Environment Variables
 
 Required in production (Vercel environment settings):
+
 ```
 ANTHROPIC_API_KEY=sk-ant-...
+UPSTASH_REDIS_REST_URL=...          # rate limiting + spend ledger
+UPSTASH_REDIS_REST_TOKEN=...
+SUPABASE_URL=...                    # waitlist, orders, woz-intent, deck storage
+SUPABASE_SERVICE_ROLE_KEY=...       # server-side writes (webhook, fulfilment)
+STRIPE_SECRET_KEY=...               # checkout + webhook verification
+STRIPE_WEBHOOK_SECRET=...
 ```
 
-No other secrets. No database credentials. No third-party API keys.
+See `web/.env.example` for the full list including optional vars (PostHog, Resend, spend ceilings). Session state is **not** stored server-side — only transactional records (waitlist, orders) hit Supabase.
 
 ---
 
@@ -879,11 +895,11 @@ No other secrets. No database credentials. No third-party API keys.
 **Rejected:** Server-Sent Events (`Content-Type: text/event-stream`), `@ai-sdk/react` useChat hook.
 **Rationale:** `useChat` from the Vercel AI SDK accumulates the full response before exposing it, which defeats streaming. The custom protocol is lightweight (20 lines of client parsing code) and gives precise control over event timing. SSE would require consistent event formatting; mixing prose and structured events is simpler with the custom line-based approach.
 
-### Decision 3: localStorage, no database
+### Decision 3: localStorage for sessions, Supabase for transactional data
 
-**Chosen:** localStorage for session state.
-**Rejected:** Supabase, PlanetScale, Redis.
-**Rationale:** No auth, no user accounts. A database would require user identification. localStorage is sufficient for single-browser session continuity. The privacy model is explicit: data stays in the browser, nothing is sent to a server except active API calls.
+**Chosen:** localStorage for Full Validation session state; Supabase for waitlist, orders, woz-intent, and deck storage; Stripe for paid checkout.
+**Rejected (for sessions):** Server-side session tracking, user accounts.
+**Rationale:** Chat sessions remain anonymous and browser-local — no login required. Supabase backs only server-initiated transactional records (email capture, paid orders, fulfilment artefacts) where persistence across requests is necessary. The privacy model for conversation content is explicit: idea text and chat history stay in the browser except during active API calls.
 
 ### Decision 4: POST for all routes
 
@@ -895,13 +911,13 @@ No other secrets. No database credentials. No third-party API keys.
 
 **Chosen:** Client sends `phase` and `scores` on every request.
 **Rejected:** Server-side session tracking.
-**Rationale:** Stateless server is simpler, cheaper, and matches the no-database constraint. The client is the source of truth for session state (backed by localStorage). The server only needs the current state to inject into the system prompt — it does not need history.
+**Rationale:** Stateless server for chat is simpler and cheaper. The client is the source of truth for session state (backed by localStorage). The server only needs the current state to inject into the system prompt — it does not need server-side session history. Transactional data (orders, waitlist) is persisted separately in Supabase.
 
-### Decision 6: Markdown download, no Gamma
+### Decision 6: Markdown download for free tier; deck via paid fulfilment (no in-session Gamma)
 
-**Chosen:** Client-side markdown generation and file download.
-**Rejected:** Gamma MCP integration for web MVP.
-**Rationale:** Gamma integration requires MCP server infrastructure not present in a Next.js web app. The Claude Code plugin version uses Gamma because MCP tools are available in that runtime. For the web MVP, a markdown download provides the same reference artifact with zero infrastructure. Gamma can be added in a later version via a separate API if the Gamma HTTP API becomes available.
+**Chosen:** Client-side markdown generation and file download for all Full Validation completions. Paid bundle orders receive a branded deck HTML artefact via the automated fulfilment pipeline, stored in Supabase Storage and served at `GET /deck/[orderId]`.
+**Rejected:** In-browser Gamma MCP integration for the free web flow.
+**Rationale:** Gamma MCP requires Claude Code runtime infrastructure not present in a Next.js web app. The free tier gets a markdown download with zero extra infrastructure. The paid path runs fulfilment server-side after Stripe checkout (webhook → `fulfilment.ts`), which generates and stores the deck out of band — not live in the chat session. The Claude Code plugin still uses Gamma in-session because MCP tools are available there.
 
 ### Decision 7: `server-only` package for Anthropic client
 

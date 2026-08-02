@@ -40,9 +40,11 @@ The session persists in localStorage so you can close the tab and resume later f
 - **Tailwind CSS v4** + shadcn/ui primitives
 - **Zod** for input validation in route handlers
 - **Upstash Redis** for distributed rate limiting (with an in-memory fallback for local dev only)
-- **Vitest** + React Testing Library — 230 tests across unit + integration
+- **Vitest** + React Testing Library — 303 tests across unit + integration
 - **Vercel** for hosting; Node.js runtime on the route handlers (Edge would break the Anthropic SDK)
-- **No database, no auth** — server is stateless, session state lives in the browser
+- **Supabase** for waitlist, orders, woz-intent, and deck storage (server-side only)
+- **Stripe** for one-off paid validation bundle checkout
+- **No user auth** — Full Validation session state lives in the browser; server is stateless for chat
 
 ---
 
@@ -154,9 +156,15 @@ web/
 │   │   ├── layout.tsx            # Loads Playfair Display + Fira Code
 │   │   ├── fast/                 # /fast — Fast Check
 │   │   ├── validate/             # /validate — Full Validation
+│   │   ├── deck/[orderId]/       # GET — served fulfilled deck HTML
 │   │   └── api/
 │   │       ├── fast/             # POST /api/fast — single-shot
-│   │       └── chat/             # POST /api/chat — streaming conversation
+│   │       ├── chat/             # POST /api/chat — streaming conversation
+│   │       ├── waitlist/         # POST /api/waitlist — spend-cap email capture
+│   │       ├── woz-intent/       # POST /api/woz-intent — purchase intent
+│   │       └── stripe/
+│   │           ├── checkout/     # POST /api/stripe/checkout
+│   │           └── webhook/      # POST /api/stripe/webhook
 │   ├── components/
 │   │   ├── home/ResumeSessionBanner.tsx     # Reads localStorage, offers resume
 │   │   ├── fast/                            # FastPageContent + FastInput + FastStream
@@ -172,13 +180,16 @@ web/
 │   │   ├── anthropic.ts          # Anthropic client (server-only guard)
 │   │   ├── prompts.ts            # System prompts for both modes
 │   │   ├── rate-limit.ts         # Upstash + in-memory limiter, getClientIp
+│   │   ├── spend-ledger.ts       # Daily Anthropic-spend circuit breaker
 │   │   ├── streaming.ts          # Line-based stream parser
 │   │   ├── markdown.ts           # discovery.md generator for download
 │   │   ├── session.ts            # localStorage CRUD
+│   │   ├── orders.ts             # Supabase order lifecycle
+│   │   ├── fulfilment.ts         # Automated post-payment fulfilment
 │   │   └── utils.ts              # cn() + getRelativeTime
 │   ├── middleware.ts             # Origin guard for /api/*
 │   └── types/index.ts            # All shared TypeScript interfaces
-└── tests/                        # Unit + integration (230 tests)
+└── tests/                        # Unit + integration (303 tests)
 ```
 
 For the long-form architecture, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
