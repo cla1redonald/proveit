@@ -8,6 +8,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "scan": "node src/cli.ts"
+    "scan": "node src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "3.2.3"
   }
 }

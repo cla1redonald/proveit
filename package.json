@@ -9,5 +9,10 @@
   ],
   "dependencies": {
     "openai": "^4"
+  },
+  "scripts": {
+    "test:core": "npm test -w @proveit/core",
+    "test:web": "npm test --prefix web -- --run",
+    "lint:studio": "npm run lint -w proveit-studio"
   }
 }
