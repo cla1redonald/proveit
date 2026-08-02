@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cmd=$(jq -r \".tool_input.command // empty\"); if printf \"%s\" \"$cmd\" | grep -q \"git commit\"; then s=$(git diff --cached --name-only 2>/dev/null); if printf \"%s\" \"$s\" | grep -qE \"^(scripts/|agents/|commands/|web/src/)\" && ! printf \"%s\" \"$s\" | grep -qE \"^(README\\.md|CLAUDE\\.md|AGENTS\\.md|docs/|web/README\\.md)\"; then echo \"docs-sync reminder: code is staged with no docs (README/CLAUDE/AGENTS/docs/web/README). Update them, or put [no-docs] in the commit message if none are needed.\"; fi; fi",
+            "command": "cmd=$(jq -r \".tool_input.command // empty\"); if printf \"%s\" \"$cmd\" | grep -q \"git commit\"; then s=$(git diff --cached --name-only 2>/dev/null); if printf \"%s\" \"$s\" | grep -qE \"^(scripts/|agents/|commands/|web/src/|studio/src/|packages/)\" && ! printf \"%s\" \"$s\" | grep -qE \"^(README\\.md|CLAUDE\\.md|AGENTS\\.md|docs/|web/README\\.md|studio/README\\.md)\"; then echo \"docs-sync reminder: code is staged with no docs (README/CLAUDE/AGENTS/docs/web/README/studio/README). Update them, or put [no-docs] in the commit message if none are needed.\"; fi; fi",
             "timeout": 5
           }
         ]
