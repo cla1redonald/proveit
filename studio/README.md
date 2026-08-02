@@ -33,10 +33,11 @@ The reader reads the vault **live** off disk — no build step, no sync, nothing
 npm run lint -w proveit-studio     # ESLint (next/core-web-vitals)
 npx tsc --noEmit                   # from studio/
 npm run build -w proveit-studio
+npm test -w proveit-studio         # auth-config guard tests
 npm test -w @proveit/core          # shared scan/parse tests (21 tests, fixture-backed)
 ```
 
-CI runs lint, typecheck, and build for Studio plus tests for `@proveit/core` on PRs to `main` and `feat/proveit-studio` (see `.github/workflows/ci.yml`).
+CI runs lint, typecheck, build, and tests for Studio plus tests for `@proveit/core` on PRs to `main` and `feat/proveit-studio` (see `.github/workflows/ci.yml`).
 
 ## The synthesiser (runs on your Max plan)
 
@@ -55,7 +56,7 @@ Re-run to refresh. Model via `PROVEIT_SYNTH_MODEL` (default `sonnet`).
 The shared scan/parse lives in [`../packages/core`](../packages/core) and feeds a pluggable `DataSource`, chosen by `STUDIO_SOURCE`:
 
 - **Local** (`fs`, default) — `FsVaultSource` reads the Obsidian vault straight off disk. No auth.
-- **Hosted** (`supabase`) — `SupabaseSource` reads the synced mirror. **Live at [studio.proveit.tools](https://studio.proveit.tools)**, private behind single-user **magic-link auth** (Supabase Auth, allow-listed to one email via `STUDIO_ALLOWED_EMAIL`; gate in `src/middleware.ts`). Populate/refresh it with `scripts/sync.ts`.
+- **Hosted** (`supabase`) — `SupabaseSource` reads the synced mirror. **Live at [studio.proveit.tools](https://studio.proveit.tools)**, private behind single-user **magic-link auth** (Supabase Auth, allow-listed to one email via `STUDIO_ALLOWED_EMAIL`; gate in `src/middleware.ts`). If `STUDIO_SOURCE=supabase` without `STUDIO_ALLOWED_EMAIL`, all routes redirect to `/login?error=config`. Populate/refresh it with `scripts/sync.ts`.
 
 Same UI, same components — only the adapter swaps.
 
