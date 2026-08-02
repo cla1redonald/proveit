@@ -913,11 +913,11 @@ See `web/.env.example` for the full list including optional vars (PostHog, Resen
 **Rejected:** Server-side session tracking.
 **Rationale:** Stateless server for chat is simpler and cheaper. The client is the source of truth for session state (backed by localStorage). The server only needs the current state to inject into the system prompt — it does not need server-side session history. Transactional data (orders, waitlist) is persisted separately in Supabase.
 
-### Decision 6: Markdown download, no Gamma
+### Decision 6: Markdown download for free tier; deck via paid fulfilment (no in-session Gamma)
 
-**Chosen:** Client-side markdown generation and file download.
-**Rejected:** Gamma MCP integration for web MVP.
-**Rationale:** Gamma integration requires MCP server infrastructure not present in a Next.js web app. The Claude Code plugin version uses Gamma because MCP tools are available in that runtime. For the web MVP, a markdown download provides the same reference artifact with zero infrastructure. Gamma can be added in a later version via a separate API if the Gamma HTTP API becomes available.
+**Chosen:** Client-side markdown generation and file download for all Full Validation completions. Paid bundle orders receive a branded deck HTML artefact via the automated fulfilment pipeline, stored in Supabase Storage and served at `GET /deck/[orderId]`.
+**Rejected:** In-browser Gamma MCP integration for the free web flow.
+**Rationale:** Gamma MCP requires Claude Code runtime infrastructure not present in a Next.js web app. The free tier gets a markdown download with zero extra infrastructure. The paid path runs fulfilment server-side after Stripe checkout (webhook → `fulfilment.ts`), which generates and stores the deck out of band — not live in the chat session. The Claude Code plugin still uses Gamma in-session because MCP tools are available there.
 
 ### Decision 7: `server-only` package for Anthropic client
 
