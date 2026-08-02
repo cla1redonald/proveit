@@ -1,10 +1,13 @@
 name: CI
 
+# feat/proveit-studio: gate Studio/core PRs while that branch is active.
+# Remove from both lists once feat/proveit-studio merges to main.
+
 on:
   push:
-    branches: [main]
+    branches: [main, feat/proveit-studio]
   pull_request:
-    branches: [main]
+    branches: [main, feat/proveit-studio]
 
 jobs:
   web:

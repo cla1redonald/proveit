@@ -36,7 +36,7 @@ npm run build -w proveit-studio
 npm test -w @proveit/core          # shared scan/parse tests (packages/core)
 ```
 
-CI runs lint, typecheck, and build for Studio plus tests for `@proveit/core` on every PR to `main` (see `.github/workflows/ci.yml`).
+CI runs lint, typecheck, and build for Studio plus tests for `@proveit/core` on PRs to `main` and `feat/proveit-studio` (see `.github/workflows/ci.yml`).
 
 ## The synthesiser (runs on your Max plan)
 
