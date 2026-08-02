@@ -16,6 +16,7 @@ Thumbs.db
 .env.*.local
 # ProveIt generated research files (session artifacts — not for source control)
 discovery.md
+!packages/core/tests/fixtures/**
 research-*.md
 swarm-*.md
 review-*.md
