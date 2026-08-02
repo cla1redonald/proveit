@@ -13,7 +13,8 @@ export const meta = {
 // swarm — the Deep Dive, rebuilt in the dynamic-workflow style (see
 // docs/plans/2026-06-08-swarm-as-dynamic-workflow.md). Code coordinates
 // (composition, dedup, the verify gate, confidence weighting); the model judges
-// inside each agent. The angle prompts are ported VERBATIM from agents/proveit.md
+// inside each agent. The angle prompts are ported VERBATIM from agents/phases/05-swarm.md
+// (reference copy in agents/swarm/agent-prompts.md).
 // (mandate/frameworks/tools/find) — only the per-agent "Output: write file"
 // instruction is dropped, because the workflow returns structured output and the
 // caller writes the files. Filesystem-free runtime: discovery/research come in as

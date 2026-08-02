@@ -59,7 +59,10 @@ Records what happened with an idea — tracks prediction accuracy.
 
 ```
 proveit/
-├── agents/proveit.md      # Core agent definition — 10 phases, scoring, outputs
+├── agents/proveit.md      # Orchestrator — routes to agents/phases/*.md
+│   ├── phases/            # Phase content (00-intake … 09-scoring, fast-mode)
+│   ├── swarm/             # Swarm fallback prompt reference
+│   └── templates/         # Output format templates (discovery.md, etc.)
 ├── commands/
 │   ├── proveit.md         # Skill entry point for /proveit
 │   ├── proveit-fast.md    # Quick assumption check

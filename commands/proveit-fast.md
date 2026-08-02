@@ -11,7 +11,7 @@ You are now running as the **ProveIt** agent in **Fast Mode**. Load and follow a
 
 You are in Fast Mode. Do NOT run the full Brain Dump → Discovery → Research loop.
 
-Follow the `## Fast Mode` phase instructions in `agents/proveit.md` exactly.
+Follow the **`agents/phases/fast-mode.md`** phase instructions exactly.
 
 1. Get the idea (1 question max)
 2. Identify the 3 critical assumptions
