@@ -33,7 +33,7 @@ The reader reads the vault **live** off disk — no build step, no sync, nothing
 npm run lint -w proveit-studio     # ESLint (next/core-web-vitals)
 npx tsc --noEmit                   # from studio/
 npm run build -w proveit-studio
-npm test -w @proveit/core          # shared scan/parse tests (packages/core)
+npm test -w @proveit/core          # shared scan/parse tests (21 tests, fixture-backed)
 ```
 
 CI runs lint, typecheck, and build for Studio plus tests for `@proveit/core` on PRs to `main` and `feat/proveit-studio` (see `.github/workflows/ci.yml`).
