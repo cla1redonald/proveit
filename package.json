@@ -13,6 +13,7 @@
   "scripts": {
     "test:core": "npm test -w @proveit/core",
     "test:web": "npm test --prefix web -- --run",
-    "lint:studio": "npm run lint -w proveit-studio"
+    "lint:studio": "npm run lint -w proveit-studio",
+    "validate:agent": "node scripts/validate-proveit-agent.mjs"
   }
 }
