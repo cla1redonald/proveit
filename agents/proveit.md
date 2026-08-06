@@ -765,9 +765,14 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 >
 > [DISCOVERY.MD CONTENTS] [LATEST_RESEARCH CONTENTS]"
 
-#### Category-Specific AI-Commoditization Scoring (Frontier v3, 2026-08-01)
+#### Category-Specific AI-Commoditization Scoring (Frontier v4, 2026-08-06)
 
 *Updated based on frontier shifts since June 2026. The following categories face accelerated commoditization. Adjust Viability scoring down and Feasibility survival-window assumptions accordingly.*
+
+**BLACK ZONE — Fully closed. Kill signal, not a discount.** Snapshot §3 (v4) introduces a "Closed" tier above "Closing fast" for categories the foundation labs have already fully absorbed as a default, native feature — not merely at risk:
+
+- **Standalone AI browsers** (OpenAI retiring Atlas into ChatGPT/Codex directly, shutdown 2026-08-09): agentic browsing is now a default ChatGPT/Codex capability. If the idea's core value is "an AI browser," this is a kill signal, not a Viability discount.
+- **AI budgeting / personal-finance assistants** (ChatGPT's Plaid-connected budgeting expanded Pro→Plus, 2026-06-25): "connect your bank, get AI insights" is now a ChatGPT feature. If the idea's core value is AI-native budgeting/spend-insights with no other moat, this is a kill signal, not a Viability discount.
 
 **RED ZONE — Survival window < 6 months. High risk of foundation-lab absorption:**
 
@@ -793,6 +798,8 @@ All swarm agents have access to **Lenny's Podcast** (`mcp__lenny-transcripts__se
 - **Workflow-specific AI (task-domain + distribution lock-in)**: E.g., "AI for sales reps on Salesforce," "AI for customer-support reps on Zendesk," "AI pair programmer for code review in GitHub." Value = narrowness + embeddedness. Survival window: 18+ months if distribution is defensible. Viability floor: 6+ (not 8+).
 
 **Peak/Off-Peak Pricing Note** (DeepSeek V4, 2026-07-10): DeepSeek introduced 2× pricing multiplier during peak hours (9am–12pm, 2pm–6pm UTC). Cost unpredictability now a factor in unit economics. Flag ideas that require predictable inference costs; ask "how sensitive is viability to 2–3× cost spikes during peak hours?"
+
+**Self-check note — ProveIt's own Gamma dependency** (frontier-snapshot.md §3, v4): presentation/deck-generation tools now rate "Pressured" — Gamma (ProveIt's own handoff-deck generator, `mcp__claude_ai_Gamma__generate`) shipped as a native app inside ChatGPT with Zapier/Make/n8n API parity (2026-03-06). No functional change to ProveIt's Output 1, but when scoring a competitor idea whose differentiator is "AI-generated decks," don't treat Gamma-style deck generation as an Anthropic-ecosystem-exclusive moat — it's now a cross-platform commodity layer.
 
 ---
 
@@ -1495,7 +1502,8 @@ For: claude.ai/design — paste any of these as the prompt for a new project on 
 2. Pick the project type matching the artefact you want (Slide deck / Prototype: Wireframe / Other)
 3. Name the project, hit Create
 4. Copy the prompt below for that artefact, paste into the prompt box, send
-5. (Optional but recommended) Set up the brand once as a Design System (top-level "Design systems" tab on the home page) — then it's available to every future project without re-pasting
+5. (Optional but recommended) Set up the brand once as a Design System (top-level "Design systems" tab on the home page) — then it's available to every future project without re-pasting, or import an existing design system directly from GitHub/file
+6. Once a project exists, `/design-sync` links it bidirectionally to Claude Code for round-trip edits, and the canvas supports direct WYSIWYG editing — you don't have to re-paste a prompt for small tweaks
 
 ---
 
@@ -1664,7 +1672,7 @@ These two downstream tools have **non-overlapping** outputs:
 
 | Tool | Produces | Does NOT produce |
 |------|----------|------------------|
-| Claude Design | Decks, wireframes, screens, social cards, logos as exploratory directions, any 2D layout. Reads brand tokens or a saved Design System. | Engineering spec, marketing copy beyond what's in an artefact |
+| Claude Design | Decks, wireframes, screens, social cards, logos as exploratory directions, any 2D layout. Reads brand tokens or a saved Design System. Exports to PDF/PPTX, Canva, Adobe, Vercel, Replit, Wix, or standalone HTML/org URL. `/design-sync` links a project back to Claude Code for round-trip edits. | Engineering spec, marketing copy beyond what's in an artefact |
 | Gamma | Stakeholder deck (the validation narrative) | UX, wireframes, engineering spec, brand identity |
 
 **Logos.** ProveIt doesn't produce logos. The "Logos" prompt in `claude-design-prompts.md` generates three exploratory directions with rationale, in vector/HTML, in ~3 minutes — the way to explore before committing to one.

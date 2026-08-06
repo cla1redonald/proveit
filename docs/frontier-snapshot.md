@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 3
-generated: 2026-08-01
-generated_by: frontier-delta-watch
-next_scan_due: 2026-08-15
+snapshot_version: 4
+generated: 2026-08-06
+generated_by: frontier-scan
+next_scan_due: 2026-08-20
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -23,22 +23,31 @@ The agent cites this file by section; it does *not* re-derive the frontier from 
 
 | Lab | Flagship | Shipped | Standout | Price (in/out per Mtok) |
 |-----|----------|---------|----------|--------------------------|
-| Anthropic | **Claude Opus 5** (`claude-opus-5`) | 2026-07-24 | Fable 5–class reasoning at half the price; Dynamic Workflows across Opus/Sonnet/Fable tiers; xhigh effort mode; 1M context | $5 / $25 |
-| OpenAI | **GPT-5.6 family** (Sol/Terra/Luna) | 2026-07-09 (general) | Sol: $5/$30, SWE-bench 96.2%; Terra: $2/$12 (20% cut post-launch); Luna: $0.20/$1.20 (80% cut 2026-07-30) for commodity tier | Sol $5 / $30; Terra $2 / $12; Luna $0.20 / $1.20 |
-| Google | **Gemini 4 (pre-training)** | 2026-07-21 | "Most ambitious pre-training run yet"; Sundar said "significantly larger" flagship; no release date, model ID, or benchmarks public | TBD |
-| xAI | **Grok 4.5** (`grok-4-5`) | 2026-07-08 | 500K context window, native video input, frontier coding; 2T model wrapping training, target Aug 2026 | ~$5 (est.) |
-| DeepSeek (open-weight) | **DeepSeek-V4** (MIT, 1.6T/49B MoE) | 2026-07-10 (GA) | SWE-bench Verified 80.6%; peak/off-peak pricing (2× multiplier); 1M context; self-hostable | V4-Pro $0.435 / $0.87; V4-Flash $0.14 / $0.28 (peak 2×) |
+| Anthropic | **Claude Opus 5** (`claude-opus-5`) | 2026-07-24 | SWE-bench Verified 96.0%, SWE-bench Pro 79.2%; OSWorld 2.0 jumped 55.7%→70.6% vs Opus 4.8; new low/medium/high effort toggle; default on Claude Max, top model on Claude Pro | $5 / $25 (unchanged vs Opus 4.8) |
+| Anthropic | **Claude Sonnet 5** (`claude-sonnet-5`) | 2026-06-30 | Near-Opus agentic performance (Terminal-Bench 2.1: 80.4%, ~level with Opus 4.8); SWE-bench Pro 63.2% (below Opus 5) | $2 / $10 intro (through 2026-08-31) → $3 / $15 standard |
+| Anthropic | **Claude Fable 5 / Mythos 5** | 2026-06-09 (redeployed 2026-07-01) | SWE-bench Pro 80.3% vs Opus 4.8's 69.2%; broad release gated by new safety classifiers; briefly export-controlled and pulled worldwide for ~19 days (2026-06-12 → 2026-06-30) after a bypass was disclosed | Not separately listed |
+| OpenAI | **GPT-5.6 family** (Sol/Terra/Luna) | 2026-07-09 (GA) | Sol: flagship, 96.2% SWE-bench, preferred model for Microsoft 365 Copilot from launch day; Terra: balanced/enterprise; Luna: high-volume commodity tier. Sol redesigned its own speculative-decoding draft model, driving >15% token-gen efficiency gain | Sol $5 / $30; Terra $2.00 / $12.00 (−20%, 2026-07-30); Luna $0.20 / $1.20 (−80%, 2026-07-30) |
+| Google | **Gemini 3.6 Flash** (+ 3.5 Flash-Lite, 3.5 Flash Cyber) | 2026-07-21 | New "workhorse" tier — beats the prior flagship Gemini 3.1 Pro on Artificial Analysis Intelligence Index (50 vs 46) and on SWE-Bench Pro (58.7% vs 55.1% for 3.5 Flash); **no Gemini 3.5 Pro shipped** (still in partner testing). Gemini 4 (next full flagship) remains in pre-training, no public model ID/benchmarks/date | $1.50 / $7.50 (output −17% vs 3.5 Flash's $9) |
+| xAI | **Grok 4.5** (`grok-4-5`) | 2026-07-08 | 500K context, native video input, frontier coding. **Grok 5 has missed two consecutive quarterly targets (Q1 and Q2 2026)** and remains unreleased as of 2026-08-06; xAI instead shipped grok-voice-think-fast-2.0 (2026-07-29), now the default voice router (2026-08-05) | ~$5 (est.) |
+| DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-07-20 (full GA, after 2026-04-24 preview) | SWE-bench Verified 80.6% — highest yet for an open-weight model, tied exactly with Gemini 3.1 Pro; 1M context, self-hostable | $0.435 / $0.87 (V4-Flash $0.14 / $0.28 off-peak; 2× peak) |
+| Meta (closed pivot) | **Muse Spark 1.1** | 2026-04-08 (2026-07-09 paid API) | Meta's first fully closed-weight frontier model (Meta Superintelligence Labs, led by Alexandr Wang); multimodal, ~260K context. Llama 4 Scout/Maverick (Apr 2025) remain the last *open*-weight Llama flagships | $1.25 / $4.25 |
 
-**Net:** the frontier is now a six-lab race with pricing stratification by capability tier.
-Anthropic (Opus 5) and OpenAI (GPT-5.6 Sol) trade the frontier lead on benchmarks; GPT-5.6 Luna at
-$0.20/$1.20 (80% cut post-launch) collapses commodity pricing, forcing cost competition below
-reasoning-model economics. Google's Gemini 4 in training, xAI shipping Grok 4.5 + 2T model,
-DeepSeek V4-GA with peak/off-peak pricing. Structural shift: Opus 5 + Fable 5 now span both
-flagship and reasoning tiers in a single model-family; GPT-5.6 family invents a three-tier system
-(Sol flagship / Terra mid / Luna commodity). Pricing deflation accelerating: Opus 4.1/4 → Opus 5
-is $15/$75 → $5/$25 (67% within 12 months); GPT-5.6 Luna → $0.20/$1.20 undercuts open-weight.
+**Net:** the frontier is now an eight-model, six-plus-lab race, and the shape of the competition has
+shifted from "who has the smartest model" to "who has the cheapest model that's smart enough."
+Google's Gemini 3.6 Flash beating the prior-generation flagship Pro on both intelligence and coding
+benchmarks — while Google *skips* a 3.5 Pro release entirely — is the clearest signal yet that
+mid-tier models have absorbed flagship-grade capability. OpenAI's GPT-5.6 three-tier system keeps
+cutting the commodity floor (Luna −80%, Terra −20%, both 2026-07-30) while its flagship Sol becomes
+the default engine inside Microsoft 365 Copilot, a direct cannibalization signal for
+Office-adjacent wrappers. Anthropic's Opus 5 held price flat ($5/$25) against a large capability
+jump, and its Fable 5 export-control suspension (~19 days, 2026-06-12 to 2026-06-30) is now a dated,
+concrete precedent for single-model regulatory risk. On the open-weight side, Meta has formally
+abandoned its open-weight-flagship strategy (Muse Spark, closed, 2026-04-08) just as DeepSeek
+(V4-Pro, GA 2026-07-20) and Moonshot's Kimi K3 (2.8T MoE, largest open-weight model to date,
+2026-07-16) push open weights to near-frontier coding parity — the open frontier has moved from
+Meta/Mistral to a China-led field. xAI has now missed two consecutive quarterly targets for Grok 5.
 
-_Sources: [Anthropic — Claude Opus 5](https://www.anthropic.com/news/claude-opus-5), [OpenAI — GPT-5.6 family](https://openai.com/index/gpt-5-6/), [Coursiv — GPT-5.6 pricing post-30-Jul cut](https://coursiv.io/blog/chatgpt-5-6), [Google — Gemini 4 pre-training](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-june-2026/), [xAI — Grok 4.5](https://x.com/elonmusk/status/1810647894...), [DeepSeek — V4 GA pricing](https://api-docs.deepseek.com/), [SWE-bench 96.2% for GPT-5.6 Sol](https://www.morphllm.com/best-ai-model-for-coding)._
+_Sources: [TechCrunch — Claude Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [Anthropic — Claude Sonnet 5](https://www.anthropic.com/news/claude-sonnet-5), [TechCrunch — Claude Fable 5](https://techcrunch.com/2026/06/09/anthropics-claude-fable-5-is-a-version-of-mythos-the-public-can-access-today/), [MarkTechPost — Fable 5 redeployed](https://www.marktechpost.com/2026/07/01/anthropic-redeploys-claude-fable-5-on-july-1-after-us-export-controls-lift-adds-new-cybersecurity-classifier/), [TechCrunch — GPT-5.6 / Microsoft Copilot](https://techcrunch.com/2026/07/09/openai-says-gpt-5-6-is-the-preferred-model-for-microsoft-copilot-amid-breakup-chatter/), [aipricing.guru — GPT-5.6 cuts](https://www.aipricing.guru/openai-pricing/), [OpenAI release notes](https://openai.com/products/release-notes/), [TechCrunch — Gemini 3.6 Flash / no 3.5 Pro](https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/), [TechTimes — Gemini 3.6 Flash cost](https://www.techtimes.com/articles/321268/20260722/gemini-36-flash-cuts-token-costs-scores-higher-every-benchmark.htm), [releasebot.io — xAI](https://releasebot.io/updates/xai), [macgpu.com — DeepSeek V4 full release](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [Pebblous — Meta Muse Spark](https://blog.pebblous.ai/blog/meta-muse-spark-closed-source/en/)._
 
 ---
 
@@ -47,31 +56,56 @@ _Sources: [Anthropic — Claude Opus 5](https://www.anthropic.com/news/claude-op
 These are the capabilities a PM can no longer treat as a differentiator, because a frontier model
 ships them out of the box. **If an idea's core value is on this list, it is a feature, not a product.**
 
-- **Massively parallel agent orchestration** — Opus 4.8 ships Dynamic Workflows: hundreds of parallel
-  subagents with adversarial verification, written as on-the-fly JS harnesses. Bun used it to port
-  750k lines Zig→Rust in 11 days at 99.8% test-pass. _(2026-05-28.)_
-- **Effort dials** — `output_config.effort` (low/medium/high/xhigh/max) is the canonical token-control
-  API across Opus 4.8/4.7/4.6, Sonnet 4.6, and Mythos; `xhigh` targets long-horizon agentic/coding
-  tasks over 30 min with million-token budgets. `budget_tokens` is deprecated and being removed.
-  _(2026-05-28.)_
-- **Native computer use** — Opus 4.8 hits 84% on Online-Mind2Web; OpenAI Codex added Windows Computer
-  Use (clicks/types in any Windows app) on 2026-05-29, previously macOS-only. _(2026-05-29.)_
-- **Consolidated agentic assistants** — ChatGPT Agent (2025-07-17) folded Operator, Deep Research, and
-  chat into one native mode on a virtual computer with connectors; ChatGPT Workspace Agents
-  (2026-04-22) add scheduled/Slack-triggered, Salesforce-connected enterprise agents.
-- **Inline document/code editing** — OpenAI deprecated Canvas (~2026-05-28), inlining "writing blocks"
-  and "code blocks" directly into chat.
-- **Native website generation + deploy** — Codex Sites (2026-06-02) creates and deploys hosted web
-  projects from ChatGPT Business workspaces by default.
-- **Native multimodal video generation** — Gemini Omni (2026-05-19) does video generation with physics
-  understanding (gravity, fluid dynamics) and SynthID watermarking, distributed free via YouTube
-  Shorts Remix / YouTube Create.
-- **Native video input** — Grok 4.5 (2026-07-08) ships native video understanding; multimodal video
-  I/O is now a default capability tier. _(2026-07-08.)_
-- **Standard production-default model tiers** — Gemini 2.5 Pro/Flash/Flash-Lite reached GA
-  (2025-06–07-2025); these are the production-safe defaults.
+- **Native computer use, sharply improved** — Claude Opus 5 jumped from 55.7% to 70.6% on OSWorld
+  2.0 versus Opus 4.8 in a single release; "AI that operates a computer for you" keeps getting less
+  differentiated at the model layer. _(2026-07-24.)_
+- **Effort dials as the standard cost/capability control** — Opus 5 ships a low/medium/high effort
+  toggle; Opus 4.8 already had `xhigh`/`max` for long-running agentic work at $10/$50 fast-mode
+  pricing (3× cheaper than the prior $30/$150 fast mode). This is now the default lever any
+  token-economics model should assume PMs (and Anthropic's own pricing) will use. _(2026-05-28 /
+  2026-07-24.)_
+- **Massively parallel agent orchestration is GA, not preview** — Claude Code Dynamic Workflows
+  (lead agent writes a JS orchestration script, fans out up to 16 concurrent / 1,000 total
+  subagents per run) is now available on all paid plans — Pro, Max, Team, Enterprise — plus API,
+  Bedrock, Vertex, and Microsoft Foundry (Pro requires manual enable in `/config`). This is the
+  exact pattern ProveIt's own `frontier-scan.workflow.mjs` and `swarm.workflow.mjs` implement by
+  hand. _(2026-06-02.)_
+- **Peer-to-peer multi-agent coordination matured to a stable primitive** — Claude Code Agent Teams
+  (distinct from subagents: independent context windows, direct mailbox/SendMessage communication,
+  self-coordination off a shared dependency-aware task list) went from an experimental research
+  preview behind a feature flag (2026-02-05) to friction-free automatic team formation by the
+  current docs (v2.1.178) — no more explicit setup step.
+- **Remote/mobile control of a coding agent** — Codex Remote reached GA on all paid ChatGPT plans
+  (Plus, Pro, Business, Enterprise, Education) via a QR-paired, Noise-protocol-encrypted relay, so
+  developers can start/monitor/approve agent work from a phone without exposing the dev machine.
+  Previously a differentiator for third-party "Codex on your phone" wrappers. _(2026-06-25.)_
+- **Agent orchestration/sandboxing as a hosted cloud primitive** — Google's Gemini API "Managed
+  Agents" now default to Gemini 3.6 Flash and add lifecycle environment hooks (pre/post-execution
+  scripts that can block/lint/audit tool calls), budget controls, scheduled triggers, and an
+  Environments API for isolated cloud sandboxes — "orchestrate an agent in a sandbox with hooks" is
+  now a single Google API call. _(2026-07-28.)_
+- **Always-on, persistent, cross-surface agentic work** — Claude Cowork expanded beyond desktop to
+  web (claude.ai) and mobile (iOS/Android) for Max subscribers; tasks now run on Anthropic's servers
+  and persist with no device online. Disclosed usage (~1.2M sampled sessions, 600,000+ orgs): over
+  90% of Cowork usage is *non*-software-development work (33.4% business process/ops, 16.4% content
+  creation, 8.7% software dev) — the reference implementation for general knowledge-work automation
+  now ships from the platform layer. _(2026-07-07.)_
+- **24/7 proactive cross-app agent** — Google's Gemini Spark runs on dedicated Cloud VMs (not the
+  device) and takes background/proactive actions across Google apps, now extending to automate web
+  errands and integrate third-party tools via MCP; currently AI Ultra-subscriber beta, not free
+  tier. _(2026-05-19, extended 2026-07.)_
+- **Native personal-finance / budgeting inside the assistant** — ChatGPT's Plaid-connected
+  budgeting/spending-dashboard experience expanded from Pro to Plus users on web/iOS/Android.
+  _(2026-06-25.)_
+- **Agentic browsing folded into the default chat surface** — OpenAI is retiring the standalone
+  Atlas browser (multi-tab navigation, downloads, login, page automation) into ChatGPT and Codex
+  directly; Atlas stops working entirely 2026-08-09. _(2026-07-09.)_
+- **Coding-assistant capability at open-weight, consumer-hardware scale** — Alibaba's
+  Qwen3.5-122B-A10B (122B/10B active MoE) reportedly matches Claude Sonnet 4.5-class performance
+  runnable on local/consumer hardware, the first model at that size class to hit a mainstream
+  closed-frontier bar outside a datacenter. _(2026-02-24.)_
 
-_Sources: [Anthropic — Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [Anthropic — Dynamic Workflows](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code), [effort API](https://platform.claude.com/docs/en/build-with-claude/effort), [Codex Windows Computer Use](https://www.techtimes.com/articles/317531/20260601/openai-codex-computer-use-now-windows-foreground-takeover-europe-excluded.htm), [ChatGPT Agent](https://openai.com/index/introducing-chatgpt-agent/), [Workspace Agents](https://venturebeat.com/orchestration/openai-unveils-workspace-agents-a-successor-to-custom-gpts-for-enterprises-that-can-plug-directly-into-slack-salesforce-and-more), [Canvas deprecation](https://aidailypost.com/news/openai-upgrades-gpt-55-readability-removes-canvas-from-instant), [Codex Sites](https://releasebot.io/updates/openai/codex), [Gemini Omni](https://blog.google/innovation-and-ai/technology/ai/google-io-2026-all-our-announcements/), [Gemini 2.5 GA](https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai)._
+_Sources: [TechCrunch — Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [Anthropic — Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [InfoQ — Dynamic Workflows GA](https://www.infoq.com/news/2026/06/dynamic-workflows-claude-code/), [Claude Code — Agent Teams docs](https://code.claude.com/docs/en/agent-teams), [TechTimes — Codex Remote GA](https://www.techtimes.com/articles/319201/20260627/openai-codex-remote-goes-live-all-plans-phone-control-now-secured-qr-relay.htm), [Google — Managed Agents / 3.6 Flash hooks](https://blog.google/innovation-and-ai/technology/developers-tools/expanding-managed-agents-gemini-api-3-6-flash-hooks/), [Claude — Cowork web/mobile](https://claude.com/blog/cowork-web-mobile), [Google — AI updates July 2026 / Gemini Spark](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-july-2026/), [OpenAI — Personal finance in ChatGPT](https://openai.com/index/personal-finance-chatgpt/), [OpenAI — Atlas retirement](https://help.openai.com/en/articles/20001371-evolving-atlas-into-chatgpt-for-browser-based-agentic-work), [VentureBeat — Qwen3.5 Medium](https://venturebeat.com/technology/alibabas-new-open-source-qwen3-5-medium-models-offer-sonnet-4-5-performance)._
 
 ---
 
@@ -82,73 +116,92 @@ ship this as a default before the idea reaches PMF?*
 
 | Category | Commoditization status | Signal |
 |----------|------------------------|--------|
-| Multi-agent / orchestration middleware | **Closing fast** | Opus 4.8 ships native parallel-subagent coordination with adversarial verification, shrinking the gap for orchestration-layer startups (2026-05-28) |
-| AI-driven desktop automation | **Closing fast** | Codex Windows Computer Use makes cross-platform "AI that controls your computer" a first-party OpenAI feature (2026-05-29) |
-| Text-to-video / video editing | **Closing fast** | Gemini Omni Flash does prompt-based video editing free on YouTube; coverage names Runway and Pika as exposed (2026-05-19) |
-| No-code website builders | **Closing fast** | Codex Sites generates and deploys hosted web projects natively in ChatGPT Business (2026-06-02) |
-| Cross-app productivity agents | **Closing fast** | Gemini Spark acts across Search, Android, YouTube, and Google apps for AI Ultra subscribers (2026-05-20) |
-| Coding-assistant startups | **Closing fast** | Codex ships dedicated agentic-coding model variants (GPT-5.3-Codex etc.) on a ~monthly cadence — a model-level moat for OpenAI (2026-02-05) |
-| Open-weight vs closed-frontier on code | **Closed enough to compete** | DeepSeek V4-Pro scores 80.6% SWE-bench Verified, MIT-licensed and self-hostable, ~1/30th per-token cost vs GPT-5.5 / Opus 4.7 (2026-04-27) |
-| "Free AI tool" consumer products | **Pressured** | ChatGPT Ads (self-serve since 2026-05-05) and the $8/mo ChatGPT Go tier with 10× usage anchor the price ceiling (2026-01-15) |
-| Distribution / proprietary-data / workflow-embedded products | **Defensible** | Evans's Feb-2026 thesis: no durable model moat; value accrues to distribution, vertical data, and deep workflow integration (2026-02-19) |
+| AI budgeting / personal-finance apps | **Closed** | ChatGPT's Plaid-connected budgeting/spending experience expanded from Pro to Plus users — "connect your bank + get insights" is now a ChatGPT feature, not a company (2026-05-15, expanded 2026-06-25) |
+| Standalone "AI browser" products | **Closed** | OpenAI retires Atlas as a standalone product, folding agentic browsing into ChatGPT/Codex directly; Atlas shuts off entirely 2026-08-09 — kills the rationale for Perplexity Comet / Browser Company-style entrants (2026-07-09) |
+| Agent orchestration / sandboxing infrastructure | **Closing fast** | Google's Gemini API Managed Agents ships hooks, budget controls, and an Environments API as a hosted primitive — orchestration-layer infra is now a single API call (2026-07-28) |
+| General-purpose knowledge-work automation agents | **Closing fast** | Claude Cowork now persistent and cross-device (web/mobile), with disclosed usage showing 90%+ non-dev work — the reference "AI does my office tasks" agent now ships in the base subscription (2026-07-07) |
+| Cross-app proactive personal assistants | **Closing fast** | Gemini Spark (24/7, background-capable, extending to web errands + MCP) — still Ultra-beta, not free tier, so pressure is real but not yet at the free tier (2026-05-19 / 2026-07) |
+| Presentation/deck-generation tools | **Pressured** | Gamma — ProveIt's own deck tool — is now a native app inside ChatGPT with full Zapier/Make/n8n API parity, signaling deck-gen is becoming a commoditized cross-platform layer rather than an Anthropic-ecosystem differentiator (2026-03-06) |
+| Enterprise coding-assistant platforms | **Closing / contested** | OpenAI named a Leader in the 2026 Gartner MQ for Enterprise AI Coding Agents alongside Anthropic, Cursor, and GitHub — enterprise procurement has analyst cover to default to an incumbent platform, not a startup (2026-05-20) |
+| Open-weight vs. closed-frontier on code | **Closed enough to compete, field widening** | DeepSeek V4-Pro (MIT) ties Gemini 3.1 Pro at 80.6% SWE-bench Verified (GA 2026-07-20); Kimi K3 (2.8T MoE) is now the largest open-weight model released (2026-07-16); Qwen3.5-122B-A10B hits Sonnet 4.5-class on consumer hardware (2026-02-24) |
+| "Free AI tool" / thin-wrapper consumer products broadly | **Pressured** | Forbes: base models commoditizing faster than expected; 80% of AI wrapper startups projected to fail by end of 2026; leverage migrating to proprietary data/inference infra and GTM (2026-06-24) |
+| Distribution / proprietary-data / regulated-vertical products | **Defensible** | Legal, insurance, construction, and healthcare AI captured ~75% of ~$3.07B raised across 73 disclosed vertical-AI deals (Aug 2025–Jul 2026), on ~half the deal count — Harvey ($5B val., ~$190M ARR) and Abridge ($5.3B val.) as proof points (2026-07-15) |
 
 **The survival-window framing (2026):** an AI startup faces a closing survival window once a
-foundation lab targets its category. The structural pattern across this watchlist is consistent —
-text-to-video, desktop automation, orchestration middleware, no-code site builders, and cross-app
-assistants are all being absorbed as native platform features. Per Benedict Evans (2026-02-19),
-foundation models are commoditizing into utility infrastructure with no durable technical moat for
-any lab; value accrues to **application-layer companies that own distribution, proprietary vertical
-data, or deep workflow integration**. The survival question for any exposed startup is whether it
-owns a distribution channel, a style/brand flywheel, or professional-grade workflow integration that
-a free first-party feature cannot match. **ProveIt scoring should weight distribution and
-data-flywheel moats heavily and discount model-quality advantages.**
+foundation lab targets its category. This run adds two clean, dated closures — AI budgeting apps
+(ChatGPT's native Plaid feature) and standalone AI browsers (Atlas folding into ChatGPT/Codex) — to
+the existing pattern of text-to-video, desktop automation, orchestration middleware, no-code site
+builders, and cross-app assistants all being absorbed as native platform features. Forbes' dated
+80%-wrapper-failure projection (2026-06-24) and the vertical-AI funding data (2026-07-15) sharpen
+Benedict Evans's thesis: no durable model moat exists for any lab; value accrues to
+**application-layer companies that own distribution, proprietary vertical data, or deep workflow
+integration** — and the regulated verticals (legal, health, insurance, construction) are where the
+money is proving that thesis out with real deal flow. **ProveIt scoring should keep weighting
+distribution and data-flywheel moats heavily and discounting model-quality advantages — and should
+now treat "regulated vertical + proprietary data" as a positive Viability signal with a funding-data
+citation behind it, not just a heuristic.**
 
-_Sources: [Anthropic — Opus 4.8 / Dynamic Workflows](https://www.anthropic.com/news/claude-opus-4-8), [Codex Windows Computer Use](https://www.techtimes.com/articles/317531/20260601/openai-codex-computer-use-now-windows-foreground-takeover-europe-excluded.htm), [Gemini Omni Flash vs video startups](https://mindwiredai.com/2026/05/23/gemini-omni-flash-google-ai-video-editing/), [Codex Sites](https://releasebot.io/updates/openai/codex), [Gemini Spark](https://techstartups.com/2026/05/20/google-launches-gemini-3-5-flash-and-omni-world-model-at-i-o-2026-as-ai-race-with-openai-heats-up/), [GPT-5.3-Codex](https://openai.com/index/introducing-gpt-5-3-codex/), [DeepSeek V4-Pro review](https://codersera.com/blog/deepseek-v4-pro-review-benchmarks-pricing-2026/), [ChatGPT Ads](https://openai.com/index/testing-ads-in-chatgpt/), [ChatGPT Go](https://openai.com/index/introducing-chatgpt-go/), [Benedict Evans](https://www.ben-evans.com/benedictevans/2026/2/19/how-will-openai-compete-nkg2x)._
+_Sources: [OpenAI — Personal finance in ChatGPT](https://openai.com/index/personal-finance-chatgpt/), [OpenAI — Atlas retirement](https://help.openai.com/en/articles/20001371-evolving-atlas-into-chatgpt-for-browser-based-agentic-work), [Google — Managed Agents](https://blog.google/innovation-and-ai/technology/developers-tools/expanding-managed-agents-gemini-api-3-6-flash-hooks/), [Claude — Cowork web/mobile](https://claude.com/blog/cowork-web-mobile), [Google — Gemini Spark](https://blog.google/innovation-and-ai/technology/ai/google-ai-updates-july-2026/), [Gamma × ChatGPT](https://gamma.app/integrations/chatgpt), [OpenAI — Gartner MQ Leader](https://openai.com/index/gartner-2026-agentic-coding-leader/), [macgpu.com — DeepSeek V4](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [Simon Willison — Kimi K3](https://simonwillison.net/2026/Jul/16/kimi-k3/), [VentureBeat — Qwen3.5 Medium](https://venturebeat.com/technology/alibabas-new-open-source-qwen3-5-medium-models-offer-sonnet-4-5-performance), [Forbes — wrapper commoditization](https://www.forbes.com/sites/josipamajic/2026/06/24/every-company-is-now-an-ai-wrapper-so-gtm-is-the-new-moat/), [newmarketpitch — vertical AI funding](https://newmarketpitch.com/blogs/news/vertical-ai-funding-analysis), [Benedict Evans](https://www.ben-evans.com/benedictevans/2026/2/19/how-will-openai-compete-nkg2x)._
 
 ---
 
 ## 4. Token economics — the cost curve under every AI business model
 
-- **Price decline is the dominant trend.** Epoch AI measured LLM inference price decline at a median
-  **50× per year**, accelerating to **200× per year after January 2024**; the price to reach GPT-4
-  performance on PhD-level science questions fell 40× per year (reasoning models excluded due to
-  thinking-token inflation). _(2025-03-12.)_
-- **Within-tier flagship deflation is real.** Opus 4.1/4 ($15/$75) → today's Opus 4.5+ ($5/$25) is a
-  67% drop in ~12 months. o3 was cut 80% on 2025-06-10 (from $10/$40 to $2/$8) via inference-infra
-  optimization with no model change; o3-pro launched at $20/$80. _(2025-06-10.)_
-- **Commodity floor.** GPT-5.6 Luna at **$0.20 / $1.20** (2026-07-30 80% cut) now undercuts DeepSeek
-  V4-Flash ($0.14 / $0.28 off-peak; 2× during peak hours). Cheapest Western proprietary: Gemini
-  2.5 Flash-Lite at **$0.10 / $0.40**; GPT-4.1 nano matches. Frontier vendors now pricing below
-  open-weight for commodity workloads, signaling deflation end-state is near. _(2026-07-30 / 2026-08.)_
+- **Flagship pricing held flat while capability jumped.** Claude Opus 5 shipped at unchanged Opus
+  pricing ($5/$25) versus Opus 4.8, with a low/medium/high effort toggle as the new cost lever
+  instead of a price change. _(2026-07-24.)_
+- **Sonnet 5's intro price is expiring soon.** Claude Sonnet 5 launched 2026-06-30 at $2/$10 per
+  Mtok (input/output); that pricing reverts to $3/$15 standard on **2026-08-31** — about 3.5 weeks
+  from this snapshot's generation date. Any cost model quoting the intro rate is about to be 50%
+  too low on both sides. _(2026-06-30.)_
+- **Commodity floor kept falling.** GPT-5.6 Luna cut 80% (from $1.00/$6.00 to **$0.20/$1.20**) and
+  Terra cut 20% (from $2.50/$15.00 to **$2.00/$12.00**), effective 2026-07-30 — driven partly by a
+  >15% token-generation efficiency gain from having Sol redesign Codex's own speculative-decoding
+  draft model. Sol (flagship) held at $5/$30. This keeps proprietary commodity tiers priced below
+  or near open-weight (DeepSeek V4-Flash $0.14/$0.28 off-peak, 2× peak). _(2026-07-30.)_
+- **Cost-per-completed-task fell faster than sticker price.** Gemini 3.6 Flash cut list price to
+  $1.50/$7.50 (output down ~17% from 3.5 Flash's $9) *and* separately uses ~17% fewer output tokens
+  on average on the Artificial Analysis Index (up to 65% fewer on some agentic/coding tasks) —
+  combining to an effective ~31% average cost-per-completed-task drop, up to ~71% on agentic coding
+  workloads specifically. Model cost comparisons based on sticker price-per-token alone will
+  materially overstate real budgets. _(2026-07-22.)_
+- **Coding-agent billing model changed underneath PMs.** Codex usage on Plus/Pro/Business has been
+  billed against actual token consumption (API-equivalent rates) rather than a flat per-message
+  allowance since 2026-04-02 (extended to legacy Enterprise/Edu/Health/Gov 2026-04-23, with a
+  shared org-wide credit pool for Enterprise). Heavy agentic runs now cost materially more than
+  under the old flat model; light tasks generally cost less. Flat-rate Codex cost assumptions from
+  early 2026 are stale.
 - **Current per-Mtok rates (in / out):**
-  - Anthropic — Opus 5 $5 / $25; Fable 5 ~$25–50 / $75–150 (exact pricing TBD); Sonnet 5 $3 / $15;
-    Haiku 4.5 $1 / $5 (1M ctx). Batch 50% cheaper; prompt caching cuts cached-input 90%. _(2026-07-24.)_
-  - OpenAI — GPT-5.6 Sol $5 / $30 (flagship, 96.2% SWE-bench), Terra $2 / $12, Luna $0.20 / $1.20
-    (commodity tier, 80% cut 2026-07-30). GPT-4.1 $2 / $8, nano $0.10 / $0.40. Batch/flex 50% off.
-    _(2026-07-09 GA / 2026-07-30.)_
-  - Google — Gemini 4 TBD (pre-training); Gemini 3.5 Flash $1.50 / $9.00 (1M ctx); 2.5 Pro
-    $1.25–$2.50 / $10–$15; 2.5 Flash $0.30 / $2.50; 2.5 Flash-Lite $0.10 / $0.40. _(2026-08-01.)_
-  - xAI — Grok 4.5 ~$5 (estimated; exact pricing not published). 500K context. _(2026-07-08.)_
-  - DeepSeek — V4-Pro $0.435 / $0.87 (off-peak; peak 2×); V4-Flash $0.14 / $0.28 (cache-hit $0.0028;
-    off-peak; peak 2×). Both 1M ctx, 384K max output, peak/off-peak pricing 2026-07-10+. _(2026-07-10.)_
-- **Output multiplier.** Anthropic Opus 5 and Fable 5 run 5× output-to-input ratio; GPT-5.6 Sol is 6×
-  (6× pricing asymmetry embedded: $30 out / $5 in); Gemini 3.5 Flash is 6×. Luna commodity tier at
-  $0.20/$1.20 is 6×. Budget the output side heavily on reasoning workloads.
-- **"Flash" no longer means cheap.** Gemini 3.5 Flash is a 3× increase over Gemini 3 Flash and 6× over
-  3.1 Flash-Lite; in independent benchmarks its total run cost ($1,551) *exceeded* Gemini 3.1 Pro
-  ($892), per Simon Willison. Re-benchmark actual run costs, not headline rates. _(2026-05-19.)_
-- **Subscription credit ceilings.** From 2026-06-15, agentic usage via the Claude Agent SDK,
-  `claude -p` headless, Claude Code GitHub Actions, and third-party Agent SDK apps draws from a
-  separate monthly credit pool (Pro $20, Max 5× $100, Max 20× $200; no rollover) — effectively forcing
-  API billing for production agentic workloads. _(2026-05-14.)_
+  - Anthropic — Opus 5 $5 / $25; Sonnet 5 $2 / $10 (intro, through 2026-08-31) → $3 / $15
+    standard; Haiku 4.5 $1 / $5 (1M ctx). Fast mode (Opus 4.8-era) $10 / $50 (xhigh/max effort).
+    Batch 50% cheaper; prompt caching cuts cached-input 90%.
+  - OpenAI — GPT-5.6 Sol $5 / $30; Terra $2.00 / $12.00 (post-30-Jul cut); Luna $0.20 / $1.20
+    (post-30-Jul cut). Codex billed at consumption-based/API-equivalent rates since 2026-04-02.
+  - Google — Gemini 4 TBD (pre-training, no pricing); Gemini 3.6 Flash $1.50 / $7.50 (1M ctx);
+    Gemini 3.1 Pro pricing carried from prior tier (flagship reasoning, GPQA 94.3%).
+  - xAI — Grok 4.5 ~$5 (estimated; exact pricing not published). 500K context.
+  - DeepSeek — V4-Pro $0.435 / $0.87 (off-peak; peak 2×), GA 2026-07-20; V4-Flash $0.14 / $0.28
+    (cache-hit $0.0028; off-peak; peak 2×). Both 1M ctx.
+  - Meta — Muse Spark 1.1 (closed-weight, OpenAI-compatible API) $1.25 / $4.25. _(2026-07-09.)_
+  - Mistral — Mistral Large 3 (open, Apache 2.0, 675B/41B active MoE, 256K ctx) $0.50 / $1.50.
+    _(2025-12-04.)_ A new, larger open-weight MoE family entered early access July 2026, explicitly
+    aimed at closing the gap with closed US frontier labs.
+- **Subscription vs. API billing keeps diverging.** Since 2026-06-15, agentic usage via the Claude
+  Agent SDK, `claude -p` headless, Claude Code GitHub Actions, and third-party Agent SDK apps draws
+  from a separate monthly credit pool (Pro $20, Max 5× $100, Max 20× $200; no rollover) —
+  effectively forcing API billing for production agentic workloads, a dynamic reinforced by Codex's
+  own shift to consumption-based billing this run.
 
-**What this means for viability scoring:** a business model that only works at *today's* token price
-but breaks if inference gets 5× cheaper is fragile in the wrong direction — but one that *needs*
-prices to fall further to be viable is betting on a trend (50–200× annual decline) that has reliably
-delivered. Any token-cost assumption in a 12-month roadmap is likely 10–50× too high by ship time.
-Flag both directions.
+**What this means for viability scoring:** the direction of travel is unchanged — inference keeps
+getting cheaper per unit of *useful* work faster than per raw token, so a 12-month roadmap's
+token-cost assumption is still likely too high by ship time. But two new wrinkles this run: (1) two
+of the models PMs are most likely to be actively testing against right now — Sonnet 5 and GPT-5.6
+Terra/Luna — have pricing that is either about to change (Sonnet 5, 2026-08-31) or just changed
+(GPT-5.6, 2026-07-30), so "what I tested with last week" is not a safe basis for a cost model; and
+(2) Codex's move to consumption-based billing means "flat monthly Codex cost" assumptions from
+before April 2026 are simply wrong for agentic-heavy workloads. Flag both.
 
-_Sources: [Epoch AI — inference price trends](https://epoch.ai/data-insights/llm-inference-price-trends), [o3 80% cut](https://community.openai.com/t/o3-is-80-cheaper-and-introducing-o3-pro/1284925), [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [OpenAI pricing](https://openai.com/api/pricing/), [GPT-4.1](https://www.techtarget.com/whatis/feature/GPT-41-explained-Everything-you-need-to-know), [o4-mini](https://openai.com/index/introducing-o3-and-o4-mini/), [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [Gemini 3.5 Flash cost](https://simonwillison.net/2026/May/19/gemini-35-flash/), [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing), [Agent SDK credits](https://codingwithai.com/news/claude-agent-sdk-credits-june-2026)._
+_Sources: [TechCrunch — Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [TechCrunch — Sonnet 5 pricing](https://techcrunch.com/2026/06/30/anthropic-launches-claude-sonnet-5-as-a-cheaper-way-to-run-agents/), [Anthropic — Sonnet 5](https://www.anthropic.com/news/claude-sonnet-5), [aipricing.guru — GPT-5.6 cuts](https://www.aipricing.guru/openai-pricing/), [OpenAI release notes](https://openai.com/products/release-notes/), [eesel.ai — Codex consumption billing](https://www.eesel.ai/blog/openai-codex-pricing), [TechTimes — Gemini 3.6 Flash cost](https://www.techtimes.com/articles/321268/20260722/gemini-36-flash-cuts-token-costs-scores-higher-every-benchmark.htm), [macgpu.com — DeepSeek V4](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [Pebblous — Muse Spark API](https://blog.pebblous.ai/blog/meta-muse-spark-closed-source/en/), [TechTimes — Mistral open MoE](https://www.techtimes.com/articles/319798/20260706/mistral-ai-targets-frontier-gap-open-weight-model-entering-july-early-access.htm), [Anthropic Opus 4.8 — fast mode pricing](https://www.anthropic.com/news/claude-opus-4-8)._
 
 ---
 
@@ -156,30 +209,43 @@ _Sources: [Epoch AI — inference price trends](https://epoch.ai/data-insights/l
 
 ProveIt's outputs feed downstream AI tools; this section keeps those references from drifting.
 
-- **Claude Code** ships **Dynamic Workflows** (2026-05-28, research preview, requires v2.1.154+):
-  Claude writes a JS orchestration script and runs up to hundreds of parallel subagents via the
-  `ultracode` setting (which pairs `xhigh` effort with automatic workflow-orchestration permission).
-  Anthropic warns it "can consume substantially more tokens than a typical session." ProveIt's
-  multi-phase research fan-out can now be expressed as a single Dynamic Workflow script rather than
-  manual subagent orchestration.
-- **Claude Design** (launched 2026-04-17, Anthropic Labs preview, powered by Opus 4.7) turns prompts,
-  images, DOCX/PPTX/XLSX, or a codebase into interactive prototypes, wireframes, pitch decks, and
-  marketing collateral, then packages a handoff bundle passable to Claude Code in one instruction.
-  It's a direct handoff target for ProveIt's `claude-design-prompts.md` artefact. Evidence for the
-  artefact: Brilliant cut complex-page recreation from 20+ prompts to 2; a Datadog PM went from "a
-  week of back-and-forth" to "a single conversation." Exports: Canva, PDF, PPTX, standalone HTML, or
-  internal org URL. _(2026-04-17.)_
-- **Codex** (OpenAI) is the competing agentic-coding CLI/product — now with Windows Computer Use
-  (2026-05-29) and Codex Sites (2026-06-02) — relevant because ProveIt ships an `AGENTS.md` for Codex
-  parity alongside `CLAUDE.md`. GPT-5.4 became the Codex main model on 2026-03-05.
-- **Antigravity CLI** (Google) replaces **Gemini CLI**: Google announced Antigravity 2.0 at I/O 2026
-  (2026-05-19), an agent-first platform (Go CLI, desktop app, SDK). Gemini CLI and Code Assist IDE
-  extensions stop serving Google AI Pro/Ultra tiers on **2026-06-18** (enterprise/Cloud retain
-  access). Antigravity CLI is closed-source. **Update any Gemini CLI references in ProveIt docs to
-  Antigravity CLI and note the 2026-06-18 deprecation.** _(2026-05-19 / 2026-05-20.)_
-- **Gamma** — still ProveIt's stakeholder-deck generator (`mcp__claude_ai_Gamma__generate`).
+- **Claude Code Dynamic Workflows are now GA**, not a research preview: available on all paid Claude
+  plans (Pro, Max, Team, Enterprise) plus the API, Bedrock, Vertex, and Microsoft Foundry (Pro users
+  must enable manually in `/config`). Up to 16 concurrent / 1,000 total subagents per run, fan-out +
+  adversarial-verification patterns. Fast mode runs at up to 2.5× speed at $10/M input, $50/M
+  output — 3× cheaper than the prior fast-mode rate ($30/$150). ProveIt's own
+  `frontier-scan.workflow.mjs` and `swarm.workflow.mjs` are validated instances of the exact
+  primitive now shipped natively. _(2026-06-02 GA confirmation; 2026-05-28 Opus 4.8 launch.)_
+- **Claude Code Agent Teams matured to a stable, frictionless primitive**: the former
+  TeamCreate/TeamDelete setup no longer exists — a team now forms automatically on first teammate
+  spawn (v2.1.178 docs), roughly six months after its 2026-02-05 experimental-flag launch. Distinct
+  from subagents: independent context windows, mailbox/SendMessage peer communication, shared
+  dependency-aware task list.
+- **Claude Design shipped a major overhaul** (2026-06-17): importable design systems (GitHub/file/
+  upload), a bidirectional `/design-sync` terminal command linking Claude Design to Claude Code,
+  real WYSIWYG canvas editing, PDF/PPTX export, and handoff exports to Adobe, Canva, Vercel, Replit,
+  and Wix (in addition to the prior Canva/PDF/PPTX/HTML/org-URL set). Over 1 million users in the
+  first week. **This is a direct handoff-surface change for ProveIt's `claude-design-prompts.md`
+  artefact — its prompt blocks and design-brief format should be checked against the new
+  `/design-sync` and canvas capabilities.**
+- **Codex** (OpenAI) — now running GPT-5.6 (Sol/Terra/Luna) as of 2026-07-09 GA, with GPT-5.4/
+  5.4-mini fully sunsetting 2026-08-31 (Terra replaces 5.4, Luna replaces 5.4-mini). Codex Remote
+  reached GA on all paid plans 2026-06-25 (QR-paired encrypted relay for phone control). Weekly
+  active users grew from ~5M (2026-06-02) to 8M (2026-07-14) following the GPT-5.6 launch, with
+  non-developer knowledge-work usage (~20% of users) growing >3× faster than developer adoption.
+  Named a Leader in the 2026 Gartner Magic Quadrant for Enterprise AI Coding Agents (alongside
+  Anthropic, Cursor, GitHub) on 2026-05-20. Billing has been consumption-based since 2026-04-02.
+  Atlas (OpenAI's standalone browser) is being folded into ChatGPT/Codex, shutting off entirely
+  2026-08-09.
+- **Antigravity CLI** (Google) has fully replaced Gemini CLI for individual (Pro/Ultra/free) users
+  as of 2026-06-18 — a Go-based platform running multiple background agents asynchronously without
+  locking the terminal, retaining legacy Agent Skills/Hooks/Subagents mechanisms. Enterprise users
+  on Gemini Code Assist licenses are unaffected. Antigravity CLI itself is closed-source.
+- **Gamma** — still ProveIt's stakeholder-deck generator (`mcp__claude_ai_Gamma__generate`), but is
+  now also a native app inside ChatGPT with full Zapier/Make/n8n API parity (2026-03-06) — worth
+  noting as a commoditization signal for the deck-generation category itself (see Section 3).
 
-_Sources: [Anthropic — Dynamic Workflows](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code), [effort/ultracode API](https://platform.claude.com/docs/en/build-with-claude/effort), [Claude Design](https://www.anthropic.com/news/claude-design-anthropic-labs), [GPT-5.3-Codex cadence](https://openai.com/index/introducing-gpt-5-3-codex/), [Antigravity CLI transition](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), [The Register — Gemini CLI deprecation](https://www.theregister.com/ai-ml/2026/05/20/bye-bye-gemini-cli-google-nudges-devs-toward-antigravity/5243605)._
+_Sources: [InfoQ — Dynamic Workflows GA](https://www.infoq.com/news/2026/06/dynamic-workflows-claude-code/), [Anthropic — Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), [Claude Code — Agent Teams docs](https://code.claude.com/docs/en/agent-teams), [VentureBeat — Claude Design overhaul](https://venturebeat.com/technology/anthropic-ships-major-claude-design-overhaul-with-design-system-imports-code-round-trips-and-a-fix-for-its-token-burning-problem), [KuCoin — Codex 8M WAU](https://www.kucoin.com/news/flash/openai-codex-surpasses-8-million-weekly-active-users-grows-7x-in-5-months), [TechTimes — Codex Remote GA](https://www.techtimes.com/articles/319201/20260627/openai-codex-remote-goes-live-all-plans-phone-control-now-secured-qr-relay.htm), [OpenAI — Gartner MQ Leader](https://openai.com/index/gartner-2026-agentic-coding-leader/), [eesel.ai — Codex consumption billing](https://www.eesel.ai/blog/openai-codex-pricing), [OpenAI — Atlas retirement](https://help.openai.com/en/articles/20001371-evolving-atlas-into-chatgpt-for-browser-based-agentic-work), [Google Developers — Antigravity CLI transition](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), [Gamma × ChatGPT](https://gamma.app/integrations/chatgpt)._
 
 ---
 
@@ -189,6 +255,39 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-08-06 (snapshot v4)** — Full `frontier-scan` refresh. Flagship refresh across four labs,
+  two new commoditization closures, a design-tooling handoff-surface change, and a regulatory-risk
+  precedent.
+  - **`[AGENT-IMPACT]`** Flagship refresh: Claude Opus 5 (2026-07-24, $5/$25 unchanged, 96.0%
+    SWE-bench Verified, OSWorld 2.0 55.7%→70.6%), Claude Sonnet 5 (2026-06-30, $2/$10 intro
+    expiring 2026-08-31), GPT-5.6 family GA (2026-07-09, now the preferred model for Microsoft 365
+    Copilot), Gemini 3.6 Flash (2026-07-21, beats prior flagship 3.1 Pro on intelligence and coding
+    benchmarks; **no Gemini 3.5 Pro shipped**). Grok 5 has now missed two consecutive quarterly
+    targets and remains unreleased.
+  - **`[AGENT-IMPACT]`** New commoditization closures: standalone AI browsers (OpenAI retiring
+    Atlas into ChatGPT/Codex, cutoff 2026-08-09) and AI budgeting/personal-finance apps (ChatGPT's
+    Plaid-connected feature expanded Pro→Plus, 2026-06-25).
+  - **`[AGENT-IMPACT]`** Agent-orchestration/sandboxing infrastructure crossed into "closing fast":
+    Google's Gemini API Managed Agents now ships hooks, budget controls, and an Environments API as
+    a hosted primitive (2026-07-28).
+  - **`[AGENT-IMPACT]`** Claude Design major overhaul (2026-06-17: design-system import,
+    bidirectional `/design-sync`, WYSIWYG canvas, expanded export targets) changes the handoff
+    surface ProveIt's `claude-design-prompts.md` artefact targets — flagged for a doc/format check.
+  - **`[AGENT-IMPACT]`** Claude Code Dynamic Workflows confirmed GA (not preview) across all paid
+    plans (2026-06-02); Agent Teams confirmed matured from experimental flag to frictionless stable
+    primitive.
+  - **`[AGENT-IMPACT]`** Meta formally abandoned its open-weight-flagship strategy (Muse Spark,
+    closed-weight, 2026-04-08); open-weight frontier leadership has shifted to DeepSeek (V4-Pro GA
+    2026-07-20, 80.6% SWE-bench Verified) and Moonshot's Kimi K3 (2026-07-16, largest open-weight
+    model released to date).
+  - Regulatory-risk precedent: Claude Fable 5/Mythos 5 export-control suspension (~19 days,
+    2026-06-12 to 2026-06-30) — dated evidence for the single-frontier-model dependency risk flag.
+  - Codex billing moved to consumption-based/API-equivalent rates (2026-04-02, extended
+    2026-04-23); Codex Remote reached GA on all paid plans (2026-06-25); Codex WAU grew 5M→8M
+    (2026-06-02 → 2026-07-14) with non-dev usage outgrowing developer usage 3×.
+  - Forbes' dated 80%-of-AI-wrappers-fail-by-2026-end projection and vertical-AI funding data
+    (~75% of $3.07B to regulated verticals) added as citable evidence for the survival-window
+    framing and the distribution/data-moat defensibility thesis.
 - **2026-08-01 (snapshot v3)** — Biweekly delta-watch refresh. Material changes across flagship lineup
   and pricing inflection.
   - **`[AGENT-IMPACT]`** Flagship tier upgrade: Anthropic Opus 5 (2026-07-24, $5/$25, Fable-class),
