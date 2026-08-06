@@ -23,7 +23,9 @@ Two cost profiles, set by `args.mode`:
 - **`full`** (default) — skeptic-per-finding + Opus synthesis. The deepest refresh (~100 agents, ~3.7M tokens).
 - **`lite`** — one skeptic per domain, capped findings, Sonnet synthesis. A quicker, lighter refresh.
 
-There is deliberately **no scheduled/CI automation**. An unattended cron bills the Anthropic *API* (a separate wallet from your Max subscription) and a full scan isn't cheap, so the call was to keep this a manual, subscription-funded action you trigger when you want it.
+The **heavy workflow** has deliberately **no scheduled/CI automation**: an unattended cron of the full scan would bill the Anthropic *API* (a separate wallet from your Max subscription) and isn't cheap, so it stays a manual, subscription-funded action you trigger on Max when you want it.
+
+A separate **lightweight `frontier-scan` Managed Agent** (a single Sonnet-5 announcement monitor, **not** the swarm) *is* deployed on an Anthropic cron (`depl_01Gpjjk7u7H8HJNDzgCDYtL4`, 1st & 15th at 05:00 UTC, first run 2026-08-15). It **does** bill the API wallet, web-searches for model announcements, and opens a PR only on an `[AGENT-IMPACT]` change (silent otherwise). Deploy/manage it via `scripts/frontier-ma-deploy.mjs`; full detail in `docs/managed-agent-setup.md`.
 
 ## How to Use
 
@@ -59,7 +61,9 @@ Records what happened with an idea — tracks prediction accuracy.
 
 ```
 proveit/
-├── agents/proveit.md      # Core agent definition — 9 phases (0–6.7, 7–9), scoring, outputs
+├── agents/
+│   ├── proveit.md              # Core agent definition — 9 phases (0–6.7, 7–9), scoring, outputs
+│   └── frontier-scan-agent.md  # Managed-Agent instructions (lightweight announcement monitor)
 ├── commands/
 │   ├── proveit.md         # Skill entry point for /proveit
 │   ├── proveit-fast.md    # Quick assumption check
@@ -67,11 +71,16 @@ proveit/
 │   └── proveit-retro.md   # Calibration retrospective
 ├── scripts/
 │   ├── openai-review.mjs           # Cross-model review (second-opinion model)
-│   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot
-│   └── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
+│   ├── frontier-scan.workflow.mjs  # Dynamic workflow: refreshes the frontier snapshot (run on Max)
+│   ├── swarm.workflow.mjs          # Dynamic workflow: the Deep Dive swarm (fan-out → verify → synthesize)
+│   ├── deploy-frontier-agent.ts    # Creates/updates the Managed Agent object (not the schedule)
+│   ├── frontier-ma-deploy.mjs      # Creates/reconfigures the biweekly scheduled deployment (the cron)
+│   ├── frontier-ma-test.mjs        # Manual one-off Managed Agent test run (forces a draft PR)
+│   └── check-docs-sync.sh          # Shared docs-sync gate logic (CI + commit hook)
 ├── docs/
-│   ├── design.md             # Design decisions and validation framework
-│   └── frontier-snapshot.md  # Living, dated record of the AI frontier (AI-currency engine)
+│   ├── design.md               # Design decisions and validation framework
+│   ├── frontier-snapshot.md    # Living, dated record of the AI frontier (AI-currency engine)
+│   └── managed-agent-setup.md  # Frontier-scan Managed Agent: deployment, monitoring, scripts
 └── .claude/settings.json     # Permissions config (Bash disabled by default)
 ```
 

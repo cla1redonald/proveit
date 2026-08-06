@@ -2,229 +2,106 @@
 
 ## Overview
 
-ProveIt's **frontier-scan Managed Agent** is a lightweight announcement monitor that runs on Anthropic's infrastructure every 2 weeks (1st and 15th at 05:00 UTC). It watches for new model announcements from the big 6 labs and alerts you to [AGENT-IMPACT] changes.
+ProveIt's **frontier-scan Managed Agent** is a **lightweight announcement monitor** that runs on Anthropic's infrastructure every two weeks (1st and 15th at 05:00 UTC). It web-searches the last ~14 days across the big-6 labs and opens a PR **only if** something is genuinely `[AGENT-IMPACT]`; otherwise it does nothing (silent success).
 
-Unlike session-level routines (which require an active Claude session), Managed Agents:
-- Run independently on Anthropic's servers
-- Execute on a cron schedule (no session required)
-- Have persistent state and can commit/PR changes
-- Auto-scale and handle their own lifecycle
+> **This is NOT the frontier-scan swarm workflow.** Two different things share the name:
+>
+> | | What it is | Where it runs | Cost |
+> |---|---|---|---|
+> | **Dynamic workflow** (`scripts/frontier-scan.workflow.mjs`) | The deep swarm: fan-out per lab, adversarial skeptic verifies every dated claim, synthesize, diff. ~100 agents, `full`/`lite` modes. Produces the full snapshot refresh. | Inside a **Claude Code session** on your **Max** subscription | No API cost (Max) |
+> | **Managed Agent** (this doc) | A single Sonnet-5 loop: ~6 web searches, PR only on `[AGENT-IMPACT]`. A cheap always-on watcher. | Anthropic's servers, on a cron | **Bills the API wallet** |
+>
+> They are complementary: run the workflow by hand for a deep refresh; let the Managed Agent tick along biweekly as a cheap tripwire.
 
-**Note:** This is a *lightweight announcement monitor*, not the full frontier-scan workflow. For a complete frontier refresh with adversarial verification, run the full `frontier-scan` workflow manually on your Max subscription (free, no API cost).
+## Current status
 
-## Architecture
+✅ **Deployed and active** (2026-08-06)
 
-```
-┌─ Every 2 weeks (1st & 15th, 05:00 UTC) ──────────┐
-│                                                   │
-│  Managed Agent (Sonnet 5)                        │
-│  ├── Run frontier-scan workflow (lite mode)      │
-│  ├── Check for [AGENT-IMPACT] flags              │
-│  ├── Commit changes if found                     │
-│  └── Create draft PR if agent edits detected     │
-│                                                   │
-└─ Git commit + optional PR ───────────────────────┘
-```
+| Resource | ID |
+|----------|----|
+| Agent | `agent_01FoF2hJGMYJ5cP6P9v1EbVe` (Claude Sonnet 5, carries `agent_toolset_20260401`) |
+| Scheduled deployment | `depl_01Gpjjk7u7H8HJNDzgCDYtL4` |
+| Environment | `env_01PFBUt2cu42bYm6xsv2x5pB` (cloud, unrestricted egress) |
+| Vault | `vlt_011CdmiBF3kJi3XrKXjbdzRY` (holds the `GITHUB_TOKEN` credential) |
 
-## Deployment
+- **Schedule:** cron `0 5 1,15 * *` UTC (1st and 15th, 05:00 UTC)
+- **First scheduled run:** 2026-08-15 05:00 UTC
 
-### Current Status
+> Before 2026-08-06 there was **no** schedule. `scripts/deploy-frontier-agent.ts` only ever created the *agent object*; the cron deployment was created separately by `scripts/frontier-ma-deploy.mjs`.
 
-✅ **Deployed and active**
-- **Agent ID:** `agent_01FoF2hJGMYJ5cP6P9v1EbVe`
-- **Model:** Claude Sonnet 5
-- **Schedule:** Every 2 weeks (1st & 15th at 05:00 UTC)
-- **Deployed:** 2026-08-01 13:13 UTC
-- **Next run:** 2026-09-01 05:00 UTC
+## The three scripts
 
-### Prerequisites (for re-deployment)
+| Script | What it does | When to run it |
+|--------|--------------|----------------|
+| `scripts/deploy-frontier-agent.ts` (`npm run frontier-scan`) | Creates/updates the **agent object** (name, model, system prompt from `agents/frontier-scan-agent.md`). Does **not** create a schedule. | When you change the agent's instructions/model. |
+| `scripts/frontier-ma-deploy.mjs` | Creates/reconfigures the **scheduled deployment** (adds the toolset to the agent, registers the cron). This is where the real schedule lives. | To (re)create the cron, change the schedule/kickoff, or swap in a durable GitHub PAT. |
+| `scripts/frontier-ma-test.mjs` | Fires a **manual one-off test session** (env + vault + session + repo mount) with a kickoff that *forces* a draft PR, so the full chain can be verified on demand. | To prove the flow manually without waiting for the cron. |
 
-- `ANTHROPIC_API_KEY` set in environment
-- Node.js 18+ with TypeScript support
-- Git repository with commit access
-- GitHub token if creating PRs (optional, for automation)
-
-### Install
+All three need `ANTHROPIC_API_KEY` exported at run time and `gh` logged in (the scripts pull a GitHub token via `gh auth token`). These calls bill the API wallet.
 
 ```bash
-npm install
+export ANTHROPIC_API_KEY=sk-ant-...
+node scripts/frontier-ma-deploy.mjs   # create/reconfigure the biweekly deployment
+node scripts/frontier-ma-test.mjs     # manual one-off test run (forces a draft PR)
 ```
 
-This adds:
-- `@anthropic-ai/sdk` — for Managed Agents API calls
-- `typescript` & `ts-node` — for the deployment script
+## How it works
 
-### Deploy or Re-deploy
+Each scheduled firing (1st and 15th, 05:00 UTC):
 
-**Dry run** (see what would be deployed):
-```bash
-export ANTHROPIC_API_KEY=your-key
-npm run frontier-scan:dry
-```
-
-**Live deployment** (deploys/updates the agent to Anthropic):
-```bash
-export ANTHROPIC_API_KEY=your-key
-npm run frontier-scan
-```
-
-The script will:
-1. Read agent instructions from `agents/frontier-scan-agent.md`
-2. Build the deployment config
-3. Call the Managed Agents API to register and schedule the agent
-4. Output the agent ID and next scheduled run time
-
-## How It Works
-
-### Bi-Weekly Execution (1st & 15th, 05:00 UTC)
-
-1. **Check for Announcements**
-   - Web search the last 14 days for new model releases from:
-     - Anthropic (Claude new versions, pricing changes)
-     - OpenAI (GPT new versions, feature releases)
-     - Google (Gemini updates, capabilities)
-     - xAI (Grok updates, new versions)
-     - Meta (Llama releases)
-     - DeepSeek (new models, pricing)
-
-2. **Assess [AGENT-IMPACT]**
-   - Flag if: new flagship model, >20% pricing change, capability default, SWE-bench change, distribution feature
-   - Don't flag: minor tweaks, bug fixes, research papers, rumors
-
-3. **Commit & PR (if [AGENT-IMPACT] found)**
-   - Stage: `docs/frontier-snapshot.md` with new changelog entry
-   - Create **draft PR** with changes and suggested scoring impacts
-   - Labels: `automated`, `frontier-scan`, `ai-currency`
-   - Return the PR URL
-
-4. **Silent success (if no [AGENT-IMPACT])**
-   - No commit, no PR (routine check with nothing to report)
+1. **Read the prior snapshot** — `docs/frontier-snapshot.md` in the mounted repo (note its `generated:` date/version).
+2. **Web-search the last ~14 days** across Anthropic, OpenAI, Google, xAI, Meta, DeepSeek.
+3. **Assess `[AGENT-IMPACT]`** — flag only a new flagship model, a >20% pricing shift, a differentiator becoming a default, a canonical-benchmark change, or a major distribution/workflow shift. Ignore minor tweaks, bug fixes, papers, and rumours.
+4. **PR only if impact found** — append a dated changelog entry to `docs/frontier-snapshot.md` §6, push a branch, and open a **draft PR** (labels `automated`, `frontier-scan`, `ai-currency`).
+5. **Silent success otherwise** — **no commit, no PR.** This is the expected common outcome.
 
 ### Outcomes
 
-| Scenario | Behavior |
-|----------|----------|
-| Regular snapshot refresh (no [AGENT-IMPACT]) | Auto-commit + merge → silent success |
-| Snapshot + agent scoring changes ([AGENT-IMPACT]) | Commit + draft PR for review → user notified |
-| Workflow error or data quality issue | Log error + notify user → manual investigation |
+| Scenario | Behaviour |
+|----------|-----------|
+| Nothing `[AGENT-IMPACT]` | No commit, no PR (silent success) |
+| A genuine `[AGENT-IMPACT]` change | Draft PR for human review (never merged unattended) |
+| Web search / git / PR error | Reports the failing step; no partial commit |
+
+## GitHub auth (the vault)
+
+The scheduled session needs to push and open PRs, so the deployment carries a GitHub token two ways:
+
+- The **repo mount** (`github_repository` resource) uses it via Anthropic's git proxy for `git push`.
+- The **vault** (`vlt_011CdmiBF3kJi3XrKXjbdzRY`) stores it as a `GITHUB_TOKEN` **env-var credential**, injected at egress on requests to `api.github.com` so the agent can create the PR via the REST API. The token never enters the sandbox.
+
+> ⚠️ **Token durability.** The stored token is a `gh auth token` pulled at deploy time. If it rotates or expires, the biweekly **PR step breaks** (the scan still runs). Durable fix: mint a fine-grained PAT scoped to `cla1redonald/proveit` (Contents + Pull requests: read/write), update the vault credential's `secret_value` and the deployment's `github_repository` `authorization_token`, then re-run `scripts/frontier-ma-deploy.mjs`.
+
+## Cost
+
+The Managed Agent is a **single Sonnet-5 session** with ~5–10 web searches per run — on the order of **~$2–4 per run**, twice a month. It **bills the API wallet** (separate from your Max subscription).
+
+The `~100-agent`, multi-million-token, `full`/`lite` figures belong to the **dynamic workflow**, not this agent. Run that on Max (no API cost) when you want the deep refresh.
 
 ## Monitoring
 
-### Check Agent Status
+- **Live session view:** each run opens a session at `https://platform.claude.com/workspaces/default/sessions/<session_id>` (printed by the test script; for scheduled runs, find the session id via the deployment runs below or the Console).
+- **Deployment runs:** `client.beta.deployment_runs.list({ deployment_id: 'depl_01Gpjjk7u7H8HJNDzgCDYtL4' })` — each firing writes a run record (success carries the `session_id`; failure carries an `error.type`).
+- **GitHub:** any auto-PR appears with labels `automated`, `frontier-scan`, `ai-currency` as a draft.
 
-```bash
-# View recent runs (via Anthropic Dashboard or API)
-# Agent ID will be provided on first deployment
-```
+## Managing the deployment
 
-### Expected Log Output
-
-Each run logs to Anthropic's session transcript. You'll see:
-- Workflow phase progress (Scan → Verify → Synthesize → Diff)
-- [AGENT-IMPACT] flag summary
-- Git commit message
-- PR URL (if created)
-
-### GitHub PR Activity
-
-Auto-generated PRs will appear in the repository with:
-- **Title:** `🛰️ Frontier snapshot refresh + agent updates (automated)`
-- **Labels:** `automated`, `frontier-scan`, `ai-currency`
-- **Draft status:** If agent edits included
-- **Body:** Summary of changes + [AGENT-IMPACT] flags
-
-## Cost Estimation
-
-**Lite mode** (default, bi-weekly):
-- ~100 agents (6 domains × researchers + verifiers)
-- ~1M tokens per run (capped findings, Sonnet synthesis)
-- ~$3–4 per run (Sonnet 5 pricing)
-- **~$85–112/month** (24 runs/year, roughly every 15 days)
-
-**Full mode** (for manual runs):
-- ~300 agents (deeper research + Opus synthesis)
-- ~3.7M tokens
-- ~$20–25 per run
+- **Run now (manual):** `client.beta.deployments.run('depl_01Gpjjk7u7H8HJNDzgCDYtL4')`, the Console "Run now" button, or `scripts/frontier-ma-test.mjs` for a forced-PR test.
+- **Pause / unpause:** `client.beta.deployments.pause(id)` / `.unpause(id)` (reversible; manual runs still work while paused).
+- **Archive (terminal):** `client.beta.deployments.archive(id)` — the schedule stops permanently.
+- **Change schedule or kickoff:** edit `scripts/frontier-ma-deploy.mjs` (the `schedule.expression` / `initial_events`), then re-run it.
+- **Change the agent's instructions:** edit `agents/frontier-scan-agent.md`, run `npm run frontier-scan` (updates the agent object); the next scheduled run uses the new prompt.
 
 ## Troubleshooting
 
-### "Agent deployment failed: 403 Unauthorized"
-- Check `ANTHROPIC_API_KEY` is set and valid
-- Verify your API key has Managed Agents access (beta feature)
-
-### "Snapshot refresh succeeded but no PR created"
-- This is normal if no `[AGENT-IMPACT]` flags were detected
-- Check `git log` to see the auto-merged snapshot commit
-
-### "Git push failed: Permission denied"
-- The agent runs with your repository's permissions
-- Ensure your API key / GitHub token has write access to the repo
-
-### "Workflow timeout (30+ min)"
-- Lite mode should complete in ~8–12 min
-- If timing out: check network, or manually run with smaller domain set
-
-## Configuration
-
-### Change Schedule
-
-Edit `scripts/deploy-frontier-agent.ts`, update the `schedule.cron` field:
-
-```typescript
-schedule: {
-  timezone: "UTC",
-  cron: "0 5 * * *",  // Change this line
-}
-```
-
-Then re-deploy: `npm run frontier-scan`
-
-**Common cron patterns:**
-- `0 2 * * *` — 2:00 AM UTC
-- `0 */6 * * *` — Every 6 hours
-- `0 9 * * 1` — Mondays at 9:00 AM UTC
-
-### Adjust Mode (Lite ↔ Full)
-
-Edit `agents/frontier-scan-agent.md`, update the workflow invocation:
-
-```bash
-# Lite (fast, lower cost)
-npm run frontier-scan -- --mode lite
-
-# Full (thorough, higher cost)
-npm run frontier-scan -- --mode full
-```
-
-## Maintenance
-
-### Update Agent Instructions
-
-1. Edit `agents/frontier-scan-agent.md` with new instructions
-2. Re-deploy: `npm run frontier-scan`
-3. The next scheduled run will use the updated prompt
-
-### Disable Agent
-
-To pause the agent temporarily:
-- Via Anthropic Dashboard: disable schedule
-- Via API: update agent with `active: false`
-- Manually: stop deployments (requires dashboard access)
-
-To permanently delete:
-- Via Anthropic Dashboard: delete agent
-- Via API: call agents.delete()
-
-## Next Steps
-
-1. **Deploy:** `npm run frontier-scan`
-2. **Monitor:** Check for PRs in the repository tomorrow morning
-3. **Iterate:** Adjust schedule/mode based on first run results
-4. **Document:** Update this file if you make configuration changes
+- **`400 unknown field "name"` on vault create** — vaults use `display_name`, not `name`.
+- **`agent.selector.type: "agent_with_overrides" is not a valid value`** — deployments take a plain agent reference, so the toolset must live on the agent itself (`frontier-ma-deploy.mjs` adds `agent_toolset_20260401` before creating the deployment).
+- **Scan ran but no PR** — normal if nothing was `[AGENT-IMPACT]`.
+- **Git push / PR failed** — usually the GitHub token expired/rotated (see Token durability above).
 
 ---
 
-**Last updated:** 2026-08-01  
-**Agent model:** Claude Sonnet 5  
-**Schedule:** Daily 05:00 UTC  
-**Mode:** Lite (default)
+**Last updated:** 2026-08-06
+**Agent model:** Claude Sonnet 5
+**Schedule:** 1st & 15th, 05:00 UTC (`0 5 1,15 * *`)
+**Kind:** Lightweight announcement monitor (not the swarm workflow)
