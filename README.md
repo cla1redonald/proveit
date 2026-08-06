@@ -34,6 +34,7 @@ ProveIt is what I wanted: a fast, structured, evidence-based preflight check tha
 - [Pipeline (ShipIt)](#pipeline-shipit)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Web app maintenance](#web-app-maintenance)
 - [Quick start](#quick-start)
 - [Resuming a session](#resuming-a-session)
 - [What you get](#what-you-get)
@@ -190,6 +191,24 @@ Add these keys to `~/.claude/settings.json` (merge — don't replace the whole f
 ```
 
 </details>
+
+---
+
+## Web app maintenance
+
+The public web app lives in [`web/`](web/) and currently targets Next.js 16.3 with React 19. From the repository root:
+
+```bash
+cd web
+npm ci
+npm run lint
+npx tsc --noEmit
+npm run test:run
+npm run build
+npm audit --omit=dev
+```
+
+The audit should report zero production vulnerabilities before a release.
 
 ---
 
