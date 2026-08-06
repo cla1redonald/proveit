@@ -7,14 +7,14 @@
     "build": "next build",
     "postbuild": "bash ./scripts/upload-sourcemaps.sh",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest",
     "test:run": "vitest run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",
     "@supabase/supabase-js": "^2.105.4",
-    "@tailwindcss/postcss": "^4.2.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/typography": "0.5.16",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
@@ -22,9 +22,9 @@
     "clsx": "2.1.1",
     "lucide-react": "0.511.0",
     "nanoid": "5.1.5",
-    "next": "^15.3.9",
-    "posthog-js": "^1.372.10",
-    "posthog-node": "^5.34.2",
+    "next": "^16.3.0",
+    "posthog-js": "^1.413.3",
+    "posthog-node": "^5.48.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-markdown": "^10.1.0",
@@ -36,7 +36,7 @@
     "zod": "3.25.23"
   },
   "devDependencies": {
-    "@posthog/cli": "^0.7.11",
+    "@posthog/cli": "^0.10.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
@@ -47,10 +47,11 @@
     "@vitejs/plugin-react": "4.5.2",
     "autoprefixer": "10.4.21",
     "eslint": "9.28.0",
-    "eslint-config-next": "^15.3.9",
-    "jsdom": "^28.1.0",
-    "postcss": "8.5.4",
+    "eslint-config-next": "^16.3.0",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.5.26",
     "typescript": "5.9.3",
-    "vitest": "3.2.4"
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
   }
 }
