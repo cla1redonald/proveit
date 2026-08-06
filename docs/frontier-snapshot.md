@@ -255,6 +255,24 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-08-06 (managed-agent test pass, supplementary)** — Supervised end-to-end test of the
+  scheduled frontier-scan monitor (bi-weekly cadence check) against the ~14 days prior to this
+  same-day v4 refresh. Checked all six labs for anything crossing the `[AGENT-IMPACT]` bar per the
+  monitor's own rubric (new flagship, >20% pricing shift, capability default, benchmark jump, or
+  distribution feature). **No new `[AGENT-IMPACT]` finding beyond what v4 already captured** — the
+  flagship refresh (Opus 5, Sonnet 5, GPT-5.6, Gemini 3.6 Flash), the Atlas/budgeting commoditization
+  closures, and Managed Agents infra are all already logged under v4 above. One item is flagged as a
+  **watch item, not yet `[AGENT-IMPACT]`**: DeepSeek announced on 2026-08-06 a forthcoming
+  "significant" price increase across its API (magnitude and effective date not yet published) —
+  potentially reverses part of Section 4's "commodity floor kept falling" framing anchored on
+  DeepSeek V4-Flash's $0.14/$0.28 rate, but cannot be scored until DeepSeek publishes numbers. Also
+  noted, non-impactful: Anthropic's MCP 2026-07-28 stateless-core spec and Claude Enterprise
+  inference-hooks/admin-analytics additions, GPT-Live-1 voice model, Grok Voice Think Fast 2.0
+  default-routing (2026-08-05), and DeepSeek-V4-Flash-0731 (284B, same pricing tier) — all routine,
+  none crossing the flagship/pricing/capability/benchmark/distribution bar. This entry exists to
+  validate the monitor's PR mechanism end-to-end; re-check DeepSeek pricing at the next scheduled
+  pass (2026-08-20).
+  - _Sources: [Bloomberg — DeepSeek price hike](https://www.bloomberg.com/news/articles/2026-08-06/deepseek-plans-significant-price-increase-for-its-ai-services), [SCMP — DeepSeek price hike](https://www.scmp.com/tech/tech-trends/article/3363129/deepseek-signals-significant-price-hike-amid-surge-demand-low-cost-ai-models), [Dataconomy — DeepSeek price hike](https://dataconomy.com/2026/08/06/deepseek-significant-api-price-increase-2026/), [Releasebot — Anthropic Aug 2026](https://releasebot.io/updates/anthropic), [Releasebot — xAI Aug 2026](https://releasebot.io/updates/xai)._
 - **2026-08-06 (snapshot v4)** — Full `frontier-scan` refresh. Flagship refresh across four labs,
   two new commoditization closures, a design-tooling handoff-surface change, and a regulatory-risk
   precedent.
