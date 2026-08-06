@@ -5,8 +5,6 @@
 
 **Date:** 2026-05-10
 **Status:** Implemented in v3.2
-**Related plan:** [`docs/plans/2026-05-10-phase-0-intake-and-context-type.md`](../plans/2026-05-10-phase-0-intake-and-context-type.md)
-
 This spec is the implementation contract — required structures, exact protocol, and the boundaries between adjacent tools.
 
 ## 1. Phase 0 — Intake

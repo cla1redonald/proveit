@@ -2,9 +2,6 @@
 
 **Date:** 2026-05-10
 **Status:** Implemented in v3.3.0
-**Related plan:** [`docs/plans/2026-05-10-spend-ledger-circuit-breaker.md`](../plans/2026-05-10-spend-ledger-circuit-breaker.md)
-**Related gameplan:** [`docs/gameplans/2026-05-10-spend-ledger-circuit-breaker.md`](../gameplans/2026-05-10-spend-ledger-circuit-breaker.md)
-
 ## 1. Public API — `web/src/lib/spend-ledger.ts`
 
 ```typescript

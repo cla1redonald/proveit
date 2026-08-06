@@ -5,8 +5,6 @@
 
 **Date:** 2026-05-09
 **Status:** Implemented (commits `81ae8c9`, `a1728b4`)
-**Related plan:** [`docs/plans/2026-05-09-agent-maturation.md`](../plans/2026-05-09-agent-maturation.md)
-
 ## Goals
 
 1. Insert a deliberate **falsification + kill-criteria** stage between research synthesis and outputs — the missing decision-support moment in the pre-existing pipeline.
@@ -171,7 +169,7 @@ Each agent prompt embeds named frameworks (e.g. April Dunford for GTM positionin
 
 There are no automated tests for the agent prompts (markdown specs). Verification is real-world:
 
-1. **Wedding Speech Roaster** validation queued in `~/code/proveit-strategy/HANDOFF.md` — first end-to-end test of the new structure.
+1. **Wedding Speech Roaster** validation was used as an early end-to-end test of the new structure.
 2. **Strategic validation** (paid vs portfolio) — second test, longer-running.
 3. **Manual prompt review** — the prompts have been authored against live Lenny MCP query results to ground guest attributions.
 

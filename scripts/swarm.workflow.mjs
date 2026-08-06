@@ -11,7 +11,7 @@ export const meta = {
 
 // ---------------------------------------------------------------------------
 // swarm — the Deep Dive, rebuilt in the dynamic-workflow style (see
-// docs/plans/2026-06-08-swarm-as-dynamic-workflow.md). Code coordinates
+// the v3.7 design notes). Code coordinates
 // (composition, dedup, the verify gate, confidence weighting); the model judges
 // inside each agent. The angle prompts are ported VERBATIM from agents/proveit.md
 // (mandate/frameworks/tools/find) — only the per-agent "Output: write file"

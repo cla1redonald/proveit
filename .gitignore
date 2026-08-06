@@ -30,3 +30,7 @@ review-*.md
 
 # Supabase CLI local cache
 supabase/.temp/
+
+# Local Studio experiments and generated captures are not part of the public product
+studio/
+studio-*.png

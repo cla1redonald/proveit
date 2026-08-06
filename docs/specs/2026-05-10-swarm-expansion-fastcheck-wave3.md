@@ -5,9 +5,7 @@
 
 **Date:** 2026-05-10
 **Status:** Implemented
-**Related plan:** [`docs/plans/2026-05-10-swarm-expansion-fastcheck-wave3.md`](../plans/2026-05-10-swarm-expansion-fastcheck-wave3.md)
-
-This spec is the implementation contract — required structures for the new outputs, agent prompt anchors, and the selection logic for the new tiers. The plan doc covers *why*; this doc covers *what exactly*.
+This spec is the implementation contract — required structures for the new outputs, agent prompt anchors, and the selection logic for the new tiers.
 
 ## 1. Three new swarm agents
 
