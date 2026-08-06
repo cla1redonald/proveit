@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import posthog from "posthog-js";
+import { captureException } from "@/lib/posthog";
 
 /**
  * Route-level error boundary (Next.js App Router).
  *
  * Catches uncaught errors rendered in any page below /app and reports them
- * to PostHog so the maintainer sees them in the activity feed.
+ * to PostHog only when the visitor has opted into analytics.
  *
  * PII discipline: we only pass the Error object (name, message, stack). We
  * do NOT include any user-typed content — the idea text and chat messages
@@ -21,7 +21,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    posthog.captureException(error, { source: "app_route_error_boundary" });
+    captureException(error, { source: "app_route_error_boundary" });
   }, [error]);
 
   return (

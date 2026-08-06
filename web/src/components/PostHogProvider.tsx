@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
-import { initPostHog } from "@/lib/posthog";
+import { AnalyticsConsentBanner } from "@/components/AnalyticsConsent";
 
 /**
- * Mount-once PostHog initialiser. Sits in the root layout below <body> so it
- * runs on every page, after hydration. Quiet no-op when env vars are missing.
+ * Mounts the consent banner on every page. PostHog starts only after the
+ * visitor opts in; the consent component owns the browser-only initialisation.
  */
 export default function PostHogProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    initPostHog();
-  }, []);
-
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <AnalyticsConsentBanner />
+    </>
+  );
 }

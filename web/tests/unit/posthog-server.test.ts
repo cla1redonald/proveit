@@ -26,9 +26,11 @@ describe("posthog-server", () => {
   afterEach(() => {
     delete process.env.NEXT_PUBLIC_POSTHOG_KEY;
     delete process.env.NEXT_PUBLIC_POSTHOG_HOST;
+    delete process.env.POSTHOG_SERVER_ENABLED;
   });
 
   it("returns null and warns when NEXT_PUBLIC_POSTHOG_KEY is unset", () => {
+    process.env.POSTHOG_SERVER_ENABLED = "true";
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const client = getPostHogServer();
     expect(client).toBeNull();
@@ -39,6 +41,7 @@ describe("posthog-server", () => {
   });
 
   it("captureServerException is a quiet no-op when key is unset", async () => {
+    process.env.POSTHOG_SERVER_ENABLED = "true";
     vi.spyOn(console, "warn").mockImplementation(() => {});
     await expect(
       captureServerException(new Error("boom"), { route: "/api/x" }),
@@ -47,6 +50,7 @@ describe("posthog-server", () => {
   });
 
   it("forwards Error + properties + distinctId when key is set", async () => {
+    process.env.POSTHOG_SERVER_ENABLED = "true";
     process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test_key";
     const err = new Error("anthropic exploded");
     await captureServerException(err, { route: "/api/chat" }, "user-123");
@@ -58,6 +62,7 @@ describe("posthog-server", () => {
   });
 
   it("wraps non-Error values in Error before sending", async () => {
+    process.env.POSTHOG_SERVER_ENABLED = "true";
     process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test_key";
     await captureServerException("string error", { route: "/api/fast" });
     const [sentErr] = captureExceptionMock.mock.calls[0];
@@ -66,6 +71,7 @@ describe("posthog-server", () => {
   });
 
   it("swallows internal capture errors without throwing", async () => {
+    process.env.POSTHOG_SERVER_ENABLED = "true";
     process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test_key";
     captureExceptionMock.mockRejectedValueOnce(new Error("network down"));
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -74,5 +80,11 @@ describe("posthog-server", () => {
     ).resolves.toBeUndefined();
     expect(errSpy).toHaveBeenCalled();
     errSpy.mockRestore();
+  });
+
+  it("stays disabled unless server telemetry is explicitly enabled", () => {
+    process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_test_key";
+    expect(getPostHogServer()).toBeNull();
+    expect(captureExceptionMock).not.toHaveBeenCalled();
   });
 });

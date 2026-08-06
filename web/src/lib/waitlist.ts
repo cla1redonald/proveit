@@ -21,10 +21,9 @@ import "server-only";
  *   ip           text nullable
  *   created_at   timestamptz default now()
  *
- * Privacy: this is intentionally light-touch. The form copy tells the user
- * the email goes to the maintainer (Claire) and that's it. No marketing
- * automation, no third-party processors. If this ever grows into a real
- * mailing list, that's the moment to add a privacy notice and an opt-out.
+ * Privacy: the form tells the user the email goes to the maintainer (Claire)
+ * and links to the privacy notice. Supabase stores the entry and Resend may
+ * deliver a notification email. This is not a marketing mailing list.
  *
  * Fail open on Supabase errors — better to silently lose a submission than
  * to break the form for the user. Errors are logged for follow-up.

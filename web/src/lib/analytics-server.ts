@@ -3,8 +3,8 @@ import "server-only";
 /**
  * Server-side PostHog analytics client for API route event capture.
  *
- * Reuses NEXT_PUBLIC_POSTHOG_KEY + NEXT_PUBLIC_POSTHOG_HOST (already
- * provisioned for client analytics). No new env vars needed.
+ * Reuses NEXT_PUBLIC_POSTHOG_KEY + NEXT_PUBLIC_POSTHOG_HOST, but requires
+ * POSTHOG_SERVER_ENABLED=true. Server events are opt-in at deployment level.
  *
  * Distinct from posthog-server.ts (which handles exception tracking):
  * this module is for business-event capture (checkout_initiated,
@@ -26,6 +26,11 @@ let _client: PostHog | null | undefined;
 
 function getAnalyticsClient(): PostHog | null {
   if (_client !== undefined) return _client;
+
+  if (process.env.POSTHOG_SERVER_ENABLED !== "true") {
+    _client = null;
+    return _client;
+  }
 
   const key =
     process.env.NEXT_PUBLIC_POSTHOG_KEY || process.env.POSTHOG_KEY;

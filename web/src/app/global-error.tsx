@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import posthog from "posthog-js";
+import { captureException } from "@/lib/posthog";
 
 /**
  * Root-level error boundary (Next.js App Router).
@@ -9,7 +9,7 @@ import posthog from "posthog-js";
  * Fires for errors in the root layout / providers, which the route-level
  * error.tsx cannot catch. Must include its own <html> + <body>.
  *
- * PII: we only pass the Error object. No idea text, no chat content.
+ * PII: we only pass the Error object, and only after analytics consent.
  */
 export default function GlobalError({
   error,
@@ -19,7 +19,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    posthog.captureException(error, { source: "app_global_error_boundary" });
+    captureException(error, { source: "app_global_error_boundary" });
   }, [error]);
 
   return (

@@ -227,6 +227,13 @@ export default function HomePage() {
         >
           ProveIt — Evidence-based product validation.
         </p>
+        <Link
+          href="/privacy"
+          className="font-sans mt-[var(--space-2)] inline-block underline underline-offset-2"
+          style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
+        >
+          Privacy notice
+        </Link>
       </footer>
     </div>
   );

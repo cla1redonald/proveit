@@ -7,8 +7,9 @@ import "server-only";
  * posthog-js wiring (lib/posthog.ts) so server errors land in the same
  * project as client errors.
  *
- * Env vars: reuses NEXT_PUBLIC_POSTHOG_KEY + NEXT_PUBLIC_POSTHOG_HOST
- * (already provisioned for client analytics in #29). No new env vars needed.
+ * Env vars: reuses NEXT_PUBLIC_POSTHOG_KEY + NEXT_PUBLIC_POSTHOG_HOST, but
+ * requires POSTHOG_SERVER_ENABLED=true. Server telemetry is deliberately
+ * disabled unless explicitly enabled after the privacy notice is reviewed.
  *
  * PII: callers must not pass user-typed content (idea text, chat messages,
  * email addresses) in properties. Pass only error objects + non-PII context
@@ -29,6 +30,11 @@ let _client: PostHog | null | undefined;
 
 export function getPostHogServer(): PostHog | null {
   if (_client !== undefined) return _client;
+
+  if (process.env.POSTHOG_SERVER_ENABLED !== "true") {
+    _client = null;
+    return _client;
+  }
 
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key) {

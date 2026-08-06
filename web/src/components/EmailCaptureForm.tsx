@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { captureEvent } from "@/lib/posthog";
 
 interface EmailCaptureFormProps {
@@ -17,9 +18,7 @@ interface EmailCaptureFormProps {
  * (+ optional one-line note) so Claire can follow up when there's more
  * capacity. Posts to /api/waitlist, which writes to a daily Upstash list.
  *
- * Privacy framing is deliberately light-touch and clear about who gets the
- * email: Claire (maintainer), no marketing automation. If this ever grows
- * into a real mailing list, add a privacy notice + opt-out at that point.
+ * The form tells users who receives the email and links to the privacy notice.
  */
 export default function EmailCaptureForm({
   reason,
@@ -98,7 +97,10 @@ export default function EmailCaptureForm({
         className="font-sans mb-[var(--space-3)]"
         style={{ fontSize: "var(--text-sm)", color: "var(--text-primary)" }}
       >
-        Want more access? Drop your email and I&apos;ll get in touch when there&apos;s more capacity. Goes straight to me (Claire), nothing automated.
+        Want more access? Drop your email and I&apos;ll get in touch when there&apos;s more capacity. Goes straight to me (Claire), nothing automated.{" "}
+        <Link href="/privacy" className="underline underline-offset-2">
+          Privacy notice
+        </Link>
       </p>
 
       <label
