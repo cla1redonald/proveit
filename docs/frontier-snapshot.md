@@ -255,6 +255,30 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-08-15 (Managed Agent scan)** — Biweekly announcement-monitor pass. One pricing-side
+  `[AGENT-IMPACT]` reversal and one new near-frontier model release, both inside the last 14 days.
+  - **`[AGENT-IMPACT]`** DeepSeek reversed its commodity-floor pricing, effective 2026-08-16 (new
+    V4-Pro-0813 checkpoint): V4-Pro rises from $0.435/$0.87 to $1.32/$3.96 peak (~3×/4.5×, half
+    that off-peak) and V4-Flash's output rate rises from $0.28 to $1.32 peak (~4.7×, half
+    off-peak), with DeepSeek citing a need to "allocate resources more reasonably." This directly
+    reverses Section 4's "commodity floor kept falling" framing — DeepSeek was the cited
+    cheap-open-weight anchor undercutting GPT-5.6 Luna, and that anchor just quadrupled. New
+    pricing still undercuts Anthropic/OpenAI flagships but no longer clearly undercuts GPT-5.6
+    Luna ($0.20/$1.20) on output. Any cost model citing DeepSeek's old $0.14/$0.28 V4-Flash rate
+    as the commodity floor is now stale.
+  - **`[AGENT-IMPACT]`** xAI shipped Grok 4.6 (2026-08-12), 35 days after Grok 4.5, scoring 61 on
+    the Artificial Analysis Intelligence Index — tying GPT-5.6 Sol and sitting just behind Claude
+    Opus 5 (63) and Fable 5 (62). Standard token pricing held flat at $2/$6 per Mtok (unchanged
+    from Grok 4.5), but cached-input pricing rose ~67% ($0.30→$0.50/Mtok) and a new 200K-token
+    long-context threshold re-bills the *entire* request at $4/$12. This is the first Grok release
+    to credibly tie a current-generation OpenAI/Anthropic flagship on a canonical composite
+    benchmark, even as Grok 5 itself remains unreleased and unscheduled.
+  - Watch item (not yet `[AGENT-IMPACT]`, no ship date/pricing/model card): OpenAI named its next
+    major model "Astra" (2026-08-01), unreleased, alongside a report of ten solved open math/CS
+    problems. Revisit once Astra actually ships.
+
+  _Sources: [Bloomberg — DeepSeek price increase](https://www.bloomberg.com/news/articles/2026-08-06/deepseek-plans-significant-price-increase-for-its-ai-services), [Fortune — DeepSeek price hike detail](https://fortune.com/2026/08/13/deepseek-increases-prices-for-ai-services-by-multiple-times/), [Engadget — DeepSeek V4-Pro 4× pricier](https://www.engadget.com/2236912/deepseek-ai-models-get-four-times-pricier/), [Tasnim — V4-Pro-0813 pricing](https://www.tasnimnews.ir/en/news/2026/08/14/3670642/deepseek-launches-new-model-at-prices-up-to-14-times-higher), [x.ai — Introducing Grok 4.6](https://x.ai/news/grok-4-6), [kingy.ai — Grok 4.6 price/benchmarks](https://kingy.ai/blog/grok-4-6-price-benchmarks-api-cursor-context-window/), [felloai — Grok 4.6 benchmarks](https://felloai.com/grok-4-6/), [aipricing.guru — Grok 4.6 pricing impact](https://www.aipricing.guru/news/xai-grok-4-6-launch-pricing-impact-august-2026/), [felloai — Astra naming](https://felloai.com/all-we-know-about-chatgpt-6/)._
+
 - **2026-08-06 (snapshot v4)** — Full `frontier-scan` refresh. Flagship refresh across four labs,
   two new commoditization closures, a design-tooling handoff-surface change, and a regulatory-risk
   precedent.
