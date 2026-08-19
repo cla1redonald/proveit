@@ -98,35 +98,35 @@ const ICON_SPRITE = `
 const PALETTE_OVERRIDE = `<style>
   /* ====== ProveIt / Roami palette re-skin ====== */
   :root {
-    --rm-river:         #2A5A52;
-    --rm-river-600:     #316B61;
-    --rm-river-700:     #234B45;
-    --rm-river-900:     #18332F;
-    --rm-mint-tint:     #E4EEE9;
-    --rm-mint-100:      #CDE0D7;
+    --deck-river:      #2A5A52;
+    --deck-river-600:  #316B61;
+    --deck-river-700:  #234B45;
+    --deck-river-900:  #18332F;
+    --deck-mint-tint:  #E4EEE9;
+    --deck-mint-100:   #CDE0D7;
 
-    --rm-amber:         #C4956A;
-    --rm-amber-soft:    #F5EAD9;
+    --deck-amber:      #C4956A;
+    --deck-amber-soft: #F5EAD9;
 
-    --rm-cream:         #FAF6F1;
-    --rm-cream-2:       #F0E8DC;
-    --rm-line:          #E0D9CF;
+    --deck-cream:      #FAF6F1;
+    --deck-cream-2:    #F0E8DC;
+    --deck-line:       #E0D9CF;
 
-    --rm-risk:          #C45252;
-    --rm-risk-soft:     #F5DEDE;
+    --deck-risk:       #C45252;
+    --deck-risk-soft:  #F5DEDE;
 
     /* Map deck system tokens to ProveIt palette */
-    --slide-bg:         var(--rm-cream);
+    --slide-bg:         var(--deck-cream);
     --surface:          #FFFCF6;
-    --surface-2:        var(--rm-cream-2);
-    --accent:           var(--rm-river);
-    --accent-ink:       var(--rm-river-700);
-    --dark-bg:          var(--rm-river-900);
-    --dark-surface:     var(--rm-river-700);
+    --surface-2:        var(--deck-cream-2);
+    --accent:           var(--deck-river);
+    --accent-ink:       var(--deck-river-700);
+    --dark-bg:          var(--deck-river-900);
+    --dark-surface:     var(--deck-river-700);
     --dark-ink-2:       #A8C4BC;
     --on-accent:        #0E2722;
     --shadow-accent:    0 12px 30px rgba(42,90,82,.28);
-    --line:             var(--rm-line);
+    --line:             var(--deck-line);
   }
 
   /* Cover headline must be LIGHT on the dark statement slide: deck.css's .cover-headline
@@ -156,12 +156,12 @@ const PALETTE_OVERRIDE = `<style>
   .kpi-icon {
     width: 56px; height: 56px;
     border-radius: 16px;
-    background: var(--rm-mint-tint);
-    color: var(--rm-river-700);
+    background: var(--deck-mint-tint);
+    color: var(--deck-river-700);
     display: grid;
     place-items: center;
   }
-  .kpi-icon.risk { background: var(--rm-risk-soft); color: var(--rm-risk); }
+  .kpi-icon.risk { background: var(--deck-risk-soft); color: var(--deck-risk); }
   .kpi-label {
     font: 700 13px/1.2 var(--font-sans);
     color: var(--ink-3);
@@ -192,14 +192,14 @@ const PALETTE_OVERRIDE = `<style>
     gap: 4px;
   }
   .kill-cell.ask {
-    background: var(--rm-mint-tint);
-    border: 1px solid var(--rm-mint-100);
-    border-left: 4px solid var(--rm-river);
+    background: var(--deck-mint-tint);
+    border: 1px solid var(--deck-mint-100);
+    border-left: 4px solid var(--deck-river);
   }
   .kill-cell.walk {
-    background: var(--rm-risk-soft);
-    border: 1px solid var(--rm-risk-soft);
-    border-left: 4px solid var(--rm-risk);
+    background: var(--deck-risk-soft);
+    border: 1px solid var(--deck-risk-soft);
+    border-left: 4px solid var(--deck-risk);
   }
   .kill-type {
     font: 800 10.5px/1 var(--font-sans);
@@ -207,8 +207,8 @@ const PALETTE_OVERRIDE = `<style>
     text-transform: uppercase;
     margin-bottom: 3px;
   }
-  .kill-type.ask { color: var(--rm-river-700); }
-  .kill-type.walk { color: var(--rm-risk); }
+  .kill-type.ask { color: var(--deck-river-700); }
+  .kill-type.walk { color: var(--deck-risk); }
   .kill-evidence {
     font: 400 14px/1.4 var(--font-sans);
     color: var(--ink-2);
@@ -263,8 +263,8 @@ const PALETTE_OVERRIDE = `<style>
     flex: 0 0 auto;
     width: 36px; height: 36px;
     border-radius: 10px;
-    background: var(--rm-mint-tint);
-    color: var(--rm-river-700);
+    background: var(--deck-mint-tint);
+    color: var(--deck-river-700);
     display: grid;
     place-items: center;
   }
@@ -286,7 +286,7 @@ function slideCover(ideaSummary: string): string {
             <span class="nm">ProveIt</span>
             <span class="rl">Idea Validation Report</span>
           </div>
-          <svg width="48" height="48" style="color:var(--rm-mint-tint);flex:0 0 auto;" aria-hidden="true"><use href="#ic-proveit"/></svg>
+          <svg width="48" height="48" style="color:var(--deck-mint-tint);flex:0 0 auto;" aria-hidden="true"><use href="#ic-proveit"/></svg>
         </div>
         <div class="anim">
           <span class="eyebrow">Your validation results</span>
