@@ -1,5 +1,5 @@
 /* ============================================================================
-   deck.css — slide-type library for the Rightmove-style presentation system.
+   deck.css: slide-type library for the executive presentation system.
    Loaded after colors_and_type.css. Slides are <section> children of
    <deck-stage>; the component absolutely-positions each to fill the 1280×720
    canvas, so we never set position/size on the section — only inner layout.
@@ -38,8 +38,8 @@ deck-stage { background: #0a1512; }
   content: ""; width: 22px; height: 3px; border-radius: 2px;
   background: var(--accent);
 }
-.is-dark .eyebrow { color: var(--rm-turquoise); }
-.is-dark .eyebrow::before { background: var(--rm-turquoise); }
+.is-dark .eyebrow { color: var(--deck-turquoise); }
+.is-dark .eyebrow::before { background: var(--deck-turquoise); }
 
 .slide-title { font: var(--w-black) var(--fs-h1)/var(--lh-snug) var(--font-sans); letter-spacing: var(--ls-tight); color: var(--ink); margin: 0; text-wrap: balance; }
 .slide-lead { font: var(--w-regular) var(--fs-h3)/1.4 var(--font-sans); color: var(--ink-2); margin: 0; max-width: 60ch; text-wrap: pretty; }
@@ -95,12 +95,12 @@ deck-stage { background: #0a1512; }
    SECTION DIVIDER
    =========================================================================== */
 .divider .pad { justify-content: center; gap: 22px; }
-.divider .idx { font: var(--w-black) 22px/1 var(--font-sans); color: var(--rm-turquoise); letter-spacing: .04em; }
+.divider .idx { font: var(--w-black) 22px/1 var(--font-sans); color: var(--deck-turquoise); letter-spacing: .04em; }
 .divider .d-title { font: var(--w-black) var(--fs-d2)/1.05 var(--font-sans); letter-spacing: -0.02em; color: var(--dark-ink); margin: 0; max-width: 22ch; text-wrap: balance; }
 .divider .d-sub { font: var(--w-regular) var(--fs-h3)/1.4 var(--font-sans); color: var(--dark-ink-2); margin: 0; max-width: 52ch; }
 .divider-rail { display: flex; gap: 8px; margin-top: 8px; }
 .divider-rail i { height: 4px; width: 40px; border-radius: 3px; background: var(--dark-line); display: block; }
-.divider-rail i.on { background: var(--rm-turquoise); width: 64px; }
+.divider-rail i.on { background: var(--deck-turquoise); width: 64px; }
 
 /* ===========================================================================
    AGENDA
@@ -133,15 +133,15 @@ deck-stage { background: #0a1512; }
 .card.accent { border-color: transparent; background: linear-gradient(180deg,#06433A,#073B33); color: var(--dark-ink); box-shadow: var(--shadow-lg); }
 .card.accent .k { color: #fff; }
 .card.accent .v { color: var(--dark-ink-2); }
-.card.mint { background: var(--rm-mint-tint); border-color: var(--rm-mint-100); }
+.card.mint { background: var(--deck-mint-tint); border-color: var(--deck-mint-100); }
 
 /* Icon chip in front of a card title */
 .ic {
   flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px;
-  display: grid; place-items: center; background: var(--rm-mint-tint); color: var(--rm-turquoise-700);
+  display: grid; place-items: center; background: var(--deck-mint-tint); color: var(--deck-turquoise-700);
 }
 .ic svg { width: 21px; height: 21px; }
-.card.accent .ic { background: rgba(0,222,182,.18); color: var(--rm-turquoise); }
+.card.accent .ic { background: rgba(0,222,182,.18); color: var(--deck-turquoise); }
 
 /* Bullet list (text + inline <b>). Bullet is an absolutely-placed pseudo so
    inline bold never breaks into a separate flex column. */
@@ -170,7 +170,7 @@ deck-stage { background: #0a1512; }
 .statement .pad { justify-content: center; gap: 28px; }
 .statement .big { font: var(--w-black) var(--fs-d1)/1.06 var(--font-sans); letter-spacing: -0.025em; margin: 0; max-width: 20ch; text-wrap: balance; }
 .statement .big .hl { color: var(--accent-ink); }
-.is-dark.statement .big .hl, .is-dark .big .hl { color: var(--rm-turquoise); }
+.is-dark.statement .big .hl, .is-dark .big .hl { color: var(--deck-turquoise); }
 .statement .attrib { display: flex; align-items: center; gap: 14px; font: var(--w-semi) var(--fs-small)/1.3 var(--font-sans); color: var(--ink-3); }
 .statement .attrib .bar { width: 40px; height: 3px; background: var(--accent); border-radius: 2px; }
 
@@ -196,7 +196,7 @@ deck-stage { background: #0a1512; }
 }
 .fw-pillar .pt { font: var(--w-bold) var(--fs-small)/1.2 var(--font-sans); color: var(--ink); }
 .fw-pillar .pd { font: var(--w-regular) 15px/1.4 var(--font-sans); color: var(--ink-3); }
-.fw-pillar .pi { width: 32px; height: 32px; border-radius: 9px; background: var(--rm-mint-tint); display: grid; place-items: center; color: var(--rm-turquoise-700); margin-bottom: 2px; }
+.fw-pillar .pi { width: 32px; height: 32px; border-radius: 9px; background: var(--deck-mint-tint); display: grid; place-items: center; color: var(--deck-turquoise-700); margin-bottom: 2px; }
 .fw-pillar .pi svg { width: 18px; height: 18px; }
 .fw-foundation {
   text-align: center; padding: 14px; border-radius: var(--r-md);
@@ -219,7 +219,7 @@ deck-stage { background: #0a1512; }
 .tl-list { display: flex; flex-direction: column; gap: 9px; margin: 0; padding: 0; list-style: none; }
 .tl-list li { display: flex; gap: 10px; font: var(--w-regular) 15px/1.35 var(--font-sans); color: var(--ink-2); }
 .tl-list li::before { content: ""; flex: 0 0 auto; margin-top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-.tl-out { margin-top: 16px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--rm-mint-tint); font: var(--w-semi) 14px/1.35 var(--font-sans); color: var(--rm-turquoise-700); }
+.tl-out { margin-top: 16px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--deck-mint-tint); font: var(--w-semi) 14px/1.35 var(--font-sans); color: var(--deck-turquoise-700); }
 
 /* ===========================================================================
    METRICS / KPI DASHBOARD
@@ -233,8 +233,8 @@ deck-stage { background: #0a1512; }
 .kpi .big { font: var(--w-black) 27px/1.12 var(--font-sans); color: var(--ink); letter-spacing: -.02em; }
 .kpi .why { font: var(--w-regular) 14px/1.35 var(--font-sans); color: var(--ink-3); }
 .kpi .trend { font: var(--w-bold) 13px/1 var(--font-sans); display: inline-flex; align-items: center; gap: 5px; }
-.kpi .trend.up { color: var(--rm-good); }
-.kpi .trend.dn { color: var(--rm-risk); }
+.kpi .trend.up { color: var(--deck-good); }
+.kpi .trend.dn { color: var(--deck-risk); }
 .kpi-band { display: flex; gap: 16px; margin-top: 16px; }
 .kpi-band .seg { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .kpi-band .seg .h { font: var(--w-bold) var(--fs-small)/1.2 var(--font-sans); color: var(--ink); display:flex; align-items:center; gap:8px; }
@@ -242,12 +242,12 @@ deck-stage { background: #0a1512; }
 .pindot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 
 /* small inline tag */
-.tag { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius: var(--r-pill); font: var(--w-bold) 12px/1 var(--font-sans); letter-spacing:.03em; background: var(--rm-mint-tint); color: var(--rm-turquoise-700); white-space: nowrap; }
-.tag.coral { background: var(--rm-coral-soft); color: var(--rm-coral-600); }
+.tag { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius: var(--r-pill); font: var(--w-bold) 12px/1 var(--font-sans); letter-spacing:.03em; background: var(--deck-mint-tint); color: var(--deck-turquoise-700); white-space: nowrap; }
+.tag.coral { background: var(--deck-coral-soft); color: var(--deck-coral-600); }
 
 /* Inline icon inside a KPI category label */
 .kpi .cat { display: inline-flex; align-items: center; gap: 7px; }
-.kpi .cat svg { width: 14px; height: 14px; color: var(--rm-turquoise-700); flex: 0 0 auto; }
+.kpi .cat svg { width: 14px; height: 14px; color: var(--deck-turquoise-700); flex: 0 0 auto; }
 
 /* ===========================================================================
    AGENDA — icon tile per item (shared 4-section icon language)
@@ -255,7 +255,7 @@ deck-stage { background: #0a1512; }
 .agenda-item { align-items: center; }
 .agenda-item .ag-ic {
   flex: 0 0 auto; width: 46px; height: 46px; border-radius: 13px;
-  background: var(--rm-mint-tint); color: var(--rm-turquoise-700);
+  background: var(--deck-mint-tint); color: var(--deck-turquoise-700);
   display: grid; place-items: center;
 }
 .agenda-item .ag-ic svg { width: 23px; height: 23px; }
@@ -269,15 +269,15 @@ deck-stage { background: #0a1512; }
 .phase-rail { display: flex; align-items: center; gap: 9px; }
 .pr-step {
   display: inline-flex; align-items: center; gap: 9px;
-  font: var(--w-bold) 14px/1 var(--font-sans); color: var(--rm-turquoise-700);
-  background: var(--rm-mint-tint); padding: 8px 16px 8px 8px; border-radius: var(--r-pill);
+  font: var(--w-bold) 14px/1 var(--font-sans); color: var(--deck-turquoise-700);
+  background: var(--deck-mint-tint); padding: 8px 16px 8px 8px; border-radius: var(--r-pill);
 }
 .pr-step .pr-n {
   display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
-  background: var(--rm-turquoise); color: #04231C;
+  background: var(--deck-turquoise); color: #04231C;
   font: var(--w-black) 12px/1 var(--font-sans); font-variant-numeric: tabular-nums;
 }
-.pr-arrow { color: var(--rm-turquoise); flex: 0 0 auto; }
+.pr-arrow { color: var(--deck-turquoise); flex: 0 0 auto; }
 
 /* ===========================================================================
    ON A PAGE (slide 20) — icon-led 4-section summary, light on text
@@ -290,7 +290,7 @@ deck-stage { background: #0a1512; }
 }
 .op-head { display: flex; flex-direction: column; gap: 13px; }
 .op-top { display: flex; align-items: center; justify-content: space-between; }
-.op-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--rm-mint-tint); color: var(--rm-turquoise-700); display: grid; place-items: center; }
+.op-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--deck-mint-tint); color: var(--deck-turquoise-700); display: grid; place-items: center; }
 .op-ic svg { width: 23px; height: 23px; }
 .op-n { font: var(--w-black) 15px/1 var(--font-sans); color: var(--accent-ink); font-variant-numeric: tabular-nums; }
 .op-t { font: var(--w-bold) 17px/1.2 var(--font-sans); color: var(--ink); }
@@ -341,5 +341,5 @@ deck-stage { background: #0a1512; }
   transition: background .15s, color .15s;
 }
 .theme-switch button:hover { background: rgba(255,255,255,.08); }
-.theme-switch button.on { background: var(--rm-turquoise); color: #04231C; }
+.theme-switch button.on { background: var(--deck-turquoise); color: #04231C; }
 @media print { .theme-switch { display: none !important; } }

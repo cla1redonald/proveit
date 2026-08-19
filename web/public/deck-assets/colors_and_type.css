@@ -1,15 +1,13 @@
 /* ============================================================================
-   Rightmove-Style Presentation System — Colors & Type
+   Executive Presentation System, Colors & Type
    ----------------------------------------------------------------------------
-   Brand-sympathetic foundations for an executive presentation. Turquoise-led,
-   warm, optimistic — echoing Rightmove's "Find Your Happy" personality
-   (Friendly Expert · Inspiring · Empowering · Charming) WITHOUT reproducing
-   their trademarked logo or product UI.
+   Brand-neutral foundations for an executive presentation: turquoise-led, warm,
+   optimistic. Re-skin via the token-override pattern; never reproduce a
+   client's trademarked logo or product UI.
 
-   Signature turquoise (#00DEB6) and a cherry/coral accent are used as the
-   brand cues. Effra (their wordmark face, a paid font) is substituted with
-   Hanken Grotesk — a free, geometric-humanist Google font with the same warm,
-   rounded, highly-legible character. SUBSTITUTION — swap if you license Effra.
+   A signature turquoise and a cherry/coral accent carry the palette. Type is
+   Hanken Grotesk, a free geometric-humanist Google font chosen for its warm,
+   rounded, highly-legible character. Swap it for any licensed face you prefer.
    ============================================================================ */
 
 /* Loaded via Google Fonts <link> in the HTML; declared here for reference. */
@@ -17,57 +15,57 @@
 
 :root {
   /* ---- Brand core ------------------------------------------------------- */
-  --rm-turquoise:      #00DEB6;  /* signature — accents, highlights, charts   */
-  --rm-turquoise-600:  #00B894;  /* deeper — turquoise text/links on light    */
-  --rm-turquoise-700:  #028C72;  /* deepest readable turquoise on white       */
-  --rm-mint-tint:      #E6FBF4;  /* faint turquoise wash for fills/panels      */
-  --rm-mint-100:       #C9F5E8;
+  --deck-turquoise:     #00DEB6;  /* signature — accents, highlights, charts   */
+  --deck-turquoise-600: #00B894;  /* deeper — turquoise text/links on light    */
+  --deck-turquoise-700: #028C72;  /* deepest readable turquoise on white       */
+  --deck-mint-tint:     #E6FBF4;  /* faint turquoise wash for fills/panels      */
+  --deck-mint-100:      #C9F5E8;
 
-  --rm-coral:          #FF5168;  /* cherry/coral accent — use sparingly        */
-  --rm-coral-600:      #E83C55;
-  --rm-coral-soft:     #FFE0E4;
+  --deck-coral:         #FF5168;  /* cherry/coral accent — use sparingly        */
+  --deck-coral-600:     #E83C55;
+  --deck-coral-soft:    #FFE0E4;
 
   /* ---- Deep teal (section openers, ink-on-dark surfaces) ---------------- */
-  --rm-teal-deep:      #073B33;  /* primary dark background                    */
-  --rm-teal-900:       #052A24;  /* darkest                                    */
-  --rm-teal-700:       #0A4F44;  /* raised panel on teal                       */
-  --rm-teal-600:       #0E6353;
+  --deck-teal-deep:     #073B33;  /* primary dark background                    */
+  --deck-teal-900:      #052A24;  /* darkest                                    */
+  --deck-teal-700:      #0A4F44;  /* raised panel on teal                       */
+  --deck-teal-600:      #0E6353;
 
   /* ---- Warm neutrals ---------------------------------------------------- */
-  --rm-ink:            #15211D;  /* primary text — warm green-black            */
-  --rm-slate:          #3E4D48;  /* secondary text                            */
-  --rm-muted:          #6B7B75;  /* tertiary / captions                       */
-  --rm-line:           #E4DFD3;  /* hairlines on cream                         */
-  --rm-line-soft:      #EFEADF;
-  --rm-cream:          #FBF6EC;  /* warm page background                       */
-  --rm-cream-2:        #F4EDE0;  /* warm panel / card on cream                 */
-  --rm-white:          #FFFFFF;
-  --rm-paper-line:     #ECEAE4;  /* hairlines on white                         */
+  --deck-ink:           #15211D;  /* primary text — warm green-black            */
+  --deck-slate:         #3E4D48;  /* secondary text                            */
+  --deck-muted:         #6B7B75;  /* tertiary / captions                       */
+  --deck-line:          #E4DFD3;  /* hairlines on cream                         */
+  --deck-line-soft:     #EFEADF;
+  --deck-cream:         #FBF6EC;  /* warm page background                       */
+  --deck-cream-2:       #F4EDE0;  /* warm panel / card on cream                 */
+  --deck-white:         #FFFFFF;
+  --deck-paper-line:    #ECEAE4;  /* hairlines on white                         */
 
   /* ---- Functional (charts / status) ------------------------------------- */
-  --rm-good:           #1FB58A;
-  --rm-watch:          #F2A900;
-  --rm-risk:           #E83C55;
+  --deck-good:          #1FB58A;
+  --deck-watch:         #F2A900;
+  --deck-risk:          #E83C55;
 
   /* ====================================================================== */
   /* SEMANTIC TOKENS — slides reference these; themes below remap them.     */
   /* Default = "Warm" direction.                                            */
   /* ====================================================================== */
-  --slide-bg:          var(--rm-cream);
-  --surface:           var(--rm-white);     /* cards / panels                 */
-  --surface-2:         var(--rm-cream-2);   /* alt panel                      */
-  --ink:               var(--rm-ink);
-  --ink-2:             var(--rm-slate);
-  --ink-3:             var(--rm-muted);
-  --line:              var(--rm-line);
-  --accent:            var(--rm-turquoise);
-  --accent-ink:        var(--rm-turquoise-700); /* accent that reads as text   */
-  --accent-2:          var(--rm-coral);
+  --slide-bg:          var(--deck-cream);
+  --surface:           var(--deck-white);     /* cards / panels                 */
+  --surface-2:         var(--deck-cream-2);   /* alt panel                      */
+  --ink:               var(--deck-ink);
+  --ink-2:             var(--deck-slate);
+  --ink-3:             var(--deck-muted);
+  --line:              var(--deck-line);
+  --accent:            var(--deck-turquoise);
+  --accent-ink:        var(--deck-turquoise-700); /* accent that reads as text   */
+  --accent-2:          var(--deck-coral);
   --on-accent:         #04231C;             /* text sitting on turquoise fill  */
 
   /* Dark context (section dividers) — set on .is-dark slides */
-  --dark-bg:           var(--rm-teal-deep);
-  --dark-surface:      var(--rm-teal-700);
+  --dark-bg:           var(--deck-teal-deep);
+  --dark-surface:      var(--deck-teal-700);
   --dark-ink:          #F3FBF8;
   --dark-ink-2:        #A9C9C1;
   --dark-line:         rgba(255,255,255,.14);
@@ -124,16 +122,16 @@
 
 /* CRISP — pure white, turquoise as a sharp accent, maximal whitespace */
 [data-theme="crisp"] {
-  --slide-bg:  var(--rm-white);
+  --slide-bg:  var(--deck-white);
   --surface:   #FBFAF7;
   --surface-2: #F4F2EC;
-  --line:      var(--rm-paper-line);
+  --line:      var(--deck-paper-line);
 }
 
 /* SOFT MINT — gentle turquoise wash, the most "optimistic" reading */
 [data-theme="mint"] {
-  --slide-bg:  var(--rm-mint-tint);
-  --surface:   var(--rm-white);
+  --slide-bg:  var(--deck-mint-tint);
+  --surface:   var(--deck-white);
   --surface-2: #D8F6EC;
   --line:      #CDEDE2;
 }
