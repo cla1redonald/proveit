@@ -255,6 +255,52 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-09-01 (announcement-monitor pass, biweekly `frontier-scan` Managed Agent)** — Lightweight
+  scan (not a full snapshot refresh) surfaced four dated, sourced changes since the 2026-08-06
+  snapshot that materially move the token-economics and open-weight sections below. **The figures
+  in Sections 1, 3, and 4 that reference DeepSeek V4 pricing, Claude Sonnet 5's pending price step,
+  and Meta's open-weight posture are now stale and should be corrected at the next full
+  `frontier-scan` refresh.**
+  - **`[AGENT-IMPACT]`** DeepSeek reversed its own "commodity floor" thesis: effective 2026-08-16
+    16:00 UTC, DeepSeek moved V4 Flash and V4 Pro to peak/off-peak billing with peak-hour output
+    pricing 3.7–4.5x the prior flat rate — V4 Flash output $0.28 → $1.32 peak / $0.66 off-peak
+    (+371% / +136%), V4 Pro output $0.87 → $3.96 peak / $1.98 off-peak (+355% / +128%). This
+    directly invalidates every citation in Sections 1/3/4 of "DeepSeek V4-Flash $0.14/$0.28" and
+    "V4-Pro $0.435/$0.87" as the open-weight commodity floor — DeepSeek is no longer the
+    default cheapest-serious-model reference point, and cost models built on the old flat rate are
+    now wrong by 2–4.5x depending on time of day.
+  - **`[AGENT-IMPACT]`** Google shipped **Gemini 3.7 Flash** (2026-08-13, three weeks after 3.6
+    Flash) at an introductory price of $0.75/$3.75 per Mtok — half of 3.6 Flash's $1.50/$7.50 — while
+    scoring 56 on the Artificial Analysis Intelligence Index, ahead of 3.6 Flash (52) and ahead of
+    Google's own flagship-tier Gemini 3.1 Pro (48). Gemini 3.5 Pro remains unshipped, now more than
+    three months past its original window, with Google shipping a third consecutive Flash refresh
+    (3.5 → 3.6 → 3.7) instead. This sharpens the existing "mid-tier absorbing flagship capability"
+    thesis in Section 1 and adds a second consecutive >20% commodity-tier price cut in the same
+    quarter (following 3.6 Flash's cut from 3.5 Flash pricing).
+  - **`[AGENT-IMPACT]`** Anthropic cancelled Claude Sonnet 5's scheduled 2026-08-31 expiry and made
+    the $2/$10 introductory rate the permanent standard price (announced 2026-08-10), reversing the
+    50%-price-step-up ($3/$15) that the 2026-08-06 snapshot flagged as an imminent cost-model risk
+    in Section 4. Any cost model that already padded in the expected September increase is now
+    overstating Sonnet 5 spend by 33–50%.
+  - **`[AGENT-IMPACT]`** Meta partially reversed the "abandoned open-weight-flagship strategy"
+    finding from the 2026-08-06 snapshot: on 2026-08-10, Meta Superintelligence Labs open-weighted
+    **Muse Glimmer** (30B dense, Apache 2.0, runs on a single 24–32GB consumer GPU) — its first
+    open-weight release since Llama 4 (April 2025) and the first Meta frontier-lab model under a
+    standard OSI license rather than the restrictive Llama Community License. Both Mark Zuckerberg
+    and CAIO Alexandr Wang publicly committed to open-weighting Muse Spark 1.2 "soon" (no date).
+    This doesn't restore Meta to the closed-vs-open-weight leaderboard at the flagship tier — Muse
+    Spark itself stays closed for now — but it changes the open-weight-competitive-landscape framing
+    in Sections 1 and 3, which currently reads Meta out of the open-weight race entirely in favor of
+    DeepSeek/Moonshot/Alibaba.
+  - Context (not independently `[AGENT-IMPACT]`, but relevant to the next full refresh): OpenAI
+    paused its next-frontier model (codenamed Astra, likely GPT-6 or GPT-5.7) on 2026-08-07 after
+    internal evaluations couldn't rule out "critical cyber capabilities" under its Preparedness
+    Framework, and told Axios on 2026-08-18 it had paused its largest planned frontier RL run and is
+    rewriting the framework itself — pushing any GPT-6-class flagship refresh later than the
+    2026-08-06 snapshot implied. xAI shipped **Grok 4.6** (2026-08-12) as an interim flagship (500K
+    context, configurable reasoning effort) while Grok 5 remains in training with no confirmed date.
+  - _Sources: [Bloomberg via Yahoo Finance — DeepSeek price hikes](https://finance.yahoo.com/technology/ai/articles/deepseek-increases-prices-ai-services-125256361.html), [TechTimes — DeepSeek V4 peak pricing](https://www.techtimes.com/articles/324764/20260817/deepseek-v4-api-prices-quadruple-peak-what-developers-pay-starting-now.htm), [Forbes — DeepSeek V4 Pro pricing](https://www.forbes.com/sites/jonmarkman/2026/08/18/deepseek-releases-v4-pro-at-14x-the-price-of-its-cheapest-model/), [Google — Introducing Gemini 3.7 Flash](https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/), [VentureBeat — Gemini 3.7 Flash pricing](https://venturebeat.com/technology/googles-gemini-3-7-flash-targets-coding-and-agents-with-a-50-introductory-price-cut), [Anthropic Platform Docs — Sonnet 5 pricing permanent](https://platform.claude.com/docs/en/about-claude/pricing), [IBTimes SG — Sonnet 5 price hike reversed](https://www.ibtimes.sg/claude-sonnet-5-price-hike-reversed-what-users-still-pay-more-92424), [VentureBeat — Meta Muse Glimmer](https://venturebeat.com/technology/meta-returns-to-open-source-with-muse-glimmer-an-apache-2-0-licensed-30b-parameter-ai-model-optimized-for-agents-available-now), [felloai — GPT-6/Astra paused](https://felloai.com/all-we-know-about-chatgpt-6/), [xAI docs — Grok 4.6](https://docs.x.ai/developers/release-notes)._
+
 - **2026-08-06 (snapshot v4)** — Full `frontier-scan` refresh. Flagship refresh across four labs,
   two new commoditization closures, a design-tooling handoff-surface change, and a regulatory-risk
   precedent.
