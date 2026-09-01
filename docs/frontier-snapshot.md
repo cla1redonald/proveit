@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 4
-generated: 2026-08-06
-generated_by: frontier-scan
-next_scan_due: 2026-08-20
+snapshot_version: 5
+generated: 2026-09-01
+generated_by: frontier-watch
+next_scan_due: 2026-09-15
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -24,30 +24,30 @@ The agent cites this file by section; it does *not* re-derive the frontier from 
 | Lab | Flagship | Shipped | Standout | Price (in/out per Mtok) |
 |-----|----------|---------|----------|--------------------------|
 | Anthropic | **Claude Opus 5** (`claude-opus-5`) | 2026-07-24 | SWE-bench Verified 96.0%, SWE-bench Pro 79.2%; OSWorld 2.0 jumped 55.7%→70.6% vs Opus 4.8; new low/medium/high effort toggle; default on Claude Max, top model on Claude Pro | $5 / $25 (unchanged vs Opus 4.8) |
-| Anthropic | **Claude Sonnet 5** (`claude-sonnet-5`) | 2026-06-30 | Near-Opus agentic performance (Terminal-Bench 2.1: 80.4%, ~level with Opus 4.8); SWE-bench Pro 63.2% (below Opus 5) | $2 / $10 intro (through 2026-08-31) → $3 / $15 standard |
+| Anthropic | **Claude Sonnet 5** (`claude-sonnet-5`) | 2026-06-30 | Near-Opus agentic performance (Terminal-Bench 2.1: 80.4%, ~level with Opus 4.8); SWE-bench Pro 63.2% (below Opus 5) | $2 / $10 (permanent, as of 2026-08-10; reversal of planned 2026-08-31 increase) |
 | Anthropic | **Claude Fable 5 / Mythos 5** | 2026-06-09 (redeployed 2026-07-01) | SWE-bench Pro 80.3% vs Opus 4.8's 69.2%; broad release gated by new safety classifiers; briefly export-controlled and pulled worldwide for ~19 days (2026-06-12 → 2026-06-30) after a bypass was disclosed | Not separately listed |
 | OpenAI | **GPT-5.6 family** (Sol/Terra/Luna) | 2026-07-09 (GA) | Sol: flagship, 96.2% SWE-bench, preferred model for Microsoft 365 Copilot from launch day; Terra: balanced/enterprise; Luna: high-volume commodity tier. Sol redesigned its own speculative-decoding draft model, driving >15% token-gen efficiency gain | Sol $5 / $30; Terra $2.00 / $12.00 (−20%, 2026-07-30); Luna $0.20 / $1.20 (−80%, 2026-07-30) |
 | Google | **Gemini 3.6 Flash** (+ 3.5 Flash-Lite, 3.5 Flash Cyber) | 2026-07-21 | New "workhorse" tier — beats the prior flagship Gemini 3.1 Pro on Artificial Analysis Intelligence Index (50 vs 46) and on SWE-Bench Pro (58.7% vs 55.1% for 3.5 Flash); **no Gemini 3.5 Pro shipped** (still in partner testing). Gemini 4 (next full flagship) remains in pre-training, no public model ID/benchmarks/date | $1.50 / $7.50 (output −17% vs 3.5 Flash's $9) |
 | xAI | **Grok 4.5** (`grok-4-5`) | 2026-07-08 | 500K context, native video input, frontier coding. **Grok 5 has missed two consecutive quarterly targets (Q1 and Q2 2026)** and remains unreleased as of 2026-08-06; xAI instead shipped grok-voice-think-fast-2.0 (2026-07-29), now the default voice router (2026-08-05) | ~$5 (est.) |
-| DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-07-20 (full GA, after 2026-04-24 preview) | SWE-bench Verified 80.6% — highest yet for an open-weight model, tied exactly with Gemini 3.1 Pro; 1M context, self-hostable | $0.435 / $0.87 (V4-Flash $0.14 / $0.28 off-peak; 2× peak) |
+| DeepSeek (open-weight) | **DeepSeek-V4-Pro** (MIT, 1.6T/49B MoE) | 2026-07-20 (full GA, after 2026-04-24 preview) | SWE-bench Verified 80.6% — highest yet for an open-weight model, tied exactly with Gemini 3.1 Pro; 1M context, self-hostable | $1.98 / $3.96 (output) off-peak / peak (as of 2026-08-16; was $0.435 / $0.87); V4-Flash $0.14 / $0.28 off-peak; peak 2× |
 | Meta (closed pivot) | **Muse Spark 1.1** | 2026-04-08 (2026-07-09 paid API) | Meta's first fully closed-weight frontier model (Meta Superintelligence Labs, led by Alexandr Wang); multimodal, ~260K context. Llama 4 Scout/Maverick (Apr 2025) remain the last *open*-weight Llama flagships | $1.25 / $4.25 |
+| Meta (return to open) | **Muse Glimmer** (30B dense MoE) | 2026-08-10 | Dense 30B multimodal model, Apache 2.0 open-weight, self-hostable on single consumer GPU (~20GB quantized 4-bit); integrated DFlash speculative-decoding drafter (3.1× faster on RTX 5090, 1.8× on M5 Max). Marks Meta's return to open-weight strategy after closed-pivot (2026-04-08). | Open-weight / self-hosted |
 
-**Net:** the frontier is now an eight-model, six-plus-lab race, and the shape of the competition has
-shifted from "who has the smartest model" to "who has the cheapest model that's smart enough."
-Google's Gemini 3.6 Flash beating the prior-generation flagship Pro on both intelligence and coding
-benchmarks — while Google *skips* a 3.5 Pro release entirely — is the clearest signal yet that
-mid-tier models have absorbed flagship-grade capability. OpenAI's GPT-5.6 three-tier system keeps
-cutting the commodity floor (Luna −80%, Terra −20%, both 2026-07-30) while its flagship Sol becomes
-the default engine inside Microsoft 365 Copilot, a direct cannibalization signal for
-Office-adjacent wrappers. Anthropic's Opus 5 held price flat ($5/$25) against a large capability
-jump, and its Fable 5 export-control suspension (~19 days, 2026-06-12 to 2026-06-30) is now a dated,
-concrete precedent for single-model regulatory risk. On the open-weight side, Meta has formally
-abandoned its open-weight-flagship strategy (Muse Spark, closed, 2026-04-08) just as DeepSeek
-(V4-Pro, GA 2026-07-20) and Moonshot's Kimi K3 (2.8T MoE, largest open-weight model to date,
-2026-07-16) push open weights to near-frontier coding parity — the open frontier has moved from
-Meta/Mistral to a China-led field. xAI has now missed two consecutive quarterly targets for Grok 5.
+**Net:** the frontier is now a nine-model, seven-lab race with a critical strategic reversal. OpenAI
+demonstrated **Astra** in early August as a new model class beyond Sol/Terra/Luna, with multi-agent
+orchestration capabilities — if released, this signals a shift away from the three-tier system. Anthropic
+**locked Sonnet 5 at $2/$10 permanently** on 2026-08-10, cancelling the planned Aug 31 increase to $3/$15
+— a cost commitment that undercuts GPT-5.6 Terra on input price and keeps pricing leverage over commodity
+models. DeepSeek shifted to **peak/off-peak billing** on 2026-08-16, with V4-Pro output jumping to $1.98
+off-peak / $3.96 peak (from flat $0.87), effectively 2.3–4.5× cost increase that erodes its commodity
+advantage. **Meta reversed course on open-weight**: after formally abandoning the strategy (Muse Spark,
+closed, 2026-04-08), the company released **Muse Glimmer** (30B dense, Apache 2.0, 2026-08-10) to run on
+consumer hardware — signaling the open-weight cost story is now sufficient for commercial deployment.
+On the open-weight coding front, DeepSeek (V4-Pro 80.6% SWE-bench Verified, GA 2026-07-20) and Moonshot's
+Kimi K3 (2.8T MoE) remain frontier-competitive; the field has widened from Meta/Mistral to a China-led
+cohort. xAI has now missed three consecutive quarterly targets for Grok 5 (Q1, Q2, Q3 2026).
 
-_Sources: [TechCrunch — Claude Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [Anthropic — Claude Sonnet 5](https://www.anthropic.com/news/claude-sonnet-5), [TechCrunch — Claude Fable 5](https://techcrunch.com/2026/06/09/anthropics-claude-fable-5-is-a-version-of-mythos-the-public-can-access-today/), [MarkTechPost — Fable 5 redeployed](https://www.marktechpost.com/2026/07/01/anthropic-redeploys-claude-fable-5-on-july-1-after-us-export-controls-lift-adds-new-cybersecurity-classifier/), [TechCrunch — GPT-5.6 / Microsoft Copilot](https://techcrunch.com/2026/07/09/openai-says-gpt-5-6-is-the-preferred-model-for-microsoft-copilot-amid-breakup-chatter/), [aipricing.guru — GPT-5.6 cuts](https://www.aipricing.guru/openai-pricing/), [OpenAI release notes](https://openai.com/products/release-notes/), [TechCrunch — Gemini 3.6 Flash / no 3.5 Pro](https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/), [TechTimes — Gemini 3.6 Flash cost](https://www.techtimes.com/articles/321268/20260722/gemini-36-flash-cuts-token-costs-scores-higher-every-benchmark.htm), [releasebot.io — xAI](https://releasebot.io/updates/xai), [macgpu.com — DeepSeek V4 full release](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [Pebblous — Meta Muse Spark](https://blog.pebblous.ai/blog/meta-muse-spark-closed-source/en/)._
+_Sources: [TechCrunch — Claude Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [Anthropic — Claude Sonnet 5](https://www.anthropic.com/news/claude-sonnet-5), [TechCrunch — Claude Fable 5](https://techcrunch.com/2026/06/09/anthropics-claude-fable-5-is-a-version-of-mythos-the-public-can-access-today/), [MarkTechPost — Fable 5 redeployed](https://www.marktechpost.com/2026/07/01/anthropic-redeploys-claude-fable-5-on-july-1-after-us-export-controls-lift-adds-new-cybersecurity-classifier/), [Releasebot — Anthropic August 2026](https://releasebot.io/updates/anthropic), [TechCrunch — GPT-5.6 / Microsoft Copilot](https://techcrunch.com/2026/07/09/openai-says-gpt-5-6-is-the-preferred-model-for-microsoft-copilot-amid-breakup-chatter/), [aipricing.guru — GPT-5.6 cuts](https://www.aipricing.guru/openai-pricing/), [OpenAI release notes](https://openai.com/products/release-notes/), [TechCrunch — Gemini 3.6 Flash / no 3.5 Pro](https://techcrunch.com/2026/07/21/google-releases-three-new-gemini-models-but-no-3-5-pro/), [TechTimes — Gemini 3.6 Flash cost](https://www.techtimes.com/articles/321268/20260722/gemini-36-flash-cuts-token-costs-scores-higher-every-benchmark.htm), [releasebot.io — xAI](https://releasebot.io/updates/xai), [macgpu.com — DeepSeek V4 full release](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [CNBC — Meta Muse Glimmer open-weight](https://www.cnbc.com/2026/08/10/meta-muse-glimmer-open-weight-ai.html), [Digitalapplied — AI pricing August 2026](https://www.digitalapplied.com/blog/ai-api-pricing-august-2026-cuts-promos-tracker)._
 
 ---
 
@@ -150,15 +150,17 @@ _Sources: [OpenAI — Personal finance in ChatGPT](https://openai.com/index/pers
 - **Flagship pricing held flat while capability jumped.** Claude Opus 5 shipped at unchanged Opus
   pricing ($5/$25) versus Opus 4.8, with a low/medium/high effort toggle as the new cost lever
   instead of a price change. _(2026-07-24.)_
-- **Sonnet 5's intro price is expiring soon.** Claude Sonnet 5 launched 2026-06-30 at $2/$10 per
-  Mtok (input/output); that pricing reverts to $3/$15 standard on **2026-08-31** — about 3.5 weeks
-  from this snapshot's generation date. Any cost model quoting the intro rate is about to be 50%
-  too low on both sides. _(2026-06-30.)_
-- **Commodity floor kept falling.** GPT-5.6 Luna cut 80% (from $1.00/$6.00 to **$0.20/$1.20**) and
-  Terra cut 20% (from $2.50/$15.00 to **$2.00/$12.00**), effective 2026-07-30 — driven partly by a
-  >15% token-generation efficiency gain from having Sol redesign Codex's own speculative-decoding
-  draft model. Sol (flagship) held at $5/$30. This keeps proprietary commodity tiers priced below
-  or near open-weight (DeepSeek V4-Flash $0.14/$0.28 off-peak, 2× peak). _(2026-07-30.)_
+- **Sonnet 5's intro price locked permanently.** Claude Sonnet 5 launched 2026-06-30 at $2/$10 per
+  Mtok (input/output) as introductory pricing scheduled to revert on 2026-08-31. Anthropic **cancelled**
+  that increase on 2026-08-10, permanently locking the rate at $2/$10 — a cost leadership move that keeps
+  it below GPT-5.6 Terra ($2.00/$12.00 input/output) and maintains pricing leverage over commodity models.
+  _(2026-06-30, reversal 2026-08-10.)_
+- **Commodity floor: proprietary cuts, open-weight recoils.** GPT-5.6 Luna cut 80% (from $1.00/$6.00 to
+  **$0.20/$1.20**) and Terra cut 20% (from $2.50/$15.00 to **$2.00/$12.00**), effective 2026-07-30. DeepSeek
+  countered by **shifting to peak/off-peak billing** on 2026-08-16: V4-Pro output jumped from flat $0.87 to
+  $1.98 off-peak / $3.96 peak (2.3–4.5× cost increase), eroding the open-weight commodity advantage just
+  as proprietary tiers were collapsing. V4-Flash still $0.14/$0.28 off-peak. Luna ($0.20/$1.20) now the
+  undisputed floor for proprietary models. _(2026-07-30 / 2026-08-16.)_
 - **Cost-per-completed-task fell faster than sticker price.** Gemini 3.6 Flash cut list price to
   $1.50/$7.50 (output down ~17% from 3.5 Flash's $9) *and* separately uses ~17% fewer output tokens
   on average on the Artificial Analysis Index (up to 65% fewer on some agentic/coding tasks) —
@@ -172,17 +174,18 @@ _Sources: [OpenAI — Personal finance in ChatGPT](https://openai.com/index/pers
   under the old flat model; light tasks generally cost less. Flat-rate Codex cost assumptions from
   early 2026 are stale.
 - **Current per-Mtok rates (in / out):**
-  - Anthropic — Opus 5 $5 / $25; Sonnet 5 $2 / $10 (intro, through 2026-08-31) → $3 / $15
-    standard; Haiku 4.5 $1 / $5 (1M ctx). Fast mode (Opus 4.8-era) $10 / $50 (xhigh/max effort).
-    Batch 50% cheaper; prompt caching cuts cached-input 90%.
-  - OpenAI — GPT-5.6 Sol $5 / $30; Terra $2.00 / $12.00 (post-30-Jul cut); Luna $0.20 / $1.20
-    (post-30-Jul cut). Codex billed at consumption-based/API-equivalent rates since 2026-04-02.
+  - Anthropic — Opus 5 $5 / $25; Sonnet 5 $2 / $10 (permanent as of 2026-08-10); Haiku 4.5 $1 / $5 (1M ctx).
+    Fast mode (Opus 4.8-era) $10 / $50 (xhigh/max effort). Batch 50% cheaper; prompt caching cuts
+    cached-input 90%.
+  - OpenAI — GPT-5.6 Sol $5 / $30; Terra $2.00 / $12.00 (post-30-Jul cut); Luna $0.20 / $1.20 (post-30-Jul cut).
+    Codex billed at consumption-based/API-equivalent rates since 2026-04-02.
   - Google — Gemini 4 TBD (pre-training, no pricing); Gemini 3.6 Flash $1.50 / $7.50 (1M ctx);
     Gemini 3.1 Pro pricing carried from prior tier (flagship reasoning, GPQA 94.3%).
   - xAI — Grok 4.5 ~$5 (estimated; exact pricing not published). 500K context.
-  - DeepSeek — V4-Pro $0.435 / $0.87 (off-peak; peak 2×), GA 2026-07-20; V4-Flash $0.14 / $0.28
-    (cache-hit $0.0028; off-peak; peak 2×). Both 1M ctx.
-  - Meta — Muse Spark 1.1 (closed-weight, OpenAI-compatible API) $1.25 / $4.25. _(2026-07-09.)_
+  - DeepSeek — V4-Pro $1.98 / $3.96 (output) off-peak / peak (as of 2026-08-16; flat $0.435 / $0.87 prior);
+    V4-Flash $0.14 / $0.28 (cache-hit $0.0028; off-peak; peak 2×). Both 1M ctx, GA 2026-07-20.
+  - Meta — Muse Spark 1.1 (closed-weight, OpenAI-compatible API) $1.25 / $4.25; Muse Glimmer (30B open-weight,
+    Apache 2.0) self-hosted / no API charge (2026-08-10).
   - Mistral — Mistral Large 3 (open, Apache 2.0, 675B/41B active MoE, 256K ctx) $0.50 / $1.50.
     _(2025-12-04.)_ A new, larger open-weight MoE family entered early access July 2026, explicitly
     aimed at closing the gap with closed US frontier labs.
@@ -192,14 +195,17 @@ _Sources: [OpenAI — Personal finance in ChatGPT](https://openai.com/index/pers
   effectively forcing API billing for production agentic workloads, a dynamic reinforced by Codex's
   own shift to consumption-based billing this run.
 
-**What this means for viability scoring:** the direction of travel is unchanged — inference keeps
-getting cheaper per unit of *useful* work faster than per raw token, so a 12-month roadmap's
-token-cost assumption is still likely too high by ship time. But two new wrinkles this run: (1) two
-of the models PMs are most likely to be actively testing against right now — Sonnet 5 and GPT-5.6
-Terra/Luna — have pricing that is either about to change (Sonnet 5, 2026-08-31) or just changed
-(GPT-5.6, 2026-07-30), so "what I tested with last week" is not a safe basis for a cost model; and
-(2) Codex's move to consumption-based billing means "flat monthly Codex cost" assumptions from
-before April 2026 are simply wrong for agentic-heavy workloads. Flag both.
+**What this means for viability scoring:** the direction of travel is reversed — inference is getting
+*more* expensive per useful work in open-weight (DeepSeek peak/off-peak shift 2026-08-16 erodes the
+open-weight cost story) while proprietary models lock in competitive pricing below landmark cost floors
+(Sonnet 5 permanence at $2/$10, Luna floor at $0.20/$1.20). A 12-month roadmap's token-cost assumption
+now needs to account for: (1) **Sonnet 5 and GPT-5.6 Terra/Luna pricing is *locked* as of 2026-08-10/30**,
+so "what I tested with" is a safe basis if tested after those dates, but wildly off if tested before;
+(2) **DeepSeek V4-Pro cost jumped 2.3–4.5× on 2026-08-16** — any cost model still quoting pre-shift rates
+is materially understated; (3) **open-weight cost advantage narrowed** — Muse Glimmer's 30B self-hosted
+option ($0 API, single GPU) is now a real alternative, but only below the Sonnet 5 performance tier;
+(4) Codex consumption-based billing (2026-04-02+) means flat-rate assumptions from early 2026 are
+stale on agentic workloads.
 
 _Sources: [TechCrunch — Opus 5](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/), [TechCrunch — Sonnet 5 pricing](https://techcrunch.com/2026/06/30/anthropic-launches-claude-sonnet-5-as-a-cheaper-way-to-run-agents/), [Anthropic — Sonnet 5](https://www.anthropic.com/news/claude-sonnet-5), [aipricing.guru — GPT-5.6 cuts](https://www.aipricing.guru/openai-pricing/), [OpenAI release notes](https://openai.com/products/release-notes/), [eesel.ai — Codex consumption billing](https://www.eesel.ai/blog/openai-codex-pricing), [TechTimes — Gemini 3.6 Flash cost](https://www.techtimes.com/articles/321268/20260722/gemini-36-flash-cuts-token-costs-scores-higher-every-benchmark.htm), [macgpu.com — DeepSeek V4](https://macgpu.com/en/blog/2026-0720-deepseek-v4-full-release-pricing-benchmarks.html), [Pebblous — Muse Spark API](https://blog.pebblous.ai/blog/meta-muse-spark-closed-source/en/), [TechTimes — Mistral open MoE](https://www.techtimes.com/articles/319798/20260706/mistral-ai-targets-frontier-gap-open-weight-model-entering-july-early-access.htm), [Anthropic Opus 4.8 — fast mode pricing](https://www.anthropic.com/news/claude-opus-4-8)._
 
@@ -255,6 +261,27 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
+  shifts since 2026-08-06; no new model releases.
+  - **`[AGENT-IMPACT]`** Claude Sonnet 5 pricing locked permanent: Anthropic cancelled the 2026-08-31 increase
+    to $3/$15 on 2026-08-10, keeping the rate at $2/$10 indefinitely — a cost-leadership move that undercuts
+    GPT-5.6 Terra on input price and signaling long-term commitment to a lower price floor.
+  - **`[AGENT-IMPACT]`** DeepSeek peak/off-peak billing shift (2026-08-16): V4-Pro output jumped from flat
+    $0.87 to $1.98 off-peak / $3.96 peak, eroding the open-weight cost advantage just as proprietary models
+    cut floors (Luna $0.20/$1.20). Affects any cost model built on pre-shift rates.
+  - **`[AGENT-IMPACT]`** Meta returned to open-weight: after formally abandoning the strategy (Muse Spark,
+    closed, 2026-04-08), released **Muse Glimmer** (30B dense multimodal, Apache 2.0, 2026-08-10) to run on
+    consumer hardware (single GPU, ~20GB quantized 4-bit) — strategic reversal signaling open-weight cost
+    story is now sufficient for deployment. Marked as a new frontier entrant.
+  - **`[AGENT-IMPACT]`** OpenAI Astra model class demonstrated early August to policymakers: multi-agent
+    orchestration capabilities as a new tier beyond Sol/Terra/Luna three-tier system. Not yet released;
+    if it ships, signals a shift away from the commodity-tiered architecture.
+  - Grok 5 misses now three consecutive quarterly targets (Q1, Q2, Q3 2026), adding to prior two-miss
+    precedent noted in v4; xAI still shipping point releases (Grok 4.6) instead.
+  - Cost-model wrinkles: "Sonnet 5 is about to get more expensive" no longer applies; "DeepSeek peak/off-peak"
+    erodes the open-weight story for heavy-usage workloads; Muse Glimmer opens a zero-API-cost option for
+    models below Sonnet tier. Viability scoring should flag if a cost model quotes Sonnet 5 > $2/$10 or
+    DeepSeek > $0.87/$0.87 flat.
 - **2026-08-06 (snapshot v4)** — Full `frontier-scan` refresh. Flagship refresh across four labs,
   two new commoditization closures, a design-tooling handoff-surface change, and a regulatory-risk
   precedent.
