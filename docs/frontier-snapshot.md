@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 5
-generated: 2026-09-01
+snapshot_version: 6
+generated: 2026-09-15
 generated_by: frontier-watch
-next_scan_due: 2026-09-15
+next_scan_due: 2026-09-29
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -260,6 +260,71 @@ _Sources: [InfoQ — Dynamic Workflows GA](https://www.infoq.com/news/2026/06/dy
 The `frontier-scan` workflow appends a diff here every run. Structural changes (a new lab enters the
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
+
+- **2026-09-15 (snapshot v6)** — Biweekly frontier-scan. Five material events since 2026-09-01: two new
+  flagship-tier model generations (OpenAI, Anthropic), a new lab entrant into the "cross-app personal
+  agent" commoditization category (Meta), a commodity-tier open-weight pricing/architecture shift
+  (DeepSeek), and continued non-shipment of xAI's Grok 5/4.7.
+  - **`[AGENT-IMPACT]`** OpenAI shipped **GPT-6 Astra** (Sept 3–4, 2026), succeeding GPT-5.6 Sol as
+    OpenAI's flagship. It is the first model OpenAI has designated **Critical for cybersecurity** under
+    its Preparedness Framework — able to find and exploit unknown vulnerabilities without step-by-step
+    human guidance — gating its full capability behind a trusted-access ("Daybreak") program. Pricing is
+    **$10/$50 per Mtok, 2.5× GPT-5.6 Sol's $4/$20**, with a 90%-discounted $1 cached-input rate. On
+    Artificial Analysis's Intelligence Index and Coding Agent Index it ties Claude Fable 5.1 for the
+    top spot, but at roughly 40% (intelligence) and 60% (coding) of Fable 5.1's cost per task, using
+    about a third of the output tokens Fable 5.1 needs for the same score. It saturates FrontierMath
+    Tier 4 (97.6%) and ExploitBench (100%) on OpenAI's own tables, but trails Fable 5.1 on Humanity's
+    Last Exam with tools (57.2% vs 65.0%) and has no published SWE-bench Pro or Terminal-Bench 2.x
+    score, so it is not a clean sweep. This resets the reasoning/agentic-coding benchmark ceiling and
+    introduces the first "Critical"-tier cyber-risk model into the frontier, a new regulatory-dependency
+    data point for single-model-risk scoring.
+  - **`[AGENT-IMPACT]`** Anthropic answered same-week with **Claude Fable 5.1 and Claude Mythos 5.1**
+    (2026-09-01), a new Mythos-class generation (same weights, two safeguard levels) that leads Claude
+    Opus 5 on every benchmark Anthropic published and matches or beats GPT-6 Astra on Artificial
+    Analysis's Intelligence Index. List price is unchanged at $10/$50 per Mtok, but **cache-read pricing
+    was cut 75% to $0.25/Mtok**, which Anthropic states lowers typical-workload cost ~25% and
+    highly-agentic-workload cost ~45% with no list-price change — an effective commodity-tier discount
+    delivered through cache economics rather than sticker price. SWE-bench Pro reaches 81.2% and
+    Terminal-Bench-Science 0.1 more than doubled versus Fable 5 (52.6% vs 24.7%). Anthropic also raised
+    its internal alignment-risk assessment from "very low" to "low" for this generation.
+  - **`[AGENT-IMPACT]`** Meta entered the **cross-app proactive personal-assistant** commoditization
+    category (Section 3) directly: **Muse**, a consumer personal AI agent that manages email, calendar,
+    bookings, form-filling, and Stripe-Link-powered checkout on a user's behalf, launched 2026-09-08
+    (US-only, 18+, web/iOS/Android/WhatsApp, AI-glasses "coming soon"). Free tier up to ~100M tokens/week,
+    paid tiers at $20 (Power) and $100 (Maximum) per month, running on the Muse Spark model family under
+    Meta Superintelligence Labs. This is a fourth major-lab entrant (alongside Gemini Spark, Claude
+    Cowork, ChatGPT agent/Atlas-folded-in) into the same commoditization category the watchlist already
+    flagged as "closing fast" — the category now has a distribution-scale competitor with 3B+ app users
+    behind it, hardening the case that this category is closed to new entrants, not merely closing.
+  - **`[AGENT-IMPACT]`** DeepSeek replaced its commodity-tier workhorse with **DeepSeek V4.1 Flash**
+    (2026-09-10): a new architecture (552B total / 8B input-active / 16B output-active MoE) with native
+    image input and MIT-licensed, self-hostable weights. Pricing is **$0.15/$0.60 per Mtok off-peak
+    (cache-miss input/output)**, a **>100% increase on output price** versus the prior V4-Flash off-peak
+    rate this snapshot has on file ($0.14/$0.28) — a second consecutive DeepSeek commodity-tier price
+    increase (following the V4-Pro peak/off-peak shift logged 2026-08-16), continuing the erosion of the
+    open-weight cost-floor story flagged in snapshot v5. DeepSeek reversed a planned Sept 14 redirect of
+    `deepseek-v4-pro` traffic to V4.1 Flash and will keep serving V4 Pro at unchanged billing instead.
+  - xAI shipped neither Grok 5 nor Grok 4.7 this cycle: Grok 4.7 (2.1T params, trained partly on SpaceX
+    engineering data) was targeted for 2026-09-12, slipped on 2026-09-11 to "a few more days" of RL
+    tuning, and remains unlisted in xAI's own model docs as of 2026-09-14; Musk has since named a further
+    successor, Grok 4.8 (2.5T), with no date. Grok 5 guidance has loosened to "within 2026." Grok 4.6
+    ($2/$6 per Mtok, 500K context) remains xAI's shipped flagship. No pricing or benchmark change to log.
+  - Google shipped no new flagship this cycle (Gemini 4 remains pre-training/untimed); Gemini 3.7 Flash
+    reached GA 2026-08-13 at introductory pricing (incremental, not scored as AGENT-IMPACT). Google began
+    retiring Google Assistant in favor of Gemini as the default Android/Wear OS assistant starting
+    2026-09-04 — a distribution note, not a model/pricing/benchmark change, so not flagged.
+  - **Net for viability scoring:** the reasoning/agentic-coding frontier ceiling reset twice in one week
+    (Astra, then Fable 5.1/Mythos 5.1), both now cluster at the same Intelligence Index score with
+    Anthropic winning on cost-per-task via cache economics and OpenAI winning on raw token efficiency —
+    cost-per-completed-task, not sticker price, is now the only comparison that holds. The personal-agent
+    commoditization category (Section 3) should be re-scored from "closing fast" toward "closed" now that
+    four of the six frontier labs (OpenAI, Google, Anthropic, Meta) ship a proactive cross-app agent
+    product. DeepSeek's second consecutive commodity-tier price increase means any cost model still
+    quoting original V4-Flash rates ($0.14/$0.28) is stale twice over.
+
+_Sources: [BenchLM — GPT-6 Astra](https://benchlm.ai/models/gpt-6-astra), [DataCamp — GPT-6 Astra](https://www.datacamp.com/blog/gpt-6-astra), [Artificial Analysis — Benchmarking GPT-6 Astra](https://artificialanalysis.ai/articles/benchmarking-gpt-6-astra), [Axios — OpenAI releases GPT-6 Astra](https://www.axios.com/2026/09/03/openai-astra-gpt-6-agi-brockman), [Al Jazeera — GPT-6 Astra](https://www.aljazeera.com/economy/2026/9/4/openai-unveils-gpt-6-astra-amid-rising-scrutiny-and-safety), [Wikipedia — GPT-6 Astra](https://en.wikipedia.org/wiki/GPT-6_Astra), [BenchLM — Claude Fable 5.1](https://benchlm.ai/models/claude-fable-5-1), [DataCamp — Claude Fable 5.1](https://www.datacamp.com/blog/claude-fable-5-1), [Vellum — Fable 5.1/Mythos 5.1 benchmarks](https://www.vellum.ai/blog/claude-fable-5-1-mythos-5-1-benchmarks-explained), [AIToolsReview — Claude Fable 5.1](https://aitoolsreview.co.uk/insights/claude-fable-5-1), [Latent Space — Claude Fable/Mythos 5.1](https://www.latent.space/p/ainews-claude-fablemythos-51-new), [TechCrunch — Meta debuts Muse](https://techcrunch.com/2026/09/08/meta-debuts-its-muse-ai-agent-will-consumers-trust-it/), [RelevantAudience — Meta Muse](https://www.relevantaudience.com/ai/meta-muse-personal-ai-agent-launch/), [Tech Insider — Meta Muse](https://tech-insider.org/what-meta-actually-shipped-with-muse/), [BenchLM — DeepSeek pricing](https://benchlm.ai/deepseek/api-pricing), [DeepSeek API docs — Pricing](https://api-docs.deepseek.com/quick_start/pricing/), [CellCog — Grok 4.7 release date](https://cellcog.ai/blog/grok-4-7-release-date/), [OrcaRouter — Grok 4.7 release date](https://www.orcarouter.ai/blog/grok-4-7-release-date), [the-decoder — Google Assistant shutdown](https://the-decoder.com/google-will-shut-down-google-assistant-starting-september-2026-as-gemini-takes-over-on-android-and-wear-os/), [Google AI updates — August 2026](https://blog.google/innovation-and-ai/technology/google-ai-updates-august-2026/)._
+
+---
 
 - **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
   shifts since 2026-08-06; no new model releases.
