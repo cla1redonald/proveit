@@ -7,10 +7,10 @@
 > factual error you can cite.
 
 ```yaml
-snapshot_version: 5
-generated: 2026-09-01
+snapshot_version: 6
+generated: 2026-10-01
 generated_by: frontier-watch
-next_scan_due: 2026-09-15
+next_scan_due: 2026-10-15
 freshness_horizon_days: 21   # snapshot is "stale" past this; AI-Commoditization agent flags it
 ```
 
@@ -261,6 +261,55 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-10-01 (snapshot v6)** — Biweekly `frontier-scan` Managed Agent pass. This window (2026-09-01 →
+  2026-09-30) was the densest frontier month tracked to date: a new OpenAI generation (GPT-6), a second
+  Anthropic mid-cycle refresh (Claude 5.5), and Google's first Gemini 4 entrant all shipped or were
+  announced inside four weeks. Flagging as `[AGENT-IMPACT]` and opening a PR for human review per the
+  Managed Agent's standing instructions.
+  - **`[AGENT-IMPACT]`** **OpenAI shipped an entirely new model generation, GPT-6**, not a GPT-5.x point
+    release: GPT-6 Astra (announced 2026-09-01, broad rollout 2026-09-04) is OpenAI's new top-tier
+    "most intelligent and aligned" model — 100% on ExploitBench vs. 78.5% for GPT-5.6 Sol, state-of-the-art
+    on computer use, coding, cybersecurity, and science. GPT-6 Sol and Luna followed 2026-09-22 as the
+    efficient tiers (GPT-6 Sol scores 56.4% on Agents' Last Exam at max effort, above Claude Opus 5's best
+    score at 60% lower cost per task), and GPT-6.1 Sol shipped 2026-09-29. This resets the reasoning-tier
+    benchmark bar the AI-Commoditization analysis should cite — GPT-5.6 references are now one generation
+    stale.
+  - **`[AGENT-IMPACT]`** **New commodity-tier price floor: GPT-6 Luna at $0.10/$0.50 per Mtok** (2026-09-22),
+    a 50% cut vs. GPT-5.6's promotional pricing and now *below* DeepSeek's V4.1-Flash off-peak rate
+    ($0.15/$0.60) — the first time a proprietary US lab has undercut DeepSeek on raw per-token price at the
+    commodity tier. GPT-6 Sol priced at $2/$10. Any cost model still citing Luna at $0.20/$1.20 (the prior
+    floor) or DeepSeek as the undisputed cheapest frontier-capable model is now stale.
+  - **`[AGENT-IMPACT]`** **Anthropic shipped a second mid-cycle refresh, the Claude 5.5 family**: Claude
+    Fable 5.1 / Mythos 5.1 (2026-09-01, same specs/price as 5.0, cache-read cost cut 75%), **Claude Opus
+    5.5** (2026-09-22, $4/$20 — a 20% price cut vs. Opus 5's $5/$25 — performing at Fable 5.1's level on
+    most work at ~40% lower cost to run), and **Claude Sonnet 5.5** (2026-09-28, same $2/$10 price as
+    Sonnet 5, 30%+ faster output, first Sonnet-tier model with cybersecurity safeguards comparable to
+    Opus-tier). Opus 5 / Sonnet 5 references in cost and benchmark models are now one minor version stale.
+  - **`[AGENT-IMPACT]`** **Google entered the Gemini 4 generation**: "Gemini 4 Argon" was announced and
+    given to select cybersecurity partners on 2026-09-30, Google's first full-flagship model since Gemini
+    3.1 Pro (2026-02-20) — the company says it sets a new record on real-world software engineering and
+    ties for first on cybersecurity benchmarks, closing the gap with Astra/Opus 5.5. No public release
+    date, pricing, or broad benchmarks yet (cyber-partner-only rollout, same phased pattern OpenAI used for
+    Astra). Google has now formally abandoned Gemini 3.5 Pro — it will not ship.
+  - DeepSeek replaced V4-Flash with **V4.1-Flash** (2026-09-10, new 552B/8B-16B-active architecture, native
+    image input, MIT-licensed) at $0.15/$0.60 off-peak — a lower input price but a ~114% *higher* output
+    price than V4-Flash's prior $0.14/$0.28 flat rate. DeepSeek also reversed a planned 2026-09-14
+    retirement of V4-Pro after user pushback; V4-Pro continues unchanged at the 2026-08-16 peak/off-peak
+    rates already reflected in this snapshot.
+  - xAI shipped Grok 4.6 (2026-08-12) and **Grok 4.7** (2026-09-21, same $2/$6 pricing and 500K context as
+    4.5/4.6) as further point releases on the coding/agentic track; still not Grok 5, which remains in
+    training on Colossus 2 with no confirmed date (Q1–Q3 2026 targets have now all passed).
+  - Meta shipped **Muse Spark 1.3** (2026-09-02, agentic-workflow update, ~$0.10/Mtok blended, still
+    closed-weight) and, at Meta Connect (2026-09-23), **Muse Realtime Voice and Avatar** — real-time
+    conversational speech plus a synced video-avatar embodiment layer, pushing persistent voice/avatar
+    companion UX further toward a default platform feature rather than a startup differentiator.
+  - **Suggested scoring update for ProveIt's AI-Commoditization analysis:** (1) treat GPT-5.6, Claude Opus
+    5 / Sonnet 5, and Gemini 3.6 Flash as the *prior* generation when citing reasoning/coding benchmarks —
+    cite GPT-6 Astra/Sol, Claude Opus 5.5/Sonnet 5.5, and (once public) Gemini 4 Argon instead; (2) reset
+    the commodity price floor used in token-economics scoring to GPT-6 Luna's $0.10/$0.50, not DeepSeek's
+    $0.14/$0.28 (that floor no longer exists at any lab); (3) flag any idea whose moat rests on "real-time
+    voice + avatar companion" against Meta's Muse Realtime Voice/Avatar as a new default-tier signal.
+  - _Sources: [OpenAI — GPT-6 Astra](https://openai.com/index/gpt-6-astra/), [OpenAI — GPT-6 Sol and Luna](https://openai.com/index/introducing-gpt-6-sol-and-luna/), [Wikipedia — GPT-6](https://en.wikipedia.org/wiki/GPT-6), [TechCrunch — GPT-6 Sol and Luna launch](https://techcrunch.com/2026/09/22/openai-launches-gpt-6-sol-and-luna/), [hidekazu-konishi.com — Claude release timeline](https://hidekazu-konishi.com/entry/anthropic_claude_model_release_timeline.html), [AIToolsReview — Claude roadmap Sept 2026](https://aitoolsreview.co.uk/insights/next-claude-model), [9to5Mac — Claude Sonnet 5.5](https://9to5mac.com/2026/09/28/anthropic-upgrades-claude-with-new-sonnet-5-5-model-details-here/), [CNBC — Gemini 4 Argon](https://www.cnbc.com/2026/09/30/google-gemini-4-argon-ai.html), [Reuters/WTAQ — Gemini 4 announcement](https://wtaq.com/2026/09/30/google-announces-gemini-4-flagship-ai-model-after-months-of-delays/), [9to5Google — Gemini 4 timing](https://9to5google.com/2026/09/24/google-says-gemini-4-release-is-coming-as-soon-as-possible/), [felloai — DeepSeek pricing](https://felloai.com/deepseek-pricing/), [morphllm — DeepSeek API pricing](https://www.morphllm.com/deepseek-api), [geotoolbox.ai — Grok 5 tracker](https://geotoolbox.ai/blog/grok-5), [xAI release notes](https://docs.x.ai/developers/release-notes), [mungomash.com — Llama/Muse versions](https://mungomash.com/ai/llama/versions/), [local-ai-zone — September 2026 AI model updates](https://local-ai-zone.github.io/blog/September_2026_AI_Model_Updates.html)._
 - **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
   shifts since 2026-08-06; no new model releases.
   - **`[AGENT-IMPACT]`** Claude Sonnet 5 pricing locked permanent: Anthropic cancelled the 2026-08-31 increase
