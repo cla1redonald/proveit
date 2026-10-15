@@ -261,6 +261,47 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-10-15 (announcement-monitor delta, 2026-10-01 → 2026-10-15)** — Lightweight biweekly scan.
+  No full `frontier-scan` dynamic-workflow refresh has run since the 2026-09-01 v5 snapshot (two
+  scheduled windows, 2026-09-15 and 2026-10-01, were missed), so Sections 1–5 above are now six
+  weeks stale and do not yet reflect the Claude 5.5 family, GPT-6/6.1, or Gemini 4 — **a full
+  `frontier-scan` run is recommended as the next action.** Within the last 14 days specifically,
+  four dated, officially-announced shifts clear the `[AGENT-IMPACT]` bar:
+  - **`[AGENT-IMPACT]`** **Meta shipped its first genuine frontier closed model.** Muse Wonder and
+    Muse Wonder Full (2026-10-12) are Meta Superintelligence Labs' first models benchmarked as
+    competitive with Claude Opus 5.5 and GPT-6 Astra rather than a commodity/open-weight play —
+    Wonder scores 52 on the Artificial Analysis Intelligence Index (one point behind GPT-6 Astra),
+    and Wonder Full leads on SWE-Marathon (57.5 vs. Opus 5.5's 46.3) and a legal-agent benchmark.
+    Pricing lands at roughly double the combined token cost of GPT-6 Sol/Claude Sonnet 5.5/Gemini 4
+    Argon's introductory rate — a premium-tier bet, not a bargain one — and Wonder Full is gated to
+    paid Muse Code subscriptions ($50–$200/mo) rather than the API. This adds a credible third closed
+    enterprise competitor alongside Anthropic/OpenAI and reverses the "Meta abandoned closed-weight
+    frontier" read from the 2026-08-06 v4 snapshot.
+  - **`[AGENT-IMPACT]`** **Gemini 4 Argon reached general availability.** After a 2026-09-30
+    announcement limited to Google's Fairwind cyber-defender program, Google opened Argon globally
+    on 2026-10-13 to paid Gemini API developers, Google AI Pro ($19.99/mo) and Ultra subscribers, and
+    GitHub Copilot's top tiers — Google's first Gemini 4 model now reaches a mass consumer/developer
+    base, not just vetted partners. Independent (Artificial Analysis) scoring ties it with GPT-6
+    Astra at 53 and places it behind Opus 5.5's 58. Pricing is introductory $2/$10 per Mtok until
+    2026-11-30, then a confirmed **doubling to $4/$20** — a dated, >20% pricing-cliff that any
+    cost model built on the intro rate needs to account for now.
+  - **`[AGENT-IMPACT]`** **GPT-6 Sol/Luna rolled out to every ChatGPT user, free and paid, globally**
+    (2026-10-07), replacing GPT-5.6 Sol/Luna as the default and folding in GPT-6 Astra's safety
+    advances plus a new **Intelligent UI** default — ChatGPT now dynamically generates interactive
+    components (charts, forms, tappable buttons, calculators) inside a chat response instead of
+    plain text, and begins answering while still reasoning. This moves "AI that builds a bespoke
+    mini-interface for your answer" from a differentiator into a free-tier default overnight.
+  - **`[AGENT-IMPACT]`** **Claude Haiku 5.5 cut commodity-tier pricing ~90%** (2026-10-07): $0.10/$0.50
+    per Mtok versus Haiku 4.5's $1/$5, now the default Haiku model on the Anthropic API with a 1M
+    context window. This resets the proprietary commodity floor well below the Luna/V4.1-Flash range
+    noted in the v5 snapshot and should be reflected in any token-economics assumption still citing
+    Haiku 4.5 rates.
+  - Non-flagged, for context: Claude Design reached GA on all plans including Free (2026-10-08),
+    with the standalone `claude.ai/design` site closing 2026-12-14 — a handoff-surface note for
+    ProveIt's own `claude-design-prompts.md` artefact, worth folding into the next full refresh
+    rather than treated as a standalone agent-impact item this run. xAI (Grok 4.7, 2026-09-21) and
+    DeepSeek (V4.1 Flash repricing, 2026-09-10) had no dated announcements inside the 2026-10-01 →
+    2026-10-15 window.
 - **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
   shifts since 2026-08-06; no new model releases.
   - **`[AGENT-IMPACT]`** Claude Sonnet 5 pricing locked permanent: Anthropic cancelled the 2026-08-31 increase
