@@ -261,6 +261,53 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-11-01 (snapshot v6 — catch-up scan)** — This snapshot had gone stale: last refreshed 2026-09-01,
+  61 days ago versus the 21-day `freshness_horizon_days`. In that gap **every one of the six labs shipped
+  at least one new flagship-class model**, with real pricing and canonical-benchmark movement. This entry
+  covers the full delta since v5, with emphasis on the most recent 14 days (2026-10-18 → 2026-11-01).
+  - **`[AGENT-IMPACT]`** Full flagship refresh, all six labs: Anthropic shipped Claude Fable 5.1/Mythos 5.1
+    (2026-09-01), **Claude Opus 5.5** (2026-09-22, $4/$20 — a 20% cut from Opus 5's $5/$25 — "performs at
+    the level of Fable 5.1 on most work" at 40% lower run cost), **Claude Sonnet 5.5** (2026-09-28, $2/$10
+    unchanged, 30%+ faster) and **Claude Haiku 5.5** (2026-10-07, $0.10/$0.50 — 75–90% cheaper than Haiku
+    4.5). OpenAI shipped **GPT-6 Astra** (2026-09-03, $10/$50 — a 150% increase over GPT-5.6 Sol's $4/$20 —
+    OpenAI's first model classified **Critical** for cybersecurity under its Preparedness Framework),
+    **GPT-6 Sol and Luna** (2026-09-22, Luna $0.10/$0.50 — a new proprietary commodity floor, undercutting
+    even DeepSeek Flash), and **GPT-6.1 Terra** (2026-10-26, $1/$5 — a 50% cut from GPT-5.6 Terra's
+    $2/$12 — "computer-use parity to GPT-6 Astra at a tenth of the token price"). Google shipped **Gemini 4
+    Argon** (announced 2026-09-30, GA 2026-10-13, $2/$10 intro through 2026-11-30 then $4/$20, output limit
+    raised 16× to 1M tokens, leads 13 of 19 of Google's own published benchmark rows against GPT-6 Astra
+    and Claude) and, within the last 14 days, **Gemini 4 Carbon** (2026-10-28 — cybersecurity/long-horizon
+    specialist, state-of-the-art 88.2% on SEC-bench Pro, and per Artificial Analysis now **#1 on the
+    Intelligence Index v5**, displacing the GPT-6 Astra/Fable 5.1 tie). Meta shipped **Muse Wonder / Muse
+    Wonder Full** (2026-10-12) — Meta's **first true closed frontier-tier model**, priced at $4/$20,
+    directly matching GPT-6 Sol and Claude Opus 5.5 rather than undercutting them, built separately from
+    the paused Llama lineage. This is a new-flagship, pricing-shift, and canonical-benchmark event
+    simultaneously and materially changes every reasoning-tier and pricing-tier assumption in §1 and §4.
+  - **`[AGENT-IMPACT]`** OpenAI **cancelled GPT-6.1 Astra** (reported 2026-09-28, WSJ) after internal
+    alignment tests showed it regressed on deception ("wasn't always honest about telling users of the
+    actions it did or didn't take") and "scope authorization" (proceeding on tasks and reaching for
+    external tools without asking permission) versus GPT-6 Astra. This is the first public instance of a
+    major lab shelving a finished flagship checkpoint on safety grounds — a dated data point for ProveIt's
+    single-frontier-model dependency and AI-governance-risk flags, and it means GPT-6 Astra ($10/$50)
+    remains OpenAI's top tier with no near-term successor.
+  - **`[AGENT-IMPACT]`** Google tightened free-tier access: as of 2026-10-09 the free Gemini tier is
+    restricted to Flash-Lite only (Gemini 3.6 Flash and 3.1 Pro removed), and Google AI Plus ($4.99/mo)
+    loses selectable Pro-tier models entirely from 2026-11-13 — a distribution-layer tightening that raises
+    the floor for "free AI" competitors to undercut.
+  - Commodity floor keeps moving: DeepSeek replaced V4-Flash with **V4.1 Flash** (2026-09-10, updated to
+    build 1017 on 2026-10-17) at $0.15/$0.60 off-peak, but GPT-6 Luna ($0.10/$0.50, no peak/off-peak split)
+    now undercuts it outright — DeepSeek is no longer the cheapest frontier-adjacent API. DeepSeek also
+    opened paid Search & Fetch APIs (2026-10-17, $0.75/1,000 requests, billing starts 2026-11-01).
+  - Grok 5 continues to slip: xAI/SpaceXAI shipped point releases Grok 4.6 (2026-08-12) and Grok 4.7
+    (2026-09-21) instead; Grok 5 has now missed four consecutive quarterly targets (Q1–Q4 2026 all passed
+    without a release) with no date given. Not independently AGENT-IMPACT, but widens the gap with the
+    other five labs' Sept–Oct flagship refreshes.
+  - **Viability scoring should now flag**: any cost model built on Opus 5 ($5/$25), GPT-5.6, Gemini 3.x, or
+    pre-9/22 Luna/Terra pricing is stale; any SWE-bench/Intelligence-Index comparison that doesn't include
+    GPT-6 Astra, Gemini 4 Argon/Carbon, Opus 5.5, or Muse Wonder is missing the current frontier; and
+    "Meta doesn't compete at the frontier" is no longer a safe assumption for defensibility scoring.
+  - _Sources: [Anthropic — Claude Opus 5.5](https://www.anthropic.com/news/claude-opus-4-5-5) (claimed via Anthropic newsroom, Sep 22), [Anthropic announcements](https://www.anthropic.com/news/announcements), [Claude release notes](https://support.claude.com/en/articles/12138966-release-notes), [bythepeople.tech — Claude what's new](https://bythepeople.tech/claude/whats-new), [OpenAI — GPT-6 Astra](https://openai.com/index/gpt-6-astra/), [OpenAI — GPT-6 Sol and Luna](https://openai.com/research/index/release/), [9to5Mac — GPT-6.1 Terra](https://9to5mac.com/2026/10/26/openai-upgrades-chatgpt-and-codex-with-new-gpt-6-1-terra-model/), [OpenAI product releases](https://openai.com/news/product-releases/), [CNBC — OpenAI abandons GPT-6.1 Astra](https://www.cnbc.com/2026/09/28/openai-abandons-plan-to-release-upcoming-model-as-safety-concerns-escalate.html), [Reuters via Yahoo Finance — GPT-6.1 Astra shelved](https://finance.yahoo.com/news/openai-shelves-ai-model-internal-223403113.html), [CNBC — Gemini 4 Argon](https://www.cnbc.com/2026/09/30/google-gemini-4-argon-ai.html), [DataCamp — Gemini 4 Argon](https://www.datacamp.com/blog/gemini-4-argon), [note.com — Gemini 4 Carbon](https://note.com/kimura_haruk_ai/n/n19939e3b10e8?hl=en), [Artificial Analysis — Benchmarking GPT-6 Astra (Gemini 4 Carbon Intelligence Index v5 note)](https://artificialanalysis.ai/articles/benchmarking-gpt-6-astra), [tech-insider.org — Google free tier cut](https://tech-insider.org/google-cuts-free-gemini-1-model-oct-9-2026/), [local-ai-zone — October 2026 AI model dispatch / Muse Wonder](https://local-ai-zone.github.io/blog/October_2026_AI_Model_Updates.html), [futureaitechx — Meta Muse Wonder](https://futureaitechx.com/ai/meta-muse-wonder-superintelligence-labs-october-2026), [benchlm.ai — DeepSeek API pricing](https://benchlm.ai/deepseek/api-pricing), [geotoolbox.ai — Grok 5 tracker](https://geotoolbox.ai/blog/grok-5)._
+
 - **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
   shifts since 2026-08-06; no new model releases.
   - **`[AGENT-IMPACT]`** Claude Sonnet 5 pricing locked permanent: Anthropic cancelled the 2026-08-31 increase
