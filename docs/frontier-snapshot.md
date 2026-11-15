@@ -261,6 +261,51 @@ The `frontier-scan` workflow appends a diff here every run. Structural changes (
 frontier, a model rename, a capability crossing from "differentiator" to "default") are flagged
 `[AGENT-IMPACT]` and trigger a PR against `agents/proveit.md`.
 
+- **2026-11-15 (delta scan, unreleased)** — Biweekly frontier-watch delta scan. The scheduled
+  managed-agent cadence lapsed for roughly two months (last entry 2026-09-01; `next_scan_due` was
+  2026-09-15); this run found a **complete flagship-generation turnover across all three largest
+  labs** that Sections 1–5 of this file do not yet reflect at all (they still describe Opus 5 /
+  GPT-5.6 / Gemini 3.6 Flash as current). Flagged for a full `frontier-scan.workflow.mjs` refresh,
+  not just this delta.
+  - **`[AGENT-IMPACT]`** New flagship generation, OpenAI: the GPT-6 family has fully superseded
+    GPT-5.6 — GPT-6 Astra (GA 2026-09-04, $10/$50, rated Critical on cybersecurity under OpenAI's
+    Preparedness Framework), GPT-6 Sol ($2/$10) and GPT-6 Luna ($0.10/$0.50, both 2026-09-22),
+    GPT-6.1 Terra ($1/$5, 2026-10-26), and the restricted GPT-6 Cyber (2026-11-05, $20/$100). Terra
+    and Luna both cut roughly 50%+ versus their GPT-5.6 equivalents (Terra $2.00/$12.00→$1/$5; Luna
+    $0.20/$1.20→$0.10/$0.50).
+  - **`[AGENT-IMPACT]`** New flagship generation, Anthropic: Claude Opus 5.5 (2026-09-22) — Anthropic
+    said Opus 5.5 "leads in agentic coding and knowledge work, and costs 40% less to run than Opus 5
+    on typical workloads." Claude Sonnet 5.5 (same date) "is a clear upgrade over Claude Sonnet 5,
+    runs 30%+ faster, and costs up to 30% less for most work." Claude Haiku 5.5 shipped 2026-10-07.
+    Claude Fable 5.2 / Mythos 5.2 (2026-11-09) scored higher than Opus 5.5 on almost all evaluated
+    capabilities and cut price 20% versus Fable 5.1 ($8/$40 vs. $10/$50) — Anthropic's first frontier
+    release since CEO Dario Amodei's September call for AI to be developed more slowly ("pacing, not
+    pausing").
+  - **`[AGENT-IMPACT]`** New flagship generation, Google: Gemini 4 Argon rolled out globally in
+    October, and Gemini 4 Carbon (announced 2026-10-28, GA to developers/enterprises 2026-11-10)
+    leads the Artificial Analysis Intelligence Index at 59 with state-of-the-art cybersecurity and
+    long-horizon capability; introductory API pricing of $2/$10 doubles to $4/$20 on 2026-12-01.
+    Gemini 4 Hydrogen (2026-11-12/13) is the faster, cheaper Gemini 4 tier. Gemini 2.5 retires from
+    the Gemini API on 2026-12-01.
+  - **`[AGENT-IMPACT]`** Canonical benchmark shift: labs are now reporting **FrontierSWE v2** and the
+    **Artificial Analysis Intelligence Index v5.0** as the headline comparison points rather than
+    SWE-bench Verified alone — on FrontierSWE v2, Claude Fable 5.2 scores 69.9% vs. Opus 5.5's 62.3%,
+    GPT-6 Astra's 65.5%, and Gemini 4 Carbon's 61.2%. Any ProveIt scoring citation still anchored to
+    the SWE-bench Verified ladder from the v3/v4 snapshots is now dated.
+  - Meta shipped Muse Spark Open (816B MoE, open-weight, 2026-10-15) and Muse Ember (new commodity
+    tier, $0.10/$0.50, 2026-11-09/10), continuing the open/closed oscillation already flagged in v5.
+  - xAI shipped three more Grok point releases (4.5 Jul, 4.6 Aug, 4.7 Sep 21) without a Grok 5
+    flagship; Grok 4.8 entered reinforcement learning as of 2026-11-10 with no ship date — same
+    "serial quarterly miss" pattern already logged in v5, not a new structural signal.
+  - DeepSeek replaced V4-Flash with V4.1-Flash (2026-09-10, refreshed to the "1017" build on
+    2026-10-17) at lower list prices, and began billing its Search/Fetch tool APIs per-request from
+    2026-11-01. V4-Pro pricing is unchanged since the 2026-08-16 peak/off-peak shift already logged
+    in v5 — not a new delta.
+  - **Net:** three of the "big six" labs each shipped a full next-generation flagship family since
+    the last snapshot, with the canonical coding benchmark itself changing underneath them. This is
+    squarely the trigger condition this monitor exists to catch; recommend running the full
+    `frontier-scan.workflow.mjs` (not just this lightweight delta) to rebuild Sections 1–5 before the
+    AI-Commoditization analysis cites this file again.
 - **2026-09-01 (snapshot v5)** — Biweekly frontier-watch delta scan. Four material strategic and cost-model
   shifts since 2026-08-06; no new model releases.
   - **`[AGENT-IMPACT]`** Claude Sonnet 5 pricing locked permanent: Anthropic cancelled the 2026-08-31 increase
